@@ -33,9 +33,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -54,7 +52,6 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
@@ -67,8 +64,6 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.io.IOUtils;
@@ -83,7 +78,6 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.panbox.PanboxConstants;
-import org.panbox.core.Utils;
 import org.panbox.core.exception.SymmetricKeyDecryptionException;
 import org.panbox.core.exception.SymmetricKeyEncryptionException;
 import org.panbox.core.identitymgmt.IPerson;
@@ -271,90 +265,12 @@ public class CryptCore {
 		}
 	}
 
-	public static void encryptStream(InputStream bis, OutputStream fos,
-			SecretKey shareKey) {
-
-		Cipher aesCipher;
-		try {
-			aesCipher = Cipher.getInstance(KeyConstants.SYMMETRIC_ALGORITHM);
-
-			aesCipher.init(Cipher.ENCRYPT_MODE, shareKey);
-
-			CipherOutputStream os = new CipherOutputStream(fos, aesCipher);
-
-			copy(bis, os);
-
-			os.close();
-
-		} catch (NoSuchAlgorithmException | NoSuchPaddingException
-				| InvalidKeyException | IOException e) {
-			logger.warn("Exception caught in CryptCore.encryptStream", e);
-		}
-
-	}
-
-	public static void decryptStream(InputStream bis, OutputStream fos,
-			SecretKey shareKey) {
-
-		Cipher aesCipher = null;
-
-		try {
-			aesCipher = Cipher.getInstance(KeyConstants.SYMMETRIC_ALGORITHM);
-			aesCipher.init(Cipher.DECRYPT_MODE, shareKey);
-
-			CipherInputStream is = new CipherInputStream(bis, aesCipher);
-
-			copy(is, fos);
-
-			is.close();
-
-		} catch (NoSuchAlgorithmException | NoSuchPaddingException
-				| InvalidKeyException | IOException e) {
-			logger.warn("Exception caught in CryptCore.decryptStream", e);
-		}
-
-	}
-
-	public static ByteBuffer decryptFile(ByteBuffer buf, SecretKey key) {
-		buf.clear();
-		byte[] bytes = new byte[buf.capacity()];
-		buf.get(bytes, 0, bytes.length);
-
-		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-		CryptCore.decryptStream(bais, baos, key);
-
-		try {
-			bais.close();
-			baos.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return ByteBuffer.wrap(baos.toByteArray());
-	}
-
-	private static void copy(InputStream is, OutputStream os)
-			throws IOException {
-		int i;
-		byte[] b = new byte[1024];
-		while ((i = is.read(b)) != -1) {
-			os.write(b, 0, i);
-		}
-	}
-
 	public static X509Certificate createSelfSignedX509Certificate(
 			PrivateKey privKey, PublicKey pubKey, IPerson person) {
 		return createSelfSignedX509Certificate(privKey, pubKey,
 				person.getEmail(),
 				person.getFirstName() + " " + person.getName());
 	}
-
-	// public static X509Certificate createSelfSignedX509Certificate(
-	// PrivateKey privKey, PublicKey pubKey) {
-	// return createSelfSignedX509Certificate(privKey, pubKey, null, null);
-	// }
 
 	/**
 	 * Creates a self signed certificate valid for 10 years (necessary to store
@@ -498,15 +414,6 @@ public class CryptCore {
 			FileNotFoundException, IOException {
 		byte[] ref = genChecksum(f);
 		return Arrays.equals(ref, tocheck);
-	}
-
-	public static char[] deriveKeystorePass(char[] userpass, byte[] salt)
-			throws NoSuchAlgorithmException, InvalidKeySpecException {
-		SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-		KeySpec ks = new PBEKeySpec(userpass, salt, 4096, 512);
-		byte[] res = f.generateSecret(ks).getEncoded();
-		Utils.eraseChars(userpass);
-		return Utils.toChars(res);
 	}
 
 }
