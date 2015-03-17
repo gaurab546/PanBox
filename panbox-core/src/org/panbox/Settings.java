@@ -203,7 +203,7 @@ public class Settings {
 					// try to connect to *somewhere*
 					socket.connect(new InetSocketAddress("panbox.org", 80));
 				} catch (IOException ex) {
-					ex.printStackTrace();
+					logger.warn("Could not use network address " + address.getHostAddress(), ex);
 					continue;
 				}
 

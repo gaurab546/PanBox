@@ -29,10 +29,13 @@ package org.panbox.desktop.common.gui.devices;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.SocketException;
+import java.util.ResourceBundle;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
+import org.panbox.Settings;
 import org.panbox.core.pairing.network.NetworkPairingInformation;
 import org.panbox.desktop.common.PanboxClient;
 import org.panbox.desktop.common.gui.PairNewDeviceDialog;
@@ -40,6 +43,10 @@ import org.panbox.desktop.common.gui.PairNewDeviceDialog;
 public class AddDeviceNetworkActionListener implements ActionListener {
 
 	protected static final Logger logger = Logger.getLogger("org.panbox");
+
+	private static final ResourceBundle bundle = ResourceBundle.getBundle(
+			"org.panbox.desktop.common.gui.Messages", Settings.getInstance()
+					.getLocale());
 
 	private final JFrame clientGuiFrame;
 	private final PanboxClient client;
@@ -53,6 +60,15 @@ public class AddDeviceNetworkActionListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		try {
+			if (Settings.getInstance().getPairingAddress() == null) {
+				JOptionPane
+						.showMessageDialog(
+								null,
+								bundle.getString("client.networkinterface.notexisting.message"),
+								bundle.getString("client.networkinterface.notexisting"),
+								JOptionPane.WARNING_MESSAGE);
+				return;
+			}
 			NetworkPairingInformation pInfo = client.initDevicePairingLAN();
 			new PairNewDeviceDialog(clientGuiFrame, client, pInfo);
 		} catch (SocketException ex) {

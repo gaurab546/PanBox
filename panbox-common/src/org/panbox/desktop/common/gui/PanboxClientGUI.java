@@ -3371,7 +3371,7 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 			clipboardHandlerCheckbox.setSelected(false);
 		}
 		mailtoSchemeCheckbox.setSelected(s.isMailtoSchemeSupported());
-		if(cspSelectionComboBox.getModel().getSize() > 0) {
+		if (cspSelectionComboBox.getModel().getSize() > 0) {
 			// in case dropbox has been found select it by default
 			selectedCSPContentPanel.removeAll();
 			selectedCSPContentPanel.add(dropboxSettingsPanel);
@@ -3379,7 +3379,18 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 
 		NetworkInterface nic;
 		try {
-			DefaultComboBoxModel<NetworkInterface> model = generateNetworkInterfacesModel();
+			if (s.getPairingAddress() == null) {
+				// no network interface found!
+				DefaultComboBoxModel<Object> noNicModel = new DefaultComboBoxModel<>();
+
+				noNicModel.addElement(bundle
+						.getString("client.networkinterface.notexisting"));
+
+				networkInterfaceComboBox.setModel(noNicModel);
+				networkAddressComboBox.setModel(noNicModel);
+				return; // finish from here
+			}
+			DefaultComboBoxModel<Object> model = generateNetworkInterfacesModel();
 			nic = NetworkInterface.getByInetAddress(s.getPairingAddress());
 			if (nic == null) {
 				// The configured IP address does not exist anymore! Will reset
@@ -3395,15 +3406,15 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 		}
 	}
 
-	private DefaultComboBoxModel<NetworkInterface> generateNetworkInterfacesModel() {
-		DefaultComboBoxModel<NetworkInterface> model = new DefaultComboBoxModel<>();
+	private DefaultComboBoxModel<Object> generateNetworkInterfacesModel() {
+		DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<>();
 		try {
 			List<NetworkInterface> nics = Collections.list(NetworkInterface
 					.getNetworkInterfaces());
 			for (NetworkInterface nic : nics) {
 				List<InetAddress> addrs = Collections.list(nic
 						.getInetAddresses());
-				if (addrs.size() > 0 && !nic.isLoopback()) {
+				if (addrs.size() > 0 && !nic.isLoopback() && nic.isUp()) {
 					model.addElement(nic);
 				}
 			}
@@ -3415,9 +3426,9 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 		return model;
 	}
 
-	private DefaultComboBoxModel<InetAddress> generateNetworkAddressModel(
+	private DefaultComboBoxModel<Object> generateNetworkAddressModel(
 			NetworkInterface nic) {
-		DefaultComboBoxModel<InetAddress> model = new DefaultComboBoxModel<>();
+		DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<>();
 		List<InetAddress> addrs = Collections.list(nic.getInetAddresses());
 		for (InetAddress addr : addrs) {
 			if (addr instanceof Inet4Address) { // ignore IPv6 addresses!!!
@@ -3504,11 +3515,11 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 	private javax.swing.JTextField lastNameTextField;
 	private javax.swing.JCheckBox mailtoSchemeCheckbox;
 	private javax.swing.JTabbedPane mainTabbedPane;
-	private javax.swing.JComboBox<InetAddress> networkAddressComboBox;
+	private javax.swing.JComboBox<Object> networkAddressComboBox;
 	private javax.swing.JLabel networkAddressLabel;
 	private javax.swing.JLabel networkDevicePairingLabel;
 	private javax.swing.JPanel networkDevicePairingPanel;
-	private javax.swing.JComboBox<NetworkInterface> networkInterfaceComboBox;
+	private javax.swing.JComboBox<Object> networkInterfaceComboBox;
 	private javax.swing.JLabel networkInterfaceLabel;
 	private javax.swing.JTextField ownerTextField;
 	private javax.swing.JButton panboxFolderChooseButton;
