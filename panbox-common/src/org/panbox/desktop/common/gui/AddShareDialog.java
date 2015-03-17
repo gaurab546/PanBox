@@ -31,8 +31,12 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.UnrecoverableKeyException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -41,11 +45,13 @@ import java.util.ResourceBundle;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileView;
 
 import org.apache.log4j.Logger;
+import org.panbox.OS;
 import org.panbox.PanboxConstants;
 import org.panbox.Settings;
 import org.panbox.core.csp.CSPAdapterFactory;
@@ -56,8 +62,15 @@ import org.panbox.desktop.common.gui.shares.FolderPanboxShare;
 import org.panbox.desktop.common.gui.shares.PanboxShare;
 import org.panbox.desktop.common.sharemgmt.ShareManagerException;
 import org.panbox.desktop.common.sharemgmt.ShareManagerImpl;
+import org.panbox.desktop.common.utils.DesktopApi;
 import org.panbox.desktop.common.vfs.backend.dropbox.DropboxAdapterFactory;
 import org.panbox.desktop.common.vfs.backend.dropbox.DropboxClientIntegration;
+
+import com.sun.jna.platform.win32.Advapi32Util;
+import com.sun.jna.platform.win32.Advapi32Util.Account;
+import com.sun.jna.platform.win32.WinNT.ACCESS_ACEStructure;
+import com.sun.jna.platform.win32.WinNT.ACCESS_ALLOWED_ACE;
+import com.sun.jna.platform.win32.WinNT.ACCESS_DENIED_ACE;
 
 public class AddShareDialog extends javax.swing.JDialog {
 
@@ -724,10 +737,8 @@ public class AddShareDialog extends javax.swing.JDialog {
 				File metadata = new File(path,
 						PanboxConstants.PANBOX_SHARE_METADATA_DIRECTORY);
 				if (!metadata.exists() && new File(path).list().length > 0) {
-					JOptionPane
-							.showMessageDialog(
-									this,
-									bundle.getString("AddShareDialog.ShareFolderNotEmpty"));
+					JOptionPane.showMessageDialog(this, bundle
+							.getString("AddShareDialog.ShareFolderNotEmpty"));
 				} else if (path.equals("")) {
 					JOptionPane
 							.showMessageDialog(
@@ -739,13 +750,37 @@ public class AddShareDialog extends javax.swing.JDialog {
 							.getString("AddShareDialog.pathAlreadyAssigned"));
 				} else {
 					File f = new File(path);
-					if (!(f).exists()) { // in case someone just types a path
-						// and expects it to be created
-						f.mkdirs();
-					}
 
-					share = new FolderPanboxShare(null, path, shareName, 0);
-					this.dispose();
+					if (!checkPermissionsOnDirectory(path)) {
+						// TODO: Instead of giving the information of incorrect
+						// access rights we should offer the user to adjust the
+						// access rights automatically (needs some extra work
+						// since JNA does not support SetFileSecurity)
+						JLabel label = new JLabel(
+								bundle.getString("AddShareDialog.errorWrongPermission"));
+						label.addMouseListener(new MouseAdapter() {
+							@Override
+							public void mouseClicked(MouseEvent e) {
+								try {
+									DesktopApi.browse(new URI("https://support.sirrix.com/otrs/index.pl?Action=AgentFAQZoom;ItemID=141"));
+								} catch (URISyntaxException e1) {
+									logger.warn("AddShareDialog : okButtonActionPerformed : Could not open URL. Please visit manually: https://support.sirrix.com/otrs/index.pl?Action=AgentFAQZoom;ItemID=141");
+								}
+							}
+						});
+						JOptionPane.showMessageDialog(null, label,
+								bundle.getString("error"),
+								JOptionPane.ERROR_MESSAGE);
+					} else {
+						if (!(f).exists()) { // in case someone just types a
+												// path
+							// and expects it to be created
+							f.mkdirs();
+						}
+
+						share = new FolderPanboxShare(null, path, shareName, 0);
+						this.dispose();
+					}
 				}
 			}
 		} catch (ShareManagerException | UnrecoverableKeyException
@@ -755,6 +790,35 @@ public class AddShareDialog extends javax.swing.JDialog {
 					bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
 		}
 	}// GEN-LAST:event_okButtonActionPerformed
+
+	private boolean checkPermissionsOnDirectory(String path) {
+		if (OS.getOperatingSystem().isWindows()) {
+			ACCESS_ACEStructure[] aces = Advapi32Util.getFileSecurity(path,
+					false);
+			for (ACCESS_ACEStructure ace : aces) {
+				Account acc = Advapi32Util.getAccountBySid(ace.getSID());
+				if (ace instanceof ACCESS_ALLOWED_ACE) {
+					if (acc.sidString.equals("S-1-5-18")) {
+						// Found user SYSTEM who has access to the file. Will
+						// proceed!
+						return true;
+					}
+				} else if (ace instanceof ACCESS_DENIED_ACE) {
+					if (acc.sidString.equals("S-1-5-18")) {
+						// Found user SYSTEM who has no access to the file. Will
+						// stop!
+						return false;
+					}
+				}
+			}
+			return false; // SYSTEM was not found in DACL -> Has no access!
+		} else if (OS.getOperatingSystem().isLinux()) {
+			return true;
+		} else {
+			logger.error("AddShareDialog : checkPermissionsOnDirectory : Not running on Linux and Windows!");
+			return false;
+		}
+	}
 
 	private void directoryChooseButtonActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_directoryChooseButtonActionPerformed
