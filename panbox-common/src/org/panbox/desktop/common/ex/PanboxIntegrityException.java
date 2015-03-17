@@ -35,7 +35,6 @@ public class PanboxIntegrityException extends PanboxEncryptionException {
 
 	public PanboxIntegrityException(String what, Throwable original) {
 		super(what, original);
-		// TODO Auto-generated constructor stub
 	}
 
 }

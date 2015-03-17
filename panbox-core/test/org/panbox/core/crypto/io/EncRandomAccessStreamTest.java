@@ -74,9 +74,6 @@ public class EncRandomAccessStreamTest {
 	public static void tearDownAfterClass() throws Exception {
 	}
 
-	/**
-	 * FIXME: hard-coded values
-	 */
 	final int BLOCKSIZE = 16;
 	final int CHUNKSIZE = BLOCKSIZE * EncRandomAccessFile.CHUNK_MULTIPLE;
 

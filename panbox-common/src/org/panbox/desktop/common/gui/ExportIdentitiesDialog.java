@@ -291,7 +291,7 @@ public class ExportIdentitiesDialog extends javax.swing.JDialog {
 	}// GEN-LAST:event_exportButtonActionPerformed
 
 	private void fileLocTextFieldActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_fileLocTextFieldActionPerformed
-		// TODO add your handling code here:
+		// currently no implementation is needed here.
 	}// GEN-LAST:event_fileLocTextFieldActionPerformed
 
 	private void fileLocButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_fileLocButtonActionPerformed

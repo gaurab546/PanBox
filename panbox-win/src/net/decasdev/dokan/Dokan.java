@@ -9,6 +9,7 @@
 package net.decasdev.dokan;
 
 import org.apache.log4j.Logger;
+import org.panbox.desktop.common.utils.DesktopApi;
 
 public class Dokan {
 
@@ -42,9 +43,9 @@ public class Dokan {
 		try {
 			System.loadLibrary("JDokan");
 		} catch (UnsatisfiedLinkError ex) {
-			// TODO: error handling
 			logger.fatal("Dokan : !!!Static construction while loading native library!!! : Exception: "
 					+ ex.getMessage());
+			System.exit(DesktopApi.EXIT_ERR_UNKNOWN);
 		}
 	}
 

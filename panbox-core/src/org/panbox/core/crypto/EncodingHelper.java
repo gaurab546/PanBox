@@ -34,7 +34,6 @@ import org.panbox.PanboxConstants;
 public class EncodingHelper {
 	
 	public static byte[] decodeString(String str, EncodingType type) {
-//			throws IOException {
 		switch (type) {
 		case BASE64:
 			
@@ -52,24 +51,9 @@ public class EncodingHelper {
 			try {
 				decoded = Base64.decodeBase64(str.getBytes(PanboxConstants.STANDARD_CHARSET));
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// encoding is broken. Will leave decoded as null
 			}
 			return decoded;
-//		case BASE85:
-//
-//			ByteArrayOutputStream boas = new ByteArrayOutputStream(1024);
-//			Ascii85InputStream is = new Ascii85InputStream(
-//					new ByteArrayInputStream(str.getBytes()));
-//			int b;
-//			while ((b = is.read()) != -1)
-//				boas.write(b);
-//
-//			boas.close();
-//			is.close();
-//
-//			return boas.toByteArray();
-
 		default:
 			break;
 		}
@@ -78,10 +62,8 @@ public class EncodingHelper {
 	}
 
 	public static String encodeByte(byte[] data, EncodingType type) {
-//			throws IOException {
 		switch (type) {
 		case BASE64:
-//			return Base64.encodeBase64URLSafeString(data);
 			Base64 b = new Base64();
 			byte[] b64RawBytes = b.encode(data);
 			
@@ -89,10 +71,8 @@ public class EncodingHelper {
 			try {
 				b64Str = new String(b64RawBytes, PanboxConstants.STANDARD_CHARSET);
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// if this really fails UTF-8 must be broken at all
 			}
-//			return b64Str;
 			String b64UrlSafeStr = b64Str.replace('+', '-').replace('/', '_');
 			
 			//remove padding, because padding is "=" and we don't want this in our URLs
@@ -106,18 +86,6 @@ public class EncodingHelper {
 				return b64UrlSafeStr.substring(0, b64UrlSafeStr.length()-1);
 			}
 			return b64UrlSafeStr;
-//		case BASE85:
-//
-//			ByteArrayOutputStream boas = new ByteArrayOutputStream(1024);
-//			Ascii85OutputStream os = new Ascii85OutputStream(boas);
-//			os.write(data);
-//			os.close();
-//			boas.close();
-//
-//			byte[] encodedBytes = boas.toByteArray();
-//			String encoded = new String(encodedBytes, "US-ASCII");
-//
-//			return encoded;
 		default:
 			break;
 		}

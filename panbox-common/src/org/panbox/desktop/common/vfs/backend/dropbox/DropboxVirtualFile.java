@@ -33,7 +33,6 @@ public class DropboxVirtualFile extends GenericVirtualFileImpl {
 
 	protected DropboxVirtualFile(String fileName, VirtualVolume volume) {
 		super(fileName, volume);
-		// TODO Auto-generated constructor stub
 	}
 
 }

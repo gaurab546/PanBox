@@ -323,53 +323,11 @@ public class MainObfuscationTest {
 	
 	public static String encodeUrlSafeBase64(byte[] data)
 	{		
-//		BASE64Encoder b64enc = new BASE64Encoder();
-//		String b64Str = b64enc.encode(data);
-		//b64enc.
-		
-//		char[] chars = b64Str.toCharArray();
-//		
-//		for(int i=0; i < chars.length; i++)
-//		{
-//			if(chars[i] == '+')
-//			{
-//				chars[i] = '-';
-//			}
-//			else if (chars[i] == '/') {
-//				chars[i] = '_';
-//			}
-//		}
-//		return String.valueOf(chars);
-		
 		return EncodingHelper.encodeByte(data, EncodingType.BASE64);
 	}
 	
 	public static byte[] decodeUrlSafeBase64(String str)
-	{		
-//		char[] chars = str.toCharArray();
-//		
-//		for(int i=0; i < chars.length; i++)
-//		{
-//			if(chars[i] == '-')
-//			{
-//				chars[i] = '+';
-//			}
-//			else if (chars[i] == '_') {
-//				chars[i] = '/';
-//			}
-//		}
-//		String b64Str = String.valueOf(chars);
-//		
-//		BASE64Decoder b64dec = new BASE64Decoder();
-//		
-//		byte[] b64bytes = null;
-//		try {
-//			b64bytes = b64dec.decodeBuffer(b64Str);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
+	{
 		return EncodingHelper.decodeString(str, EncodingType.BASE64);
 	}
 

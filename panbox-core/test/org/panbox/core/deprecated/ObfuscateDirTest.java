@@ -127,26 +127,4 @@ public class ObfuscateDirTest extends AbstractTest {
 		deleteDirectory(dir);
 
 	}
-
-	// TODO These are not unit tests
-//	@Test
-//	public void testObfuscateDir() throws InvalidKeyException,
-//			NoSuchAlgorithmException, NoSuchPaddingException,
-//			InvalidAlgorithmParameterException, IllegalBlockSizeException,
-//			BadPaddingException, IOException {
-//
-//		// FileHandler.obfuscateFileNamesInDir(plainDir, obfuscationDir, aesKey,
-//		// iv, true, EncodingType.BASE64);
-//
-//	}
-
-//	@Test
-//	public void testDeobfuscateDir() throws InvalidKeyException,
-//			NoSuchAlgorithmException, NoSuchPaddingException,
-//			InvalidAlgorithmParameterException, IllegalBlockSizeException,
-//			BadPaddingException, IOException, DataFormatException {
-//		// FileHandler.deobfuscateFileNamesInDir(obfuscationDir,
-//		// deobfuscationDir, aesKey, iv, true, EncodingType.BASE64);
-//
-//	}
 }

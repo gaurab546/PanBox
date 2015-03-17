@@ -345,7 +345,7 @@ public abstract class EncRandomAccessFile implements Flushable, Closeable {
 	 */
 	public synchronized void reencryptFile(int shareKeyVersion,
 			SecretKey shareKey) {
-		// TODO: implementation
+		// NOTE: currently no implementation and no caller
 	}
 
 	/**
@@ -425,7 +425,6 @@ public abstract class EncRandomAccessFile implements Flushable, Closeable {
 		if ((res != null) && (res.length == BLOCK_LENGTH)) {
 			return res;
 		} else {
-			// TODO: custom exception hierarchy
 			throw new FileEncryptionException("Chunk IV generation failed!");
 		}
 	}

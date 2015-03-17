@@ -90,8 +90,7 @@ public class VFSShare {
 					volume.getEncryptedObfuscationKey(publicDeviceKey),
 					privateDeviceKey);
 		} catch (SymmetricKeyDecryptionException e) {
-			// TODO: Handle this case
-			throw new RuntimeException("Could not decrypt obfuscation key.");
+			throw new RuntimeException("Could not decrypt obfuscation key.", e);
 		} catch (SymmetricKeyNotFoundException e) {
 			throw new DeviceKeyException(e);
 		}
@@ -102,8 +101,7 @@ public class VFSShare {
 		} catch (ClassNotFoundException | InstantiationException
 				| IllegalAccessException | ObfuscationException e) {
 			log.fatal("obfuscator intialization failed, quitting!", e);
-			//TODO handle this case with custom exception
-			throw new RuntimeException(e);
+			throw new RuntimeException("Obfuscator intialization failed, quitting!", e);
 		}
 	}
 
@@ -172,9 +170,7 @@ public class VFSShare {
 		} catch (SymmetricKeyNotFoundException
 				| SymmetricKeyDecryptionException e) {
 			log.fatal("Decryption of ShareKey failed", e);
-			// TODO This should be handled with a custom exception, instead of
-			// quitting the application
-			throw new RuntimeException(e);
+			throw new RuntimeException("Decryption of ShareKey failed!", e);
 		}
 	}
 

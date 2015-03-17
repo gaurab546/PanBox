@@ -319,8 +319,6 @@ public class PanboxFSLinux extends PanboxFS {
 		logger.debug("rmdir : " + path);
 
 		if (!getVirtualFileForFileName(path).delete()) {
-			// TODO: Clean this up .. Current backend deletion handler
-			// throws IOexcetion anyway
 			throw new IOException("Deletion failed!");
 		} else {
 			logger.debug("deleteDirectory : VirtualFile(" + path
@@ -414,7 +412,6 @@ public class PanboxFSLinux extends PanboxFS {
 		logger.debug("unlink : " + path);
 
 		if (!getVirtualFileForFileName(path).delete()) {
-			// TODO: error handling
 			throw new PanboxDeleteFailedException("Deletion failed!");
 		} else {
 			logger.debug("deleteFile : VirtualFile(" + path

@@ -37,19 +37,10 @@ public class PanboxCreateFailedException extends Exception {
 	}
 
 	/**
-	 * @param string
-	 * @param e
-	 */
-	public PanboxCreateFailedException(String string, IOException e) {
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
 	 * 
 	 */
 	public PanboxCreateFailedException() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -61,7 +52,6 @@ public class PanboxCreateFailedException extends Exception {
 	public PanboxCreateFailedException(String message, Throwable cause,
 			boolean enableSuppression, boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -70,7 +60,6 @@ public class PanboxCreateFailedException extends Exception {
 	 */
 	public PanboxCreateFailedException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -78,7 +67,6 @@ public class PanboxCreateFailedException extends Exception {
 	 */
 	public PanboxCreateFailedException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
 	}
 
 }

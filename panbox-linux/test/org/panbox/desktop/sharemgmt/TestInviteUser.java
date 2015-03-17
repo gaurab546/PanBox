@@ -38,7 +38,6 @@ public class TestInviteUser extends InviteUserTest {
 					LinuxPanboxService.class.getName(), true, cl).newInstance();
 		} catch (InstantiationException | IllegalAccessException
 				| ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
 	}

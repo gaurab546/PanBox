@@ -1868,11 +1868,11 @@ public abstract class PanboxClient {
 	// Settings events
 
 	public void languageChanged(Locale locale) {
-		// TODO: reload GUI with the chosen locale
+		// currently no implementation planned
 	}
 
 	public void settingsFolderChanged(File file) {
-		// TODO: Is something needed here?
+		// currently no implementation planned
 	}
 
 	public abstract void panboxFolderChanged(String path);

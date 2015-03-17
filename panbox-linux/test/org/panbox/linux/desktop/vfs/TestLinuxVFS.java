@@ -109,7 +109,6 @@ public class TestLinuxVFS extends AbstractTest {
 	private static PanboxFSLinux loop = null;
 
 	private SimpleAddressbook mAddressbook;
-	private Identity owner;
 
 	@Before
 	public void setUp() throws IOException, InterruptedException,
@@ -384,17 +383,6 @@ public class TestLinuxVFS extends AbstractTest {
 		return path.delete() & res;
 	}
 
-	private void delFileIfExists(String dir, String file) {
-		File f = null;
-		if (dir.isEmpty())
-			f = new File(file);
-		else
-			f = new File(dir, file);
-
-		if (f.exists())
-			f.delete();
-	}
-
 	@After
 	public void tearDown() throws Exception {
 		loop.unmount();
@@ -435,7 +423,6 @@ public class TestLinuxVFS extends AbstractTest {
 		AddressbookManager aBookMgr = new AddressbookManager();
 		idm.init(aBookMgr);
 		Identity loadedID = (Identity) idm.loadMyIdentity(mAddressbook);
-		owner = loadedID;
 
 		try {
 			mKey_priv = loadedID.getPrivateKeySign(PASSWORD);
@@ -465,11 +452,9 @@ public class TestLinuxVFS extends AbstractTest {
 
 			volume.createShareMetaData(p);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException(e);
+			fail();
 		} catch (ShareMetaDataException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException(e);
+			fail();
 		} catch (UnrecoverableKeyException e) {
 			fail();
 		}

@@ -48,101 +48,16 @@ public class TestMailTo extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
-
-//	public void testMailTo() {
-//		Desktop desktop;
-//		if (Desktop.isDesktopSupported() && (desktop = Desktop.getDesktop()).isSupported(Desktop.Action.MAIL)) {
-//			URI mailto;
-//			try {
-//				mailto = new URI(
-//						"mailto:john@example.com?subject=Hello%20World");
-//				desktop.mail(mailto);
-//			} catch (URISyntaxException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		} else {
-//			// TODO fallback to some Runtime.exec(..) voodoo?
-//			throw new RuntimeException(
-//					"desktop doesn't support mailto; mail is dead anyway ;)");
-//		}
-//	}
 	
 	public void testAPI()
 	{
 		//to test, please place a file in your home directory named "testfile.txt"
 		try {
-			
 			String attachment = System.getProperty("user.home")+"/testfile.txt";
 			
 			DesktopApi.browse(new URI("mailto:john@example.com?subject=Hello%20World&body=This%20is%20a%20test%20message&attachment="+attachment));
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fail();
 		}
 	}
-	
-//	public void testMail()
-//	{
-//	try {
-//	      // If the user specified a mailhost, tell the system about it.
-////	      if (args.length >= 1) System.getProperties().put("mail.host", args[0]);
-//
-//		System.getProperties().put("mail.host", "localhost");
-//		
-//	      // A Reader stream to read from the console
-////	      BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-//
-//	      // Ask the user for the from, to, and subject lines
-////	      System.out.print("From: ");
-////	      String from = in.readLine();
-////	      System.out.print("To: ");
-////	      String to = in.readLine();
-////	      System.out.print("Subject: ");
-////	      String subject = in.readLine();
-//
-//	      // Establish a network connection for sending mail
-//	      URL u = new URL("mailto:" + "test@bla.de");      // Create a mailto: URL 
-//	      URLConnection c = u.openConnection(); // Create a URLConnection for it
-//	      c.setDoInput(false);                  // Specify no input from this URL
-//	      c.setDoOutput(true);                  // Specify we'll do output
-//	      System.out.println("Connecting...");  // Tell the user what's happening
-//	      System.out.flush();                   // Tell them right now
-//	      c.connect();                          // Connect to mail host
-//	      PrintWriter out =                     // Get output stream to mail host
-//	        new PrintWriter(new OutputStreamWriter(c.getOutputStream()));
-//
-//	      // Write out mail headers.  Don't let users fake the From address
-//	      out.println("From: \"" + "My name" + "\" <" +
-//	                  System.getProperty("user.name") + "@" + 
-//	                  InetAddress.getLocalHost().getHostName() + ">");
-//	      out.println("To: " + "test@bla.de");
-//	      out.println("Subject: " + "Subject test");
-//	      out.println();  // blank line to end the list of headers
-//
-////	      // Now ask the user to enter the body of the message
-////	      System.out.println("Enter the message. " + 
-////	                         "End with a '.' on a line by itself.");
-////	      // Read message line by line and send it out.
-////	      String line;
-////	      for(;;) {
-////	        line = in.readLine();
-////	        if ((line == null) || line.equals(".")) break;
-////	        out.println(line);
-////	      }
-//
-//	      // Close the stream to terminate the message 
-//	      out.close();
-//	      // Tell the user it was successfully sent.
-//	      System.out.println("Message sent.");
-//	      System.out.flush();
-//	    }
-//	    catch (Exception e) {  // Handle any exceptions, print error message.
-//	      System.err.println(e);
-//	      System.err.println("Usage: java SendMail [<mailhost>]");
-//	    }
-//	}
 }

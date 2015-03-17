@@ -26,6 +26,8 @@
  */
 package org.panbox.core.tests;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -77,8 +79,7 @@ public class CreateEmptyFiles {
 			try {
 				f.createNewFile();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				fail();
 			}
 		}
 		

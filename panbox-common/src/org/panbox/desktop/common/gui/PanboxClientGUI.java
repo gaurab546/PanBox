@@ -3305,7 +3305,6 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 			if (!FilenameUtils.equalsNormalizedOnSystem(newPath, oldPath)) {
 				s.setMountDir(newPath);
 				// client.panboxFolderChanged(newPath);
-				// TODO: currently not needed, readd later
 				restartRequired = true;
 			}
 

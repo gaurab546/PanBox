@@ -35,12 +35,10 @@ public class ShareInaccessibleException extends ShareManagerException {
 
 	public ShareInaccessibleException(String what, Throwable ex) {
 		super(what, ex);
-		// TODO Auto-generated constructor stub
 	}
 
 	public ShareInaccessibleException(String what) {
 		super(what);
-		// TODO Auto-generated constructor stub
 	}
 
 }

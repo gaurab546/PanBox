@@ -426,6 +426,7 @@ public class JDBCHelperNonRevokeable implements DBHelper {
 					if (code.equals(SQLiteErrorCode.SQLITE_NOTADB)
 							|| code.equals(SQLiteErrorCode.SQLITE_CORRUPT)) {
 						// TODO: corrupt DB, consider deleting .db file
+						logger.warn("DB was corrupt, URL: " + dbURL);
 					}
 					continue;
 				} finally {

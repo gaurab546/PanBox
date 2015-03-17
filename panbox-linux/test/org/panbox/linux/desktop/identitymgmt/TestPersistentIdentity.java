@@ -129,7 +129,6 @@ public class TestPersistentIdentity extends AbstractTest {
 			try {
 				addressbook.addContact(contact);
 			} catch (ContactExistsException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -179,16 +178,14 @@ public class TestPersistentIdentity extends AbstractTest {
 		try {
 			assertTrue(deviceKeyLaptop.getPublic().equals(loadedID.getPublicKeyForDevice("laptop")));
 		} catch (UnrecoverableKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fail();
 		}
 		assertTrue(deviceKeyLaptop.getPrivate().equals(loadedID.getPrivateKeyForDevice("laptop")));
 		
 		try {
 			assertTrue(deviceKeyMobile.getPublic().equals(loadedID.getPublicKeyForDevice("mobile")));
 		} catch (UnrecoverableKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fail();
 		}
 		assertTrue(deviceKeyMobile.getPrivate().equals(loadedID.getPrivateKeyForDevice("mobile")));
 		
@@ -197,8 +194,7 @@ public class TestPersistentIdentity extends AbstractTest {
 		try {
 			p = loadedID.getPublicKeyForDevice("tablet");
 		} catch (UnrecoverableKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fail();
 		}		
 		assertTrue(deviceKeyTablet.getPublic().equals(p));
 		

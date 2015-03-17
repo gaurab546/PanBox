@@ -245,9 +245,11 @@ public abstract class AbstractPanboxService implements IPanboxService {
 					+ p.shareName);
 			this.volumeCache.remove(p.path);
 		} else {
-			// TODO: Should an Exception be thrown here?
 			logger.error("PanboxService : removeShare : Failed to remove share from Panbox! Sharename: "
 					+ p.shareName);
+			throw new RuntimeException(
+					"Failed to remove share from Panbox! Sharename: "
+							+ p.shareName);
 		}
 	}
 

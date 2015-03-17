@@ -51,6 +51,6 @@ public class CSPException extends Exception {
 
 	public CSPException(String message, Throwable cause,
 			boolean enableSuppression, boolean writableStackTrace) {
-		// TODO Auto-generated constructor stub
+		super(message, cause, enableSuppression, writableStackTrace);
 	}
 }

@@ -317,18 +317,6 @@ public class AESGCMRandomAccessFile extends AbstractAESGCMRandomAccessFile {
 			throws FileEncryptionException, RandomDataGenerationException,
 			InvalidKeyException, InvalidAlgorithmParameterException,
 			IllegalBlockSizeException, BadPaddingException, IOException {
-		// write only if authentication tag verification succeeds.
-		// if (implementsAuthentication() && length() > 0 && !onlyCachedData())
-		// {
-		// // FIXME: flushing auth data & subsequently checking the file auth
-		// // tag will always succeed
-		// flushAuthData();
-		// if (!getAuthTagVerifier().verifyFileAuthTag()) {
-		// throw new FileEncryptionException(
-		// "File authentication tag verification failed!");
-		// }
-		// }
-
 		// initialize cipher with corresponding chunk IV
 		byte[] iv = generateRandomChunkIV();
 

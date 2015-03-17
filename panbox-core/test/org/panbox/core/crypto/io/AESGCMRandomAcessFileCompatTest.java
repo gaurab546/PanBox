@@ -61,7 +61,6 @@ public class AESGCMRandomAcessFileCompatTest extends AESGCMRandomAccessFileTest 
 	@Override
 	protected EncRandomAccessFile openEncRAFInstance(File testFile,
 			boolean writable) throws FileEncryptionException, IOException {
-		// TODO Auto-generated method stub
 		return AESGCMRandomAccessFileCompat.open(testFile, writable);
 	}
 
