@@ -17,6 +17,16 @@ PanBox- Transparent Encryption of Files and Folders for Cloud and Storage
 
 Cloud storage is very popular due to ease of use, cheap prices and fast internet connection. The market leader Dropbox alone has more than 300 million users. However, the security of the data, which is put to the cloud storage, is threatened by the processing within the cloud storage itself, by cyber-attacks or by intelligence surveillance. A solution to this problem is provided by the software PanBox. It extends cloud-storage with client-side end-to-end encryption of data. By its unique decentralized key management PanBox still allows convenient sharing of data with other users among various devices. The user maintains complete control of the encryption and all the necessary keys.
 
+## Download Official Installer
+
+You can download the official Windows PanBox installer and Linux PanBox program archive from www.panbox.org
+
+## Get started with PanBox
+
+You can download the manual for PanBox from www.panbox.org, which fits for the Windows, Linux and Android version.
+
+The Linux version provides a readme.txt file in the program archive.
+
 ## OpenSource Development
 
 Feel free to create your own PanBox fork on github. We are always happy about any contribution and merge requests on github and are looking forward work with an activate community.
