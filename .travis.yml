@@ -1,0 +1,15 @@
+language: java
+
+os:
+  - linux  
+
+jdk:
+  - oraclejdk7
+  
+script:
+  - cd panbox-core
+  - ant
+  - cd ../panbox-common
+  - ant
+  - cd ../panbox-linux
+  - ant
