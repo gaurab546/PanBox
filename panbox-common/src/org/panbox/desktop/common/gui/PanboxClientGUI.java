@@ -34,6 +34,7 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon.MessageType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.Flushable;
 import java.io.IOException;
@@ -178,7 +179,7 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 
 		dropboxSettingsPanel = new DropboxSettingsPanel(
 				changesDetectedActionListener, changesDetectedDocumentListener);
-		
+
 		initSettingsConfig();
 
 		// set the icon
@@ -205,6 +206,8 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 			}
 		});
 		shareList.setSelectedIndex(0); // always try to select first share
+
+		enableDisableAddDeviceContactForShare();
 
 		addressbookList.addListSelectionListener(new ListSelectionListener() {
 
@@ -2462,6 +2465,9 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 			client.showTrayMessage(bundle.getString("PleaseWait"),
 					bundle.getString("tray.addShare.message"), MessageType.INFO);
 			client.addShare(newShare, password);
+
+			enableDisableAddDeviceContactForShare();
+
 			// Also update share list for selected device
 			if (device != null) {
 				deviceShareList.setModel(client.getDeviceShares(device));
@@ -2526,6 +2532,9 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 
 			// remove share from view
 			client.removeShare(share);
+
+			enableDisableAddDeviceContactForShare();
+
 			// Also update share list for selected device
 			if (device != null) {
 				deviceShareList.setModel(client.getDeviceShares(device));
@@ -3466,6 +3475,30 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 			cspSelectionComboBox.setEnabled(false);
 		}
 		return ret;
+	}
+
+	private void enableDisableAddDeviceContactForShare() {
+		if (shareList.getModel().getSize() == 0) {
+			addDeviceContactShareButton.setEnabled(false);
+			addDeviceContactShareButton
+					.setToolTipText(bundle
+							.getString("client.shareList.addUserDeviceToShareToolTipDisabled"));
+			for (MouseListener ml : addDeviceContactShareButton
+					.getMouseListeners()) {
+				addDeviceContactShareButton.removeMouseListener(ml);
+			}
+		} else {
+			addDeviceContactShareButton.setEnabled(true);
+			addDeviceContactShareButton.setToolTipText(bundle
+					.getString("client.shareList.addUserDeviceToShareToolTip"));
+			addDeviceContactShareButton
+					.addMouseListener(new java.awt.event.MouseAdapter() {
+						public void mousePressed(java.awt.event.MouseEvent evt) {
+							addDeviceContactShareButtonMousePressed(evt);
+						}
+					});
+			shareList.setSelectedIndex(0);
+		}
 	}
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
