@@ -302,12 +302,13 @@ public abstract class PanboxClient {
 	}
 
 	public PanboxClient(IPanboxService service) throws Exception {
+		// Set language to de_DE or en_US since only those two are supported for
+		// now!
 		Settings settings = Settings.getInstance();
 		if (settings.getLocale().getLanguage()
 				.equals(new Locale("de").getLanguage())) {
 			settings.setLanguage("de_DE");
-		} else if (Settings.getInstance().getLocale().getLanguage()
-				.equals(new Locale("en").getLanguage())) {
+		} else {
 			settings.setLanguage("en_US");
 		}
 
