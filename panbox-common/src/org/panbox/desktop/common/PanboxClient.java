@@ -302,6 +302,15 @@ public abstract class PanboxClient {
 	}
 
 	public PanboxClient(IPanboxService service) throws Exception {
+		Settings settings = Settings.getInstance();
+		if (settings.getLocale().getLanguage()
+				.equals(new Locale("de").getLanguage())) {
+			settings.setLanguage("de_DE");
+		} else if (Settings.getInstance().getLocale().getLanguage()
+				.equals(new Locale("en").getLanguage())) {
+			settings.setLanguage("en_US");
+		}
+
 		splash = SplashScreen.getSplashScreen();
 		if (splash == null) {
 			splashGraphics = null;
