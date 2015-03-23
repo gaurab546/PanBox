@@ -1,0 +1,10 @@
+language: java
+
+os:
+  - linux  
+
+jdk:
+  - oraclejdk7
+  
+script:
+  - ./build_linux.sh

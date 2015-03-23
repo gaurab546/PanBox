@@ -1,5 +1,7 @@
 # PanBox
 
+[![Build Status](https://travis-ci.org/Sirrix-AG/PanBox.svg)](https://travis-ci.org/Sirrix-AG/PanBox)
+
 ## Copyright
 
 Copyright 2013-2015 Sirrix AG, Fraunhofer SIT
