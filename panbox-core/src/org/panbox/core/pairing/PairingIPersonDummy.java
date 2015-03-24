@@ -91,32 +91,24 @@ public class PairingIPersonDummy implements IPerson {
 
 	@Override
 	public HashMap<String, CloudProviderInfo> getCloudProviders() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void addCloudProvider(CloudProviderInfo cloudProviderInfo) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void delCloudProvider(String name) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void setFirstName(String newFirstName) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void setName(String newName) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 }

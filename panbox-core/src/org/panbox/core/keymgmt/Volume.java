@@ -502,7 +502,7 @@ public class Volume implements IVolume {
 	public void removeUser(String ownerAlias, PublicKey ownerPubSigKey,
 			PrivateKey ownerPrivSigKey, String userAlias)
 			throws ShareMetaDataException {
-		// TODO Auto-generated method stub
+		// TODO Implement secure remove user feature
 		throw new ShareMetaDataException("Not yet implemented");
 	}
 

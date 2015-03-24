@@ -116,7 +116,6 @@ public class VirtualRootVolume implements IRootVolume {
 								.list(); // forward to VirtualVolume of share
 					}
 
-					// TODO What's the difference in paths here?
 					@Override
 					public String getRelativePath() {
 						return share.getShareName();

@@ -51,7 +51,6 @@ public class LinuxPanboxService extends AbstractPanboxService {
 			// same
 		case DROPBOX:
 			virtualVolume = new DropboxVirtualVolume(p.path);
-			// TODO: Refactor to generic virtualvolume instead of dropbox
 			break;
 		}
 		return virtualVolume;

@@ -70,15 +70,13 @@ public class TestDownloadHashCompare extends TestCase {
 		try {
 			url = new URL("http://www.stefantriller.de/panboxtest.txt");
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fail();
 		}
 
 		try {
 			org.apache.commons.io.FileUtils.copyURLToFile(url, tmpFile);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fail();
 		}
 
 		//byte[] digest = CryptCore.createFileHash(tmpFile);
@@ -114,11 +112,9 @@ public class TestDownloadHashCompare extends TestCase {
 			}
 
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fail();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			fail();
 		}
 		byte[] digest = md.digest();
 		

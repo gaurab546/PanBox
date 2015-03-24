@@ -220,7 +220,7 @@ public class DropboxSettingsPanel extends javax.swing.JPanel implements
 	}// </editor-fold>//GEN-END:initComponents
 
 	private void syncDirTextFieldActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_syncDirTextFieldActionPerformed
-		// TODO add your handling code here:
+		// currently no implementation is needed here.
 	}// GEN-LAST:event_syncDirTextFieldActionPerformed
 
 	private void syncDirButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_syncDirButtonActionPerformed

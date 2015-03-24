@@ -42,7 +42,6 @@ public class FileIntegrityException extends Exception {
 	 */
 	public FileIntegrityException() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -50,17 +49,14 @@ public class FileIntegrityException extends Exception {
 	 */
 	public FileIntegrityException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
 	}
 
 	public FileIntegrityException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
 	}
 
 	public FileIntegrityException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
 	}
 
 }

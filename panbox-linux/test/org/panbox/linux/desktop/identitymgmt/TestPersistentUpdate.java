@@ -132,7 +132,6 @@ public class TestPersistentUpdate extends AbstractTest {
 			try {
 				addressbook.addContact(contact);
 			} catch (ContactExistsException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -298,7 +297,6 @@ public class TestPersistentUpdate extends AbstractTest {
 		try {
 			id.getAddressbook().addContact(contact);
 		} catch (ContactExistsException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -324,8 +322,7 @@ public class TestPersistentUpdate extends AbstractTest {
 		try {
 			privKeySign = loadedID.getPrivateKeySign("test".toCharArray());
 		} catch (UnrecoverableKeyException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			fail();
 		}
 		PrivateKey privKeyEnc = null;
 		try {
@@ -363,8 +360,7 @@ public class TestPersistentUpdate extends AbstractTest {
 			assertTrue(id.getPublicKeyForDevice("laptop").equals(
 					loadedID.getPublicKeyForDevice("laptop")));
 		} catch (UnrecoverableKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fail();
 		}
 		assertTrue(id.getPrivateKeyForDevice("laptop").equals(
 				loadedID.getPrivateKeyForDevice("laptop")));
@@ -373,8 +369,7 @@ public class TestPersistentUpdate extends AbstractTest {
 			assertTrue(id.getPublicKeyForDevice("mobile").equals(
 					loadedID.getPublicKeyForDevice("mobile")));
 		} catch (UnrecoverableKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fail();
 		}
 		assertTrue(id.getPrivateKeyForDevice("mobile").equals(
 				loadedID.getPrivateKeyForDevice("mobile")));
@@ -384,14 +379,12 @@ public class TestPersistentUpdate extends AbstractTest {
 		try {
 			p = loadedID.getPublicKeyForDevice("tablet");
 		} catch (UnrecoverableKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fail();
 		}
 		try {
 			assertTrue(id.getPublicKeyForDevice("tablet").equals(p));
 		} catch (UnrecoverableKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fail();
 		}
 
 		// test addressbook entries

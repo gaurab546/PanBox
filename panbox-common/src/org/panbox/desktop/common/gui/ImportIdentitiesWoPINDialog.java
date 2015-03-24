@@ -101,7 +101,7 @@ public class ImportIdentitiesWoPINDialog extends javax.swing.JDialog {
 		super(client.getMainWindow());
 		this.client = client;
 		initComponents();
-		
+
 		trustExporterVerifications.setVisible(false);
 
 		importContactsTable.getSelectionModel().addListSelectionListener(
@@ -182,9 +182,13 @@ public class ImportIdentitiesWoPINDialog extends javax.swing.JDialog {
 				new Object[][] {
 
 				}, new String[] { "Contact name" }) {
+
+			private static final long serialVersionUID = -3283259237115777830L;
+			@SuppressWarnings("rawtypes")
 			Class[] types = new Class[] { java.lang.String.class };
 			boolean[] canEdit = new boolean[] { false };
 
+			@SuppressWarnings({ "rawtypes", "unchecked" })
 			public Class getColumnClass(int columnIndex) {
 				return types[columnIndex];
 			}
@@ -374,8 +378,7 @@ public class ImportIdentitiesWoPINDialog extends javax.swing.JDialog {
 			// load table values
 			VCard[] vclist = null;
 			// only continue if there are any VCards ..
-			if (((vclist = AbstractAddressbookManager
-					.readVCardFile(vcardFile)) != null)
+			if (((vclist = AbstractAddressbookManager.readVCardFile(vcardFile)) != null)
 					&& (vclist.length > 0)) {
 				// remove all existing entries before loading any
 				// new ones
@@ -390,8 +393,7 @@ public class ImportIdentitiesWoPINDialog extends javax.swing.JDialog {
 			} else {
 				JOptionPane.showMessageDialog(this,
 						bundle.getString("error.reading.contacts.file"),
-						bundle.getString("error"),
-						JOptionPane.ERROR_MESSAGE);
+						bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
 			}
 
 			this.fileLocTextField.setText(vcardFile.getAbsolutePath());
@@ -399,11 +401,11 @@ public class ImportIdentitiesWoPINDialog extends javax.swing.JDialog {
 	}
 
 	private void fileLocTextFieldActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_fileLocButtonActionPerformed
-	// File file = new File(fileLocTextField.getText());
-	// if(!file.exists()) {
-	//
-	// }
-	// loadVCardFile(file);
+		// File file = new File(fileLocTextField.getText());
+		// if(!file.exists()) {
+		//
+		// }
+		// loadVCardFile(file);
 	}// GEN-LAST:event_fileLocButtonActionPerformed
 
 	private void fileLocButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_fileLocButtonActionPerformed

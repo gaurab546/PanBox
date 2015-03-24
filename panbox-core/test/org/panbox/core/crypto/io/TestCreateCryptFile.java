@@ -78,13 +78,13 @@ public class TestCreateCryptFile extends AbstractTest {
 		@Override
 		public boolean removeInstance(String sharePath)
 				throws ObfuscationException {
-			// TODO Auto-generated method stub
+			// not used for tests
 			return false;
 		}
 
 		@Override
 		public boolean removeInstance(Obfuscator o) throws ObfuscationException {
-			// TODO Auto-generated method stub
+			// not used for tests
 			return false;
 		}
 	}

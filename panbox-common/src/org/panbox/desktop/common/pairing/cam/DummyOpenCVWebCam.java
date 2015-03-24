@@ -37,12 +37,13 @@ public class DummyOpenCVWebCam extends ImagePanel {
 
 	public DummyOpenCVWebCam() {
 		try {
-			BufferedImage image = ImageIO.read(getClass().getResource("nocam.png"));
+			BufferedImage image = ImageIO.read(getClass().getResource(
+					"nocam.png"));
 			setImage(image);
 		} catch (IOException e) {
-			//TODO!
-			e.printStackTrace();
+			// something really strange must happen here in order to throw this
+			// exception
 		}
 	}
-	
+
 }

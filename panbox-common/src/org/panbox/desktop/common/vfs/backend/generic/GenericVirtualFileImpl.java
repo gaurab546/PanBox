@@ -107,7 +107,6 @@ public class GenericVirtualFileImpl extends VirtualRandomAccessFile {
 				return false;
 			}
 		} else {
-			// TODO: check if this causes problems if file wasn't closed
 			return file.delete();
 		}
 	}

@@ -87,10 +87,8 @@ public class DropboxClientIntegration implements ICSPClientIntegration {
 	 * helper method for obtaining the current local dropbox directory being
 	 * synchronized by the dropbox client application.
 	 * 
-	 * TODO: move method to CSP integration package/corresponding subproject
-	 * 
 	 * @return {@link File}-instance pointing to the current default dropbox
-	 *         synchronization diretory
+	 *         synchronization directory
 	 * @throws IOException
 	 */
 	public File readSyncDirFromMetadata() throws IOException {

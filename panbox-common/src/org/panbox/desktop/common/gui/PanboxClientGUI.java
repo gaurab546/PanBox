@@ -139,7 +139,6 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 					.getLocale());
 
 	private boolean unsavedContactChanges = false;
-	private boolean unsavedSettings = false;
 	private ArrayList<CloudProviderInfo> removedCSPs = new ArrayList<>();
 	private int addedCSPCount = 0;
 	private DropboxSettingsPanel dropboxSettingsPanel;
@@ -519,7 +518,7 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 		shareListTabPanel = new javax.swing.JPanel();
 		shareListPanel = new javax.swing.JPanel();
 		shareListScrollPane = new javax.swing.JScrollPane();
-		shareList = new javax.swing.JList();
+		shareList = new javax.swing.JList<PanboxShare>();
 		removeShare = new javax.swing.JButton();
 		addShare = new javax.swing.JButton();
 		restoreRevButton = new javax.swing.JButton();
@@ -527,7 +526,7 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 		sharePropertiesLabel = new javax.swing.JLabel();
 		usersLabel = new javax.swing.JLabel();
 		usersListScrollPane = new javax.swing.JScrollPane();
-		usersList = new javax.swing.JList();
+		usersList = new javax.swing.JList<PanboxSharePermission>();
 		permissionsLabel = new javax.swing.JLabel();
 		urlLabel = new javax.swing.JLabel();
 		syncStatusLabel = new javax.swing.JLabel();
@@ -539,7 +538,7 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 		addressbookTabPanel = new javax.swing.JPanel();
 		addressbookPanel = new javax.swing.JPanel();
 		addressbookListScrollPane = new javax.swing.JScrollPane();
-		addressbookList = new javax.swing.JList();
+		addressbookList = new javax.swing.JList<PanboxGUIContact>();
 		exportContactButton = new javax.swing.JButton();
 		removeContactButton = new javax.swing.JButton();
 		importContactButton = new javax.swing.JButton();
@@ -569,7 +568,7 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 		devicesTabPanel = new javax.swing.JPanel();
 		deviceListPanel = new javax.swing.JPanel();
 		deviceListScrollPane = new javax.swing.JScrollPane();
-		deviceList = new javax.swing.JList();
+		deviceList = new javax.swing.JList<PanboxDevice>();
 		addDeviceButton = new javax.swing.JButton();
 		removeDeviceButton = new javax.swing.JButton();
 		devicePropertiesPanel = new javax.swing.JPanel();
@@ -579,10 +578,10 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 		deviceKeyFprintTextField = new javax.swing.JTextField();
 		jLabel1 = new javax.swing.JLabel();
 		usersListScrollPane1 = new javax.swing.JScrollPane();
-		deviceShareList = new javax.swing.JList();
+		deviceShareList = new javax.swing.JList<PanboxShare>();
 		settingsTabPanel = new javax.swing.JPanel();
 		languageLabel = new javax.swing.JLabel();
-		languageComboBox = new javax.swing.JComboBox();
+		languageComboBox = new javax.swing.JComboBox<SupportedLanguage>();
 		settingsFolderLabel = new javax.swing.JLabel();
 		settingsFolderTextField = new javax.swing.JTextField();
 		settingsFolderChooseButton = new javax.swing.JButton();
@@ -595,12 +594,12 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 		networkDevicePairingPanel = new javax.swing.JPanel();
 		networkDevicePairingLabel = new javax.swing.JLabel();
 		networkInterfaceLabel = new javax.swing.JLabel();
-		networkInterfaceComboBox = new javax.swing.JComboBox();
+		networkInterfaceComboBox = new javax.swing.JComboBox<Object>();
 		networkAddressLabel = new javax.swing.JLabel();
-		networkAddressComboBox = new javax.swing.JComboBox();
+		networkAddressComboBox = new javax.swing.JComboBox<Object>();
 		cspSettingsPanel = new javax.swing.JPanel();
 		selectedCSPLabel = new javax.swing.JLabel();
-		cspSelectionComboBox = new javax.swing.JComboBox();
+		cspSelectionComboBox = new javax.swing.JComboBox<String>();
 		selectedCSPContentPanel = new javax.swing.JPanel();
 		uriHandlerCheckbox = new javax.swing.JCheckBox();
 		mailtoSchemeCheckbox = new javax.swing.JCheckBox();
@@ -1793,8 +1792,8 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 		networkInterfaceLabel.setText(bundle
 				.getString("client.settings.devicePairing.netInterface")); // NOI18N
 
-		networkInterfaceComboBox.setModel(new javax.swing.DefaultComboBoxModel(
-				new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+		networkInterfaceComboBox.setModel(new javax.swing.DefaultComboBoxModel<Object>(
+				new Object[] {}));
 		networkInterfaceComboBox
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1805,8 +1804,8 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 		networkAddressLabel.setText(bundle
 				.getString("client.settings.devicePairing.netAddress")); // NOI18N
 
-		networkAddressComboBox.setModel(new javax.swing.DefaultComboBoxModel(
-				new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+		networkAddressComboBox.setModel(new javax.swing.DefaultComboBoxModel<Object>(
+				new Object[] {}));
 		networkAddressComboBox
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3190,13 +3189,11 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 	private void setSettingsChangesDetected() {
 		settingsApplyButton.setEnabled(true);
 		settingsRevertButton.setEnabled(true);
-		unsavedSettings = true;
 	}
 
 	private void resetSettingsApplyDiscardButtons() {
 		settingsApplyButton.setEnabled(false);
 		settingsRevertButton.setEnabled(false);
-		unsavedSettings = false;
 	}
 
 	private void settingsFolderChooseButtonActionPerformed(
@@ -3233,13 +3230,12 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_settingsApplyButtonActionPerformed
 
 		Settings s = Settings.getInstance();
-		boolean languageChanged = false, restartRequired = false;
+		boolean restartRequired = false;
 		String selLang = ((SupportedLanguage) languageComboBox
 				.getSelectedItem()).getShorthand();
 		if (!selLang.equals(s.getLanguage())) {
 			s.setLanguage(selLang);
 			// client.restartTrayIcon();
-			languageChanged = true;
 			restartRequired = true;
 		}
 
@@ -3305,7 +3301,6 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 			if (!FilenameUtils.equalsNormalizedOnSystem(newPath, oldPath)) {
 				s.setMountDir(newPath);
 				// client.panboxFolderChanged(newPath);
-				// TODO: currently not needed, readd later
 				restartRequired = true;
 			}
 
@@ -3519,7 +3514,7 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 	private javax.swing.JLabel cspAccountsLabel;
 	private javax.swing.JTable cspInfoTable;
 	private javax.swing.JScrollPane cspInfoTableScrollPanel;
-	private javax.swing.JComboBox cspSelectionComboBox;
+	private javax.swing.JComboBox<String> cspSelectionComboBox;
 	private javax.swing.JPanel cspSettingsPanel;
 	private javax.swing.JLabel deviceKeyFprintLabel;
 	private javax.swing.JTextField deviceKeyFprintTextField;
@@ -3542,7 +3537,7 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 	private javax.swing.JTextField firstNameTextField;
 	private javax.swing.JButton importContactButton;
 	private javax.swing.JLabel jLabel1;
-	private javax.swing.JComboBox languageComboBox;
+	private javax.swing.JComboBox<SupportedLanguage> languageComboBox;
 	private javax.swing.JLabel languageLabel;
 	private javax.swing.JLabel lastNameLabel;
 	private javax.swing.JTextField lastNameTextField;
@@ -3588,7 +3583,7 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 	private javax.swing.JLabel urlLabel;
 	private javax.swing.JTextField urlTextField;
 	private javax.swing.JLabel usersLabel;
-	private javax.swing.JList usersList;
+	private javax.swing.JList<PanboxSharePermission> usersList;
 	private javax.swing.JScrollPane usersListScrollPane;
 	private javax.swing.JScrollPane usersListScrollPane1;
 	private javax.swing.JLabel validFromUntilLabel;

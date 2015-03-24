@@ -54,7 +54,6 @@ import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -407,13 +406,6 @@ public class CryptCore {
 				KeyConstants.PROV_BC);
 		byte[] data = IOUtils.toByteArray(new FileInputStream(f));
 		return md.digest(data);
-	}
-
-	public static boolean checkChecksum(File f, byte[] tocheck)
-			throws NoSuchAlgorithmException, NoSuchProviderException,
-			FileNotFoundException, IOException {
-		byte[] ref = genChecksum(f);
-		return MessageDigest.isEqual(ref, tocheck);
 	}
 
 }

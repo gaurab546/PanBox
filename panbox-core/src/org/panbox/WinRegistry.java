@@ -99,8 +99,8 @@ public class WinRegistry {
 					new Class[] { int.class, byte[].class });
 			regDeleteKey.setAccessible(true);
 		} catch (Exception ex) {
-			//TODO: error handling!
 			logger.error("WinRegistry : !!!Static construction while accassing native code!!! : Exception: " + ex.getMessage());
+			System.exit(-1);
 		}
 	}
 

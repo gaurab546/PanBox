@@ -256,8 +256,8 @@ public class PairNewDeviceDialog extends javax.swing.JDialog implements
 			keyPassword = PasswordEnterDialog
 					.invoke(PasswordEnterDialog.PermissionType.DEVICE);
 			if (keyPassword == null || keyPassword.length == 0) {
-				JOptionPane.showMessageDialog(null,
-						bundle.getString("PairNewDeviceDialog.cantPairWithEmptyPW"));
+				JOptionPane.showMessageDialog(null, bundle
+						.getString("PairNewDeviceDialog.cantPairWithEmptyPW"));
 			}
 		}
 
@@ -308,11 +308,9 @@ public class PairNewDeviceDialog extends javax.swing.JDialog implements
 					.toBufferedImage(matrix);
 			qrCode.setIcon(new ImageIcon(qrCodeImage));
 		} catch (WriterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.fatal("PairNewDeviceDialog : Could not create the QR-Code from zxing library.", e);
 		} catch (RandomDataGenerationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.fatal("PairNewDeviceDialog : Could not obtain secure random from RNG for pairing password.", e);
 		}
 	}
 

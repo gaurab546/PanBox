@@ -57,10 +57,8 @@ public class PanboxWindowsServiceTest {
 		service.startupVFS();
 		
 		try {
-			System.in.read();
+			System.in.read(); //wait for exit
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
 		service.shutdownVFS();

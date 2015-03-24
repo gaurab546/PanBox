@@ -32,8 +32,6 @@ import com.sun.jna.Pointer;
 public abstract class FuseFilesystem {
 
 	private static Logger logger;
-	private final static Logger commonLogger = Logger
-			.getLogger("org.panbox.desktop.common");
 
 	private static @interface FuseMethod {
 	}
@@ -47,8 +45,6 @@ public abstract class FuseFilesystem {
 	private final ReentrantLock mountLock = new ReentrantLock();
 	private final AutoUnmountHook unmountHook = new AutoUnmountHook(this);
 	private File mountPoint = null;
-	// private Logger logger = null;
-	private PanboxFS panboxFS;
 
 	@FuseMethod
 	final int _access(final String path, final int access) {
@@ -551,7 +547,6 @@ public abstract class FuseFilesystem {
 					+ " is already mounted at " + this.mountPoint);
 		}
 		this.mountPoint = mountPoint;
-		this.panboxFS = panboxFS;
 		mountLock.unlock();
 		beforeMount(mountPoint);
 		FuseJna.mount(this, mountPoint, blocking);

@@ -30,12 +30,10 @@ public class UnknownOwnerException extends ShareManagerException {
 
 	public UnknownOwnerException(String what) {
 		super(what);
-		// TODO Auto-generated constructor stub
 	}
 
 	public UnknownOwnerException(String what, Throwable ex) {
 		super(what, ex);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**

@@ -28,12 +28,18 @@ package org.panbox.desktop.common.pairing.cam;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
+
+import org.apache.log4j.Logger;
 import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.bytedeco.javacv.OpenCVFrameGrabber;
 
 @SuppressWarnings("serial")
 public class OpenCVWebCam extends ImagePanel {
+
+	protected static final Logger logger = Logger.getLogger("org.panbox");
 
 	private boolean running = false;
 	private Thread runner = null;
@@ -73,8 +79,15 @@ public class OpenCVWebCam extends ImagePanel {
 
 			this.setImage(out);
 		} catch (Exception ex) {
-			// TODO Exception!
-			ex.printStackTrace();
+			try {
+				BufferedImage image = ImageIO.read(getClass().getResource(
+						"nocam.png"));
+				setImage(image);
+			} catch (IOException e) {
+				// something really strange must happen here in order to throw
+				// this
+				// exception
+			}
 		}
 		this.repaint();
 	}
@@ -102,8 +115,7 @@ public class OpenCVWebCam extends ImagePanel {
 				try {
 					grabber.stop();
 				} catch (Exception ex) {
-					// TODO Exception!
-					ex.printStackTrace();
+					logger.error("Could not stop OpenCV camera.");
 				}
 				runner = null;
 			}

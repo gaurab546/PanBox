@@ -344,7 +344,7 @@ public class AESCBCRandomAccessFile extends EncRandomAccessFile {
 	 */
 	@Override
 	protected byte[] readFileAuthenticationTag() {
-		// TODO Auto-generated method stub
+		// no auth tag
 		return null;
 	}
 
@@ -357,7 +357,7 @@ public class AESCBCRandomAccessFile extends EncRandomAccessFile {
 	 */
 	@Override
 	protected void writeFileAuthenticationTag(byte[] rootAuthTag) {
-		// TODO Auto-generated method stub
+		// no auth tag
 	}
 
 	/**
@@ -435,7 +435,7 @@ public class AESCBCRandomAccessFile extends EncRandomAccessFile {
 
 	@Override
 	public boolean checkFileAuthenticationTag() {
-		// TODO Auto-generated method stub
+		// no auth tag
 		return false;
 	}
 

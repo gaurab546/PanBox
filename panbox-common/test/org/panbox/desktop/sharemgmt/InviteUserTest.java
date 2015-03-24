@@ -130,6 +130,7 @@ public abstract class InviteUserTest extends ShareMgmtTest {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setupSettings2() {
 		try {
 			System.out.println("PATH: "

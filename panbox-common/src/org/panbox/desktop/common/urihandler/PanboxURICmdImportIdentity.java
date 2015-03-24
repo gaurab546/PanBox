@@ -33,12 +33,9 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
-import javax.swing.JOptionPane;
-
 import org.apache.commons.codec.binary.Base64;
 import org.panbox.PanboxConstants;
 import org.panbox.Settings;
-import org.panbox.core.crypto.CryptCore;
 import org.panbox.desktop.common.gui.ImportIdentitiesWoPINDialog;
 import org.panbox.desktop.common.gui.PanboxClientGUI;
 import org.panbox.desktop.common.gui.PleaseWaitDialog;
@@ -58,9 +55,6 @@ public class PanboxURICmdImportIdentity extends PanboxURICmd {
 		super(params);
 		if (params.length == 1) {
 			this.url = new String(params[0], PanboxConstants.STANDARD_CHARSET);
-                } else if (params.length == 2) {
-			this.url = new String(params[0], PanboxConstants.STANDARD_CHARSET);
-			this.chksum = params[1];
 		} else {
 			throw new Exception("Invalid params " + Arrays.toString(params));
 		}
@@ -71,7 +65,6 @@ public class PanboxURICmdImportIdentity extends PanboxURICmd {
 					.getLocale());
 
 	private String url;
-	private byte[] chksum;
 
 	@Override
 	public String getName() {
@@ -91,17 +84,6 @@ public class PanboxURICmdImportIdentity extends PanboxURICmd {
 			waitDialog.setLocationRelativeTo(null);
 			waitDialog.setVisible(true);
 			tmpfile = DesktopApi.downloadTemporaryFile(identityfile);
-                        if(chksum != null) { //otherwise we don't use export PIN!
-                            if (!CryptCore.checkChecksum(tmpfile, chksum)) {
-                                    JOptionPane
-                                                    .showMessageDialog(
-                                                                    null,
-                                                                    bundle.getString("PanboxURICmd.identityDownloadChksumFailed.message"),
-                                                                    bundle.getString("error"),
-                                                                    JOptionPane.ERROR_MESSAGE);
-                                    return;
-                            }
-                        }
 		} catch (Exception e) {
 			throw e;
 		} finally {

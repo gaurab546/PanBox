@@ -82,7 +82,6 @@ public class TestImportExportVcardContacts extends IdentityHelper {
 			try {
 				addressbook.addContact(contact);
 			} catch (ContactExistsException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -108,7 +107,6 @@ public class TestImportExportVcardContacts extends IdentityHelper {
 		try {
 			imported = aBookMgr.importContacts(idImport, contactFile, true);
 		} catch (ContactExistsException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		assertTrue(imported.size() > 0);		

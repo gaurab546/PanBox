@@ -79,7 +79,7 @@ public class TestUserInvite {
 	private static String aliasGuest = "Guest";
 	private static String deviceAliasOwner = "OwnerDev";
 	private static String deviceAliasGuest = "GuestDev";
-	
+
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 
@@ -127,7 +127,6 @@ public class TestUserInvite {
 		if (db.exists())
 			db.delete();
 	}
-
 
 	@Test
 	public void test() {
@@ -369,9 +368,10 @@ public class TestUserInvite {
 			e2.printStackTrace();
 			fail(e2.getMessage());
 		}
-		ShareMetaData smd = null;
 		try {
-			smd = v1.createShareMetaData(p);
+			@SuppressWarnings("unused")
+			// just for testing functionality
+			ShareMetaData smd = v1.createShareMetaData(p);
 		} catch (IllegalArgumentException | ShareMetaDataException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -403,6 +403,8 @@ public class TestUserInvite {
 					.setUserAlias(guest.getEmail()).setDeviceAlias(guestDev)
 					.setPublicDeviceKey(guest.getPublicKeyForDevice(guestDev))
 					.setOwnerSignatureKey(owner.getPublicKeySign());
+			@SuppressWarnings("unused")
+			// just for testing functionality
 			ShareMetaData smd2 = v2.acceptInvitation(p2);
 		} catch (UnrecoverableKeyException | ShareMetaDataException e) {
 			e.printStackTrace();

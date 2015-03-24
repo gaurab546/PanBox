@@ -859,8 +859,7 @@ public class AddShareDialog extends javax.swing.JDialog {
 								bundle.getString("AddShareDialog.error.ReadingDropboxSyncDir"));
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("AddShareDialog : Unable to get list of current dropbox folder shares.", e);
 		}
 
 	}// GEN-LAST:event_sharesComboBoxActionPerformed

@@ -63,7 +63,6 @@ public class AESCBCRandomAccessFileTest extends EncRandomAccessFileTest {
 	 */
 	@Override
 	int getBlockSize() throws NoSuchAlgorithmException, NoSuchPaddingException {
-		// TODO Auto-generated method stub
 		return Cipher.getInstance(AESCBCRandomAccessFile.CIPHER_CHUNK)
 				.getBlockSize();
 	}
