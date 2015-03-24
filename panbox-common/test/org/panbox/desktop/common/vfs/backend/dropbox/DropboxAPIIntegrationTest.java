@@ -72,6 +72,7 @@ public class DropboxAPIIntegrationTest {
 	// access token for dropboxfritz@gmail.com account
 	private static String ACCESS_TOKEN = "d1m6UQOJwfUAAAAAAAAAW-AkB1l1a-uQQVog8KFqTe45YAMYzWlSswLy8IXbdrlW";
 
+	@SuppressWarnings("rawtypes")
 	@BeforeClass
 	public static void setUp() throws Exception {
 		Constructor<?>[] cons = DropboxAPIIntegration.class

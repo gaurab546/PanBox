@@ -26,8 +26,6 @@
  */
 package org.panbox.desktop.common.ex;
 
-import java.io.IOException;
-
 public class PanboxCreateFailedException extends Exception {
 
 	private static final long serialVersionUID = 2971167485714839338L;

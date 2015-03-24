@@ -84,11 +84,11 @@ public class TestAddDevice {
 	private static String aliasOwner = "Owner";
 	private static String aliasGuest = "Guest";
 	private static String deviceAliasOwner1 = "OwnerDev1";
-	private static String deviceAliasGuest1 = "GuestDev1";
+//	private static String deviceAliasGuest1 = "GuestDev1";
 	private static String deviceAliasOwner2 = "OwnerDev2";
-	private static String deviceAliasGuest2 = "GuestDev2";
+//	private static String deviceAliasGuest2 = "GuestDev2";
 	private static String deviceAliasOwner3 = "OwnerDev3";
-	private static String deviceAliasGuest3 = "GuestDev3";
+//	private static String deviceAliasGuest3 = "GuestDev3";
 
 	@BeforeClass
 	public static void setUpClass() {
