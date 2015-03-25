@@ -14,7 +14,11 @@ if %errorlevel% neq 0 (
 )
 
 cd ..\panbox-win 
-IF exist lib( echo lib exists ) ELSE ( mkdir lib && echo lib created)
+IF exist lib (
+   echo lib exists
+) ELSE (
+   mkdir lib && echo lib created
+)
 call ant
 if %errorlevel% neq 0 (
    exit /b %errorlevel%
@@ -37,3 +41,6 @@ xcopy /y /i build-dependencies\Panbox.ico dist\
 xcopy /y /i build-dependencies\panbox_splashscreen.png dist\
 xcopy /y /i build-dependencies\commons-daemon-1.0.15-bin-windows\prunmgr.exe dist\
 xcopy /y /i build-dependencies\commons-daemon-1.0.15-bin-windows\prunsrv.exe dist\
+
+REM return back to starting directory
+cd ..
