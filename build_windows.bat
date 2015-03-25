@@ -14,6 +14,7 @@ if %errorlevel% neq 0 (
 )
 
 cd ..\panbox-win 
+IF exist lib( echo lib exists ) ELSE ( mkdir lib && echo lib created)
 call ant
 if %errorlevel% neq 0 (
    exit /b %errorlevel%
