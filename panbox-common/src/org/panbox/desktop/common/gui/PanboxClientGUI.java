@@ -76,6 +76,7 @@ import org.panbox.core.csp.StorageBackendType;
 import org.panbox.core.exception.ShareMetaDataException;
 import org.panbox.core.identitymgmt.CloudProviderInfo;
 import org.panbox.desktop.common.PanboxClient;
+import org.panbox.desktop.common.devicemgmt.DeviceManagerException;
 import org.panbox.desktop.common.gui.PasswordEnterDialog.PermissionType;
 import org.panbox.desktop.common.gui.addressbook.CSPTableCellEditor;
 import org.panbox.desktop.common.gui.addressbook.CSPTableModel;
@@ -151,6 +152,8 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 		this.deviceModel = client.getDeviceList();
 
 		initComponents();
+
+		checkIfRemoveDeviceShouldBeEnabled();
 
 		ActionListener changesDetectedActionListener = new ActionListener() {
 			@Override
@@ -465,6 +468,18 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 			panboxFolderLabel.setVisible(false);
 			panboxFolderTextField.setVisible(false);
 			panboxFolderChooseButton.setVisible(false);
+		}
+	}
+
+	private void checkIfRemoveDeviceShouldBeEnabled() {
+		if (client.getDeviceList().size() <= 0) {
+			removeDeviceButton.setToolTipText(bundle
+					.getString("client.deviceList.removeDevice.disabled")); // NOI18N
+			removeDeviceButton.setEnabled(false);
+		} else {
+			removeDeviceButton.setToolTipText(bundle
+					.getString("client.deviceList.removeDevice")); // NOI18N
+			removeDeviceButton.setEnabled(true);
 		}
 	}
 
@@ -1509,6 +1524,12 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 				.getString("client.deviceList.removeDevice")); // NOI18N
 		removeDeviceButton.setEnabled(false);
 		removeDeviceButton.setPreferredSize(new java.awt.Dimension(28, 28));
+		removeDeviceButton
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						removeDeviceButtonActionPerformed(evt);
+					}
+				});
 
 		javax.swing.GroupLayout deviceListPanelLayout = new javax.swing.GroupLayout(
 				deviceListPanel);
@@ -1792,8 +1813,9 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 		networkInterfaceLabel.setText(bundle
 				.getString("client.settings.devicePairing.netInterface")); // NOI18N
 
-		networkInterfaceComboBox.setModel(new javax.swing.DefaultComboBoxModel<Object>(
-				new Object[] {}));
+		networkInterfaceComboBox
+				.setModel(new javax.swing.DefaultComboBoxModel<Object>(
+						new Object[] {}));
 		networkInterfaceComboBox
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1804,8 +1826,9 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 		networkAddressLabel.setText(bundle
 				.getString("client.settings.devicePairing.netAddress")); // NOI18N
 
-		networkAddressComboBox.setModel(new javax.swing.DefaultComboBoxModel<Object>(
-				new Object[] {}));
+		networkAddressComboBox
+				.setModel(new javax.swing.DefaultComboBoxModel<Object>(
+						new Object[] {}));
 		networkAddressComboBox
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2293,6 +2316,69 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 		pack();
 		setLocationRelativeTo(null);
 	}// </editor-fold>//GEN-END:initComponents
+
+	protected void removeDeviceButtonActionPerformed(ActionEvent evt) {
+		int index = deviceList.getSelectedIndex();
+		if (index != -1) {
+			PanboxDevice selDevice = client.getDeviceList().get(
+					deviceList.getSelectedIndex());
+			ShareListModel connectedShares = client.getDeviceShares(selDevice);
+			if (connectedShares.getSize() > 0) {
+				// We still know shares for that the device has been added!
+				String shareText = "";
+				for (int i = 0; i < connectedShares.getSize(); ++i) {
+					shareText += ("- " + connectedShares.get(i).getName() + "<br>");
+				}
+				String message = MessageFormat
+						.format(bundle
+								.getString("client.deviceList.removeDevice.shareExistsMsg"),
+								shareText, selDevice.getDeviceName());
+				int okResult = JOptionPane
+						.showConfirmDialog(
+								this,
+								message,
+								bundle.getString("client.deviceList.removeDevice.reallyTitle"),
+								JOptionPane.WARNING_MESSAGE);
+				if (okResult == JOptionPane.OK_OPTION) {
+					try {
+						// TODO: Also remove device from connected known shares
+						client.deviceManager.removeDevice(selDevice);
+						client.refreshDeviceListModel();
+					} catch (DeviceManagerException e) {
+						logger.error("RemoveDevice : Operation failed.", e);
+					}
+				} else {
+					logger.debug("RemoveDevice : Operation cancled.");
+				}
+			} else {
+				// No shares are known for this device. So removing should not
+				// be a problem!
+				String message = MessageFormat
+						.format(bundle
+								.getString("client.deviceList.removeDevice.shareNotExistsMsg"),
+								selDevice.getDeviceName());
+				int okResult = JOptionPane
+						.showConfirmDialog(
+								this,
+								message,
+								bundle.getString("client.deviceList.removeDevice.reallyTitle"),
+								JOptionPane.WARNING_MESSAGE);
+				if (okResult == JOptionPane.OK_OPTION) {
+					try {
+						client.deviceManager.removeDevice(selDevice);
+						client.refreshDeviceListModel();
+					} catch (DeviceManagerException e) {
+						logger.error("RemoveDevice : Operation failed.", e);
+					}
+				} else {
+					logger.debug("RemoveDevice : Operation cancled.");
+				}
+			}
+		} else {
+			logger.error(PanboxClientGUI.class.getName()
+					+ " : Remove device was called even if it should not be possible");
+		}
+	}
 
 	private void shareListMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_shareListMouseClicked
 		if (evt.getClickCount() == 2) {
