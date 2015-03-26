@@ -3,10 +3,10 @@
 	<import file="../panbox-linux/build-common.xml"/>
 
 	<target name="compile" depends="init">
-		<javac target="1.7" srcdir="${src}" destdir="${build}">
+		<javac target="1.7" source="1.7" srcdir="${src}" destdir="${build}">
 			<classpath refid="${ant.project.name}.classpath"/>
 		</javac>
-		<javac target="1.7" srcdir="${test}" destdir="${buildtest}">
+		<javac target="1.7" source="1.7" srcdir="${test}" destdir="${buildtest}">
 			<classpath refid="${ant.project.name}.classpath"/>
 		</javac>
 	</target>
