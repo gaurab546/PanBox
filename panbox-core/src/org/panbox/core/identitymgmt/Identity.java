@@ -26,6 +26,7 @@
  */
 package org.panbox.core.identitymgmt;
 
+import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -394,16 +395,15 @@ public class Identity extends AbstractIdentity {
 	 *            - name of the device to retrieve the private key for
 	 * @return - private key for deviceName or null if we run on a different
 	 *         device
+	 * @throws GeneralSecurityException 
 	 */
 	@Override
-	public PrivateKey getPrivateKeyForDevice(String deviceName) {
+	public PrivateKey getPrivateKeyForDevice(char[] password, String deviceName) throws UnrecoverableKeyException {
 
 		PrivateKey key = null;
 		try {
-			key = (PrivateKey) this.keyStore.getKey(deviceName,
-					KeyConstants.OPEN_KEYSTORE_PASSWORD);
-		} catch (UnrecoverableKeyException | KeyStoreException
-				| NoSuchAlgorithmException e) {
+			key = (PrivateKey) this.keyStore.getKey(deviceName, password);
+		} catch (KeyStoreException | NoSuchAlgorithmException e) {
 			logger.error("Could not fetch private key for device " + deviceName
 					+ " from identity's keystore", e);
 		}

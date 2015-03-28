@@ -45,6 +45,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.panbox.core.crypto.CryptCore;
+import org.panbox.core.crypto.KeyConstants;
 import org.panbox.core.identitymgmt.AbstractAddressbookManager;
 import org.panbox.core.identitymgmt.AbstractIdentity;
 import org.panbox.core.identitymgmt.CloudProviderInfo;
@@ -362,8 +363,12 @@ public class TestPersistentUpdate extends AbstractTest {
 		} catch (UnrecoverableKeyException e) {
 			fail();
 		}
-		assertTrue(id.getPrivateKeyForDevice("laptop").equals(
-				loadedID.getPrivateKeyForDevice("laptop")));
+		try {
+			assertTrue(id.getPrivateKeyForDevice(KeyConstants.OPEN_KEYSTORE_PASSWORD, "laptop").equals(
+					loadedID.getPrivateKeyForDevice(KeyConstants.OPEN_KEYSTORE_PASSWORD, "laptop")));
+		} catch (UnrecoverableKeyException e1) {
+			fail();
+		}
 
 		try {
 			assertTrue(id.getPublicKeyForDevice("mobile").equals(
@@ -371,8 +376,12 @@ public class TestPersistentUpdate extends AbstractTest {
 		} catch (UnrecoverableKeyException e) {
 			fail();
 		}
-		assertTrue(id.getPrivateKeyForDevice("mobile").equals(
-				loadedID.getPrivateKeyForDevice("mobile")));
+		try {
+			assertTrue(id.getPrivateKeyForDevice(KeyConstants.OPEN_KEYSTORE_PASSWORD, "mobile").equals(
+					loadedID.getPrivateKeyForDevice(KeyConstants.OPEN_KEYSTORE_PASSWORD, "mobile")));
+		} catch (UnrecoverableKeyException e1) {
+			fail();
+		}
 
 		// test device key for tablet: do we get its public key?
 		PublicKey p = null;

@@ -39,7 +39,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.panbox.PanboxConstants;
 import org.panbox.core.crypto.CryptCore;
+import org.panbox.core.crypto.KeyConstants;
 import org.panbox.core.identitymgmt.exceptions.ContactExistsException;
 
 public class TestCreateIdentity extends IdentityHelper {
@@ -115,7 +117,7 @@ public class TestCreateIdentity extends IdentityHelper {
 			assertEquals(deviceKey.getPublic(),
 					id.getPublicKeyForDevice("laptop"));
 			assertEquals(deviceKey.getPrivate(),
-					id.getPrivateKeyForDevice("laptop"));
+					id.getPrivateKeyForDevice(KeyConstants.OPEN_KEYSTORE_PASSWORD, "laptop"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());

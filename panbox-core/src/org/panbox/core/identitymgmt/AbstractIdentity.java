@@ -26,6 +26,7 @@
  */
 package org.panbox.core.identitymgmt;
 
+import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -182,8 +183,9 @@ public abstract class AbstractIdentity implements IPerson {
 	 *            - name of the device to retrieve the private key for
 	 * @return - private key for deviceName or null if we run on a different
 	 *         device
+	 * @throws UnrecoverableKeyException 
 	 */
-	public abstract PrivateKey getPrivateKeyForDevice(String deviceName);
+	public abstract PrivateKey getPrivateKeyForDevice(char[] password, String deviceName) throws UnrecoverableKeyException;
 
 	/**
 	 * Retrieve the public key of a device with name deviceName

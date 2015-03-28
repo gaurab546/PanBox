@@ -779,15 +779,41 @@ public class ShareManagerImpl implements IShareManager {
 			byte[] me = md.digest(identity.getPublicKeySign().getEncoded());
 			md.reset();
 
+			if(true) {
+				//TODO: Make ask always check configurable!
+				password = PasswordEnterDialog.invoke(PasswordEnterDialog.PermissionType.SHARE);
+			}
+			
 			VolumeParams p = paramsFactory
 					.createVolumeParams()
 					.setPublicSignatureKey(identity.getPublicKeySign())
 					.setDeviceAlias(deviceName)
 					.setPublicDeviceKey(
 							identity.getPublicKeyForDevice(deviceName))
-					.setPrivateDeviceKey(
-							identity.getPrivateKeyForDevice(deviceName))
 					.setShareName(shareName).setPath(sharePath).setType(type);
+			
+			if(password != null) {
+				// password was entered
+				p = p.setPrivateDeviceKey(
+						identity.getPrivateKeyForDevice(password, deviceName));
+			} else {
+				// password was not entered!
+				try {
+					p = p.setPrivateDeviceKey(
+							identity.getPrivateKeyForDevice(KeyConstants.OPEN_KEYSTORE_PASSWORD, deviceName));
+				} catch (UnrecoverableKeyException e) {
+					logger.warn("Could not get device key with standard password, but standard password was configured.");
+
+					password = PasswordEnterDialog.invoke(PasswordEnterDialog.PermissionType.SHARE);
+					try {
+						p = p.setPrivateDeviceKey(
+								identity.getPrivateKeyForDevice(KeyConstants.OPEN_KEYSTORE_PASSWORD, deviceName));
+					} catch (UnrecoverableKeyException ex) {
+						logger.error("Entered Password was wrong!");
+						throw ex;
+					}
+				}
+			}
 
 			if (Arrays.equals(me, ownerFp)) {
 				// I am the owner
@@ -1063,7 +1089,7 @@ public class ShareManagerImpl implements IShareManager {
 		p.setKeys(identity, password)
 				.setPublicDeviceKey(identity.getPublicKeyForDevice(deviceName))
 				.setPrivateDeviceKey(
-						identity.getPrivateKeyForDevice(deviceName))
+						identity.getPrivateKeyForDevice(password, deviceName))
 				.setUserAlias(identity.getEmail());
 		pbShare = service.acceptInviation(p);
 		return pbShare;
@@ -1133,7 +1159,7 @@ public class ShareManagerImpl implements IShareManager {
 							identity.getPublicKeyForDevice(deviceName))
 					.setKeys(identity, password)
 					.setPrivateDeviceKey(
-							identity.getPrivateKeyForDevice(deviceName))
+							identity.getPrivateKeyForDevice(password, deviceName))
 					.setShareName(shareName).setPath(sharePath).setType(type);
 
 			metaDataFile.mkdirs();
