@@ -411,7 +411,8 @@ public class ShareManagerImpl implements IShareManager {
 				+ newShareName + "," + newShareType + "," + newSharePath + ")");
 		String sql = "UPDATE " + TABLE_SHARES
 				+ " SET name = ?, type = ?, backendURL = ?" + "WHERE name = ?;";
-		//String sqluuid = "SELECT FROM " + TABLE_SHARES + " uuid " + "WHERE name = ?;";
+		// String sqluuid = "SELECT FROM " + TABLE_SHARES + " uuid " +
+		// "WHERE name = ?;";
 
 		boolean nameChanged = !shareName.equals(newShareName);
 		boolean pathChanged = false;
@@ -779,11 +780,11 @@ public class ShareManagerImpl implements IShareManager {
 			byte[] me = md.digest(identity.getPublicKeySign().getEncoded());
 			md.reset();
 
-			if(true) {
-				//TODO: Make ask always check configurable!
-				password = PasswordEnterDialog.invoke(PasswordEnterDialog.PermissionType.SHARE);
+			if (Settings.getInstance().isProtectedDeviceKey()) {
+				password = PasswordEnterDialog
+						.invoke(PasswordEnterDialog.PermissionType.SHARE);
 			}
-			
+
 			VolumeParams p = paramsFactory
 					.createVolumeParams()
 					.setPublicSignatureKey(identity.getPublicKeySign())
@@ -791,23 +792,30 @@ public class ShareManagerImpl implements IShareManager {
 					.setPublicDeviceKey(
 							identity.getPublicKeyForDevice(deviceName))
 					.setShareName(shareName).setPath(sharePath).setType(type);
-			
-			if(password != null) {
+
+			if (password != null) {
 				// password was entered
-				p = p.setPrivateDeviceKey(
-						identity.getPrivateKeyForDevice(password, deviceName));
+				p = p.setPrivateDeviceKey(identity.getPrivateKeyForDevice(
+						password, deviceName));
 			} else {
-				// password was not entered!
+				// password was not entered! Try default one!
 				try {
-					p = p.setPrivateDeviceKey(
-							identity.getPrivateKeyForDevice(KeyConstants.OPEN_KEYSTORE_PASSWORD, deviceName));
+					p = p.setPrivateDeviceKey(identity.getPrivateKeyForDevice(
+							KeyConstants.OPEN_KEYSTORE_PASSWORD, deviceName));
 				} catch (UnrecoverableKeyException e) {
 					logger.warn("Could not get device key with standard password, but standard password was configured.");
 
-					password = PasswordEnterDialog.invoke(PasswordEnterDialog.PermissionType.SHARE);
+					password = PasswordEnterDialog
+							.invoke(PasswordEnterDialog.PermissionType.SHARE);
 					try {
-						p = p.setPrivateDeviceKey(
-								identity.getPrivateKeyForDevice(KeyConstants.OPEN_KEYSTORE_PASSWORD, deviceName));
+						p = p.setPrivateDeviceKey(identity
+								.getPrivateKeyForDevice(
+										KeyConstants.OPEN_KEYSTORE_PASSWORD,
+										deviceName));
+						// Looks like the configuration of deviceKeyProtection
+						// has been changed! We need to set this option to true
+						// for next startup!
+						Settings.getInstance().setProtectedDeviceKey(true);
 					} catch (UnrecoverableKeyException ex) {
 						logger.error("Entered Password was wrong!");
 						throw ex;
@@ -1159,8 +1167,9 @@ public class ShareManagerImpl implements IShareManager {
 							identity.getPublicKeyForDevice(deviceName))
 					.setKeys(identity, password)
 					.setPrivateDeviceKey(
-							identity.getPrivateKeyForDevice(password, deviceName))
-					.setShareName(shareName).setPath(sharePath).setType(type);
+							identity.getPrivateKeyForDevice(password,
+									deviceName)).setShareName(shareName)
+					.setPath(sharePath).setType(type);
 
 			metaDataFile.mkdirs();
 
