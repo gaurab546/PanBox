@@ -29,7 +29,7 @@ package org.panbox.core;
 import java.util.Map;
 
 public class KeyValuePair<K, V> implements Map.Entry<K, V> {
-    private K key;
+    private final K key;
     private V value;
 
     public KeyValuePair(K key, V value) {
