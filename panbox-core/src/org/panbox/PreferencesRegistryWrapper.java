@@ -28,6 +28,7 @@ package org.panbox;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.NodeChangeListener;
 import java.util.prefs.PreferenceChangeListener;
@@ -48,7 +49,7 @@ public class PreferencesRegistryWrapper
 	{
 		try {
 			WinRegistry.createKey( WinRegistry.HKEY_CURRENT_USER, PANBOX_REGISTRY );
-		} catch ( Exception e ) {
+		} catch ( IllegalArgumentException | IllegalAccessException | InvocationTargetException e ) {
 			loggercommon.error( "Could not create key for Panbox usage in registry!" );
 		}
 	}
@@ -58,7 +59,7 @@ public class PreferencesRegistryWrapper
 	{
 		try {
 			WinRegistry.writeStringValue( WinRegistry.HKEY_CURRENT_USER, PANBOX_REGISTRY, key, value );
-		} catch ( Exception e ) {
+		} catch ( IllegalArgumentException | IllegalAccessException | InvocationTargetException e ) {
 			loggercommon.error( "An error while writing Panbox settings registry key occurred!" );
 		}
 	}
@@ -72,7 +73,7 @@ public class PreferencesRegistryWrapper
 			if( read != null ) {
 				return read;
 			}
-		} catch ( Exception e ) {
+		} catch ( IllegalArgumentException | IllegalAccessException | InvocationTargetException e ) {
 			loggercommon.error( "An error while writing Panbox settings registry key occurred!" );
 		}
 		return def;
