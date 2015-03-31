@@ -9,7 +9,6 @@
 package net.decasdev.dokan;
 
 import org.apache.log4j.Logger;
-import org.panbox.desktop.common.utils.DesktopApi;
 
 public class Dokan {
 
@@ -36,6 +35,10 @@ public class Dokan {
 	 * Driver something wrong
 	 */
 	public static final int DOKAN_START_ERROR = -4;
+	/**
+	 * Mount point is invalid 
+	 */
+	 public static final int DOKAN_MOUNT_POINT_ERROR= -6;
 	// mount returns error codes
 	public static final int DOKAN_SUCCESS = 0;
 
@@ -43,9 +46,9 @@ public class Dokan {
 		try {
 			System.loadLibrary("JDokan");
 		} catch (UnsatisfiedLinkError ex) {
+			// TODO: error handling
 			logger.fatal("Dokan : !!!Static construction while loading native library!!! : Exception: "
 					+ ex.getMessage());
-			System.exit(DesktopApi.EXIT_ERR_UNKNOWN);
 		}
 	}
 
@@ -83,6 +86,8 @@ public class Dokan {
 			return "Driver something wrong.";
 		case Dokan.DOKAN_MOUNT_ERROR:
 			return "Can't assign a drive letter.";
+		case Dokan.DOKAN_MOUNT_POINT_ERROR:
+			return "Mount point is invalid.";
 		default:
 			return "Unknown error.";
 		}
