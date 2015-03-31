@@ -38,11 +38,9 @@ import org.panbox.core.exception.ObfuscationException;
 import org.panbox.core.keymgmt.VolumeParams;
 import org.panbox.core.vfs.backend.VirtualVolume;
 import org.panbox.desktop.common.sharemgmt.AbstractPanboxService;
-import org.panbox.desktop.common.utils.DesktopApi;
 import org.panbox.desktop.common.vfs.PanboxFS;
 import org.panbox.desktop.common.vfs.backend.IRootVolume;
 import org.panbox.desktop.common.vfs.backend.VFSShare;
-import org.panbox.desktop.common.vfs.backend.VirtualRootMultiuserVolume;
 import org.panbox.desktop.common.vfs.backend.VirtualRootVolume;
 import org.panbox.desktop.common.vfs.backend.dropbox.DropboxVirtualVolume;
 
@@ -98,11 +96,7 @@ public class PanboxServiceSession extends AbstractPanboxService {
 	@Override
 	protected void registerShare(VFSShare vfsShare, VolumeParams p) {
 		IRootVolume vrv = null;
-		if (DesktopApi.isMultiuserModeDisabled()) {
-			vrv = VirtualRootVolume.getInstance();
-		} else {
-			vrv = VirtualRootMultiuserVolume.getInstance();
-		}
+		vrv = VirtualRootVolume.getInstance();
 		if (vrv.existsAndChanged(username, vfsShare)) {
 			vrv.removeShare(username, p.shareName);
 			vrv.registerShare(username, vfsShare);
@@ -113,13 +107,7 @@ public class PanboxServiceSession extends AbstractPanboxService {
 
 	@Override
 	protected boolean unregisterShare(VolumeParams p) {
-		boolean removed = false;
-		if (DesktopApi.isMultiuserModeDisabled()) {
-			removed = VirtualRootVolume.getInstance().removeShare(p.shareName);
-		} else {
-			removed = VirtualRootMultiuserVolume.getInstance().removeShare(
-					username, p.shareName);
-		}
+		boolean removed = VirtualRootVolume.getInstance().removeShare(p.shareName);
 		return removed;
 	}
 

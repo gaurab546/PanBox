@@ -32,7 +32,6 @@ import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -44,7 +43,6 @@ import org.apache.log4j.Logger;
 import org.panbox.OS;
 import org.panbox.OS.OperatingSystem;
 import org.panbox.desktop.common.clipboard.ClipboardHandler;
-import org.panbox.WinRegistry;
 
 public class DesktopApi {
 
@@ -301,26 +299,5 @@ public class DesktopApi {
 				"panbox-tmp-" + String.valueOf(System.currentTimeMillis()), "");
 		downloadFile(source, tmpfile);
 		return tmpfile;
-	}
-
-	public static boolean isMultiuserModeDisabled() {
-		String PANBOX_REGISTRY = "SOFTWARE\\Panbox.org\\Panbox";
-		try {
-			logger.info("PanboxWindowsService : Checking for VFS multiuser mode entry in registry.");
-			String read = WinRegistry.readString(
-					WinRegistry.HKEY_LOCAL_MACHINE, PANBOX_REGISTRY,
-					"multiuserMode");
-			logger.info("PanboxWindowsService : VFS multiuser mode entry existed: "
-					+ read);
-			if (read == null) {
-				throw new IllegalArgumentException();
-			}
-			return !Boolean.valueOf(read);
-		} catch (IllegalArgumentException | IllegalAccessException
-				| InvocationTargetException e) {
-			// invalid or non-existing value. Will disable!
-			logger.info("PanboxWindowsService : VFS multiuser mode entry was not set.");
-			return false;
-		}
 	}
 }

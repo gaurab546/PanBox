@@ -31,15 +31,14 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.naming.ConfigurationException;
 
-import org.apache.log4j.Logger;
-import org.panbox.WinRegistry;
+import org.panbox.Settings;
 import org.panbox.desktop.common.vfs.PanboxFS;
 import org.panbox.desktop.windows.vfs.DokanUserFS;
 import org.panbox.desktop.windows.vfs.PanboxFSWindows;
 
 public class VFSManager {
 
-	private static final Logger logger = Logger.getLogger("org.panbox");
+	//private static final Logger logger = Logger.getLogger("org.panbox");
 
 	private static VFSManager instance;
 
@@ -50,7 +49,7 @@ public class VFSManager {
 	private VFSManager() throws ConfigurationException,
 			IllegalArgumentException, IllegalAccessException,
 			InvocationTargetException {
-		mountpoint = WindowsOSIntegration.getPanboxMountPoint();
+		mountpoint = Settings.getInstance().getMountDir();
 	}
 
 	public static VFSManager getInstance() throws ConfigurationException,
@@ -68,22 +67,19 @@ public class VFSManager {
 	public synchronized void startVFS() {
 		vfs = new PanboxFSWindows(new DokanUserFS());
 
-		File mountFile = new File(mountpoint + ":\\");
+		File mountFile = new File(mountpoint);
 		
-		if(mountFile == null || mountFile.exists()) {
-			logger.fatal("VFSManager : The configured Mountpoint '" + mountpoint + "' is already in used. Please use the AdminConfigurationUtility to change to mount point.");
-			System.exit(1000);
-		}
+//		if(mountFile == null || !mountFile.exists()) {
+//			logger.fatal("VFSManager : The configured Mountpoint '" + mountpoint + "' does not exist.");
+//			System.exit(1000);
+//		}
 		
 		vfs.mount(mountFile, false, null);
-		WindowsOSIntegration.registerVFS(mountpoint);
 	}
 
 	public synchronized void stopVFS() {
 		if (vfs != null) {
 			vfs.unmount();
-
-			WindowsOSIntegration.unregisterVFS(mountpoint);
 
 			vfs = null;
 		}
@@ -98,10 +94,5 @@ public class VFSManager {
 			return true;
 		}
 	}
-	
-	public static String getMountPoint() throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		return WinRegistry.readString(
-				WinRegistry.HKEY_LOCAL_MACHINE,
-				"Software\\Panbox.org\\Panbox", "MountPoint");
-	}
+
 }

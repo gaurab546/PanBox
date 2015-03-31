@@ -263,12 +263,12 @@ public class Settings {
 
 	/* MOUNT_DIR */
 	public void setMountDir(String dir) {
-		if (dirExists(dir)) {
+//		if (dirExists(dir)) {
 			panboxMountDir = dir;
 			prefs.put("mountDir", dir);
-		} else {
-			logger.warn("[setMountDir] Directory '" + dir + "' does not exists");
-		}
+//		} else {
+//			logger.warn("[setMountDir] Directory '" + dir + "' does not exists");
+//		}
 	}
 
 	public String getConfDir() {

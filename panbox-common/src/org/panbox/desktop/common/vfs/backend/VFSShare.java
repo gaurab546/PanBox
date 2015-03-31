@@ -213,7 +213,9 @@ public class VFSShare {
 		// NOTE: share names may not be prefix free
 		if (fileName.startsWith(shareName + File.separator)
 				|| fileName.substring(1).startsWith(shareName + File.separator)
+				|| fileName.substring(1).toUpperCase().startsWith(shareName + File.separator)
 				|| fileName.equals(shareName)
+				|| fileName.toUpperCase().equals(shareName)
 				|| fileName.substring(1).equals(shareName)) {
 			return true; // file is part of this share!
 		}
