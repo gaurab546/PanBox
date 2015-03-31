@@ -159,7 +159,15 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 			gui.setIconImage(getPanboxIcon(false));
 			client.registerMainwindow(gui);
 
-			gui.setVisible(true);
+			boolean autoStartGui = true;
+			for (String arg : args) {
+				if (arg.equals("minimized")) {
+					autoStartGui = false;
+				}
+			}
+			if (autoStartGui) {
+				gui.setVisible(true);
+			}
 		} catch (OperationAbortedException e) {
 			logger.error("PanboxClient : Wizard has been aborted.");
 			System.exit(DesktopApi.EXIT_ERR_WIZARD_ABORTED);
@@ -250,7 +258,7 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 	private final IPanboxService session;
 
 	private TrayIcon trayApp;
-	
+
 	private ClipboardHandler ch;
 
 	public PanboxClient(IPanboxService session) throws Exception {
@@ -425,7 +433,7 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 	protected void shutdown() throws Exception {
 		logger.debug("WIN:PanboxClient : shutdown");
 		unmountShares();
-		
+
 		stopClipboardHandler();
 	}
 

@@ -72,7 +72,6 @@ import org.panbox.desktop.linux.dbus.DBusService;
 import org.panbox.desktop.linux.tray.PanboxTrayIcon;
 import org.panbox.desktop.linux.tray.PanboxTrayIcon.TrayIconException;
 
-
 /**
  * @author palige
  * 
@@ -96,8 +95,9 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 
 	public static void main(String[] args) {
 		setGuiLookAndFeel();
-		
+
 		// params
+		boolean showGui = true;
 		ArrayList<String> vfsopts = new ArrayList<String>();
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equalsIgnoreCase(NO_DBUS)) {
@@ -125,6 +125,8 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 				} else {
 					logger.error("Invalid fuse argument.");
 				}
+			} else if (args[i].equalsIgnoreCase("minimized")) {
+				showGui = false;
 			} else {
 				if (!((i > 0) && (args[i - 1].equals("-o")))) {
 					logger.error("Unknown argument: " + args[i]);
@@ -157,7 +159,9 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 						});
 			}
 
-			instance.showGui();
+			if (showGui) {
+				instance.showGui();
+			}
 			instance.showTrayMessage(bundle
 					.getString("PanboxClient.panboxStartedMessage"));
 
