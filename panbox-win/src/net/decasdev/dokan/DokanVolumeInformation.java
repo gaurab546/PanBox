@@ -24,7 +24,8 @@ public class DokanVolumeInformation {
         this.volumeName = volumeName;
         this.fileSystemName = fileSystemName;
         this.maximumComponentLength = maximumComponentLength;
-        volumeSerialNumber = serialNumber;
+        this.volumeSerialNumber = serialNumber;
+        this.fileSystemFlags = 0x00000001 | 0x00000002; //case-sensitive and case-is-preserved
     }
 
     @Override
