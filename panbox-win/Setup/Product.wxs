@@ -27,7 +27,7 @@
           <FileSearch Name="dokan.sys" Id="DokanDriverFile"/>
         </DirectorySearch>
     </Property>
-    <Condition Message="Dokan library is not installed. Please install Dokan 0.6.0 or later."><![CDATA[Installed OR ( DOKAN_INSTALLED AND Not VersionNT64 ) OR ( DOKAN_INSTALLED64 AND VersionNT64 )]]></Condition>
+    <Condition Message="Dokan library is not installed. Please install Dokan 0.6.1 or later."><![CDATA[Installed OR ( DOKAN_INSTALLED AND Not VersionNT64 ) OR ( DOKAN_INSTALLED64 AND VersionNT64 )]]></Condition>
     
     <!-- Step 1: Define the directory structure -->
     <Directory Id="TARGETDIR" Name="SourceDir">
@@ -217,7 +217,7 @@
           <File Source="$(var.DistDir)\lib\org.hamcrest.core.jar" />
         </Component>
         <Component Id="sqlite.jar">
-          <File Source="$(var.DistDir)\lib\sqlite-jdbc-3.8.7.jar" />
+          <File Source="$(var.DistDir)\lib\sqlite-jdbc-3.8.6.jar" />
         </Component>
         <Component Id="videoinput.jar">
           <File Source="$(var.DistDir)\lib\videoinput.jar" />

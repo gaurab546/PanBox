@@ -29,8 +29,8 @@
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <PropertyGroup>
-    <PreBuildEvent>cd $(SolutionDir)\..
-call buildPanboxRelease.bat</PreBuildEvent>
+    <PreBuildEvent>cd $(SolutionDir)\..\..
+call build_windows.bat</PreBuildEvent>
   </PropertyGroup>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.
