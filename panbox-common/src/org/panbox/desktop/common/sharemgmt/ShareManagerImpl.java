@@ -651,10 +651,12 @@ public class ShareManagerImpl implements IShareManager {
 
 				return resultShare;
 			} catch (SQLException | NoSuchAlgorithmException | IOException e) {
-				// in case of error we need to remove the share again
-				removeShare(share.getName(), share.getPath(), share.getType());
+				logger.error("ShareManagerImpl : addNewShare : Already logging exception: ", e);
 
 				try {
+					// in case of error we need to remove the share again
+					removeShare(share.getName(), share.getPath(), share.getType());
+
 					if (shareFolder.exists() && shareDirCreated) {
 						FileUtils.deleteDirectoryTree(shareFolder);
 					}
@@ -666,11 +668,12 @@ public class ShareManagerImpl implements IShareManager {
 
 			} catch (ShareMetaDataException | UnrecoverableKeyException
 					| UnknownOwnerException e) {
-
-				// in case of error we need to remove the share again
-				removeShare(share.getName(), share.getPath(), share.getType());
+				logger.error("ShareManagerImpl : addNewShare : Already logging exception: ", e);
 
 				try {
+					// in case of error we need to remove the share again
+					removeShare(share.getName(), share.getPath(), share.getType());
+
 					if (shareFolder.exists() && shareDirCreated) {
 						FileUtils.deleteDirectoryTree(shareFolder);
 					}

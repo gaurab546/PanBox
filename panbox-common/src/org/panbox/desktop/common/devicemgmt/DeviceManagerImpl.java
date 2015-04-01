@@ -143,6 +143,23 @@ public class DeviceManagerImpl implements IDeviceManager {
 		}
 	}
 
+	@Override
+	public void addThisDevice(String name, KeyPair deviceKeyPair,
+			DeviceType type, char[] password) throws DeviceManagerException {
+		// 1. Add device key to identity key store
+		identity.addDeviceKey(deviceKeyPair, name, password);
+
+		// 2. Add meta data entry to devicelist manager
+		logger.debug("ShareManager : addDevice[protected](" + name + "," + type + ")");
+
+		try {
+			addDeviceToDB(name, type);
+		} catch (SQLException ex) {
+			throw new DeviceManagerException("Failed to run addThisDevice[protected]: ",
+					ex);
+		}
+	}
+
 	private void addDeviceToDB(String name, DeviceType type)
 			throws SQLException {
 		PreparedStatement pStatement = connection

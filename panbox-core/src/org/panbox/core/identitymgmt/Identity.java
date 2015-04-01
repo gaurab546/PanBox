@@ -194,7 +194,9 @@ public class Identity extends AbstractIdentity {
 	}
 
 	/**
-	 * Stores a given device key in the keystore of this identity
+	 * Stores a given device key in the keystore of this identity.
+	 * The given device key will be protected with the well known
+	 * secret.
 	 * 
 	 * @param ownerKeySign
 	 *            - Keypair representing the device key
@@ -211,6 +213,34 @@ public class Identity extends AbstractIdentity {
 
 			this.keyStore.setKeyEntry(deviceName, deviceKey.getPrivate(),
 					KeyConstants.OPEN_KEYSTORE_PASSWORD,
+					new java.security.cert.Certificate[] { certChain });
+
+		} catch (KeyStoreException e) {
+			logger.error("Could not add device key for device " + deviceName
+					+ " to identity's keystore", e);
+		}
+	}
+
+	/**
+	 * Stores a given device key in the keystore of this identity.
+	 * The given device key will be protected with the provided
+	 * password.
+	 * 
+	 * @param ownerKeySign
+	 *            - Keypair representing the device key
+	 * @param deviceName
+	 *            - name of the device where the key will be used
+	 */
+	@Override
+	public void addDeviceKey(KeyPair deviceKey, String deviceName, char[] password) {
+
+		try {
+			X509Certificate certChain = CryptCore
+					.createSelfSignedX509Certificate(deviceKey.getPrivate(),
+							deviceKey.getPublic(), this);
+
+			this.keyStore.setKeyEntry(deviceName, deviceKey.getPrivate(),
+					password,
 					new java.security.cert.Certificate[] { certChain });
 
 		} catch (KeyStoreException e) {

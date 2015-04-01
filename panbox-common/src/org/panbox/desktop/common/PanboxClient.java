@@ -831,6 +831,7 @@ public abstract class PanboxClient {
 				KeyPair deviceKey = CryptCore.generateKeypair();
 				char[] password = dialog.getPassword();
 				String deviceName = dialog.getDevicename();
+				boolean protectDeviceKey = dialog.isProtectDeviceKey();
 
 				id.setOwnerKeySign(ownerKeySign, password);
 				id.setOwnerKeyEnc(ownerKeyEnc, password);
@@ -842,8 +843,18 @@ public abstract class PanboxClient {
 
 				try {
 					deviceManager.setIdentity(id);
-					deviceManager.addThisDevice(deviceName, deviceKey,
-							DeviceType.DESKTOP);
+
+					if (protectDeviceKey) {
+						Settings.getInstance().setProtectedDeviceKey(true);
+						// use identity password for protection
+						deviceManager.addThisDevice(deviceName, deviceKey,
+								DeviceType.DESKTOP, password);
+					} else {
+						Settings.getInstance().setProtectedDeviceKey(false);
+						// use well known secret for protection
+						deviceManager.addThisDevice(deviceName, deviceKey,
+								DeviceType.DESKTOP);
+					}
 					refreshDeviceListModel();
 				} catch (DeviceManagerException ex) {
 					// Simply ignore this for now!
