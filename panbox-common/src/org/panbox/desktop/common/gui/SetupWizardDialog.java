@@ -54,6 +54,7 @@ public class SetupWizardDialog extends javax.swing.JDialog {
 	private String email;
 	private String devicename;
 	private char[] password;
+	private boolean protectDeviceKey;
 	private boolean canceled = true;
 	private Matcher matcher;
 
@@ -131,12 +132,16 @@ public class SetupWizardDialog extends javax.swing.JDialog {
         deviceNameLabel = new javax.swing.JLabel();
         deviceNameTextField = new javax.swing.JTextField();
         resetDeviceNameButton = new javax.swing.JButton();
+        protectDeviceKeyPanel = new javax.swing.JPanel();
+        protectDeviceKeyLabel = new javax.swing.JLabel();
+        protectDeviceKeyCheckbox = new javax.swing.JCheckBox();
         nextFinishButton = new javax.swing.JButton();
         abortBackButton = new javax.swing.JButton();
         dialogPanel = new javax.swing.JPanel();
         informationPanel = new javax.swing.JPanel();
         informationLabel = new javax.swing.JLabel();
 
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/panbox/desktop/common/gui/Messages"); // NOI18N
         personalDataLabel.setText(bundle.getString("SetupWizardDialog.personalDataLabel.text")); // NOI18N
 
         firstnameLabel.setText(bundle.getString("SetupWizardDialog.firstnameLabel.text")); // NOI18N
@@ -347,6 +352,29 @@ public class SetupWizardDialog extends javax.swing.JDialog {
                 .addContainerGap(130, Short.MAX_VALUE))
         );
 
+        protectDeviceKeyLabel.setText(bundle.getString("SetupWizardDialog.protectDeviceKeyLabel.text")); // NOI18N
+
+        protectDeviceKeyCheckbox.setText(bundle.getString("SetupWizardDialog.protectDeviceKeyCheckbox.text")); // NOI18N
+
+        javax.swing.GroupLayout protectDeviceKeyPanelLayout = new javax.swing.GroupLayout(protectDeviceKeyPanel);
+        protectDeviceKeyPanel.setLayout(protectDeviceKeyPanelLayout);
+        protectDeviceKeyPanelLayout.setHorizontalGroup(
+            protectDeviceKeyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(protectDeviceKeyLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE)
+            .addGroup(protectDeviceKeyPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(protectDeviceKeyCheckbox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        protectDeviceKeyPanelLayout.setVerticalGroup(
+            protectDeviceKeyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(protectDeviceKeyPanelLayout.createSequentialGroup()
+                .addComponent(protectDeviceKeyLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(protectDeviceKeyCheckbox)
+                .addContainerGap(127, Short.MAX_VALUE))
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(bundle.getString("SetupWizardDialog.title")); // NOI18N
         setResizable(false);
@@ -383,7 +411,7 @@ public class SetupWizardDialog extends javax.swing.JDialog {
             informationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(informationPanelLayout.createSequentialGroup()
                 .addComponent(informationLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 163, Short.MAX_VALUE))
+                .addGap(0, 163, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout dialogPanelLayout = new javax.swing.GroupLayout(dialogPanel);
@@ -413,7 +441,7 @@ public class SetupWizardDialog extends javax.swing.JDialog {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(abortBackButton, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(nextFinishButton, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(nextFinishButton, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(dialogPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -447,10 +475,13 @@ public class SetupWizardDialog extends javax.swing.JDialog {
 			panel = devicePasswordPanel;
 			break;
 		case 3:
-			nextFinishButton.setText(bundle.getString("Next"));
 			panel = passwordPanel;
 			break;
 		case 4:
+			nextFinishButton.setText(bundle.getString("Next"));
+			panel = protectDeviceKeyPanel;
+			break;
+		case 5:
 			firstname = firstnameTextField.getText();
 			finishedFirstname.setText(firstname);
 			lastname = lastnameTextField.getText();
@@ -460,6 +491,7 @@ public class SetupWizardDialog extends javax.swing.JDialog {
 			devicename = deviceNameTextField.getText();
 			finishedDevicename.setText(devicename);
 			password = passwordTextField.getPassword();
+                        protectDeviceKey = protectDeviceKeyCheckbox.isSelected();
 			
 			char[] displayPass = new char[password.length];
 			Arrays.fill(displayPass, '*');
@@ -508,7 +540,7 @@ public class SetupWizardDialog extends javax.swing.JDialog {
 	}// GEN-LAST:event_abortBackButtonActionPerformed
 
 	private void nextFinishButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_nextFinishButtonActionPerformed
-		if (step == 4) {
+		if (step == 5) {
 			// finish
 			canceled = false;
 			dispose();
@@ -621,6 +653,10 @@ public class SetupWizardDialog extends javax.swing.JDialog {
 		return canceled;
 	}
 
+        public boolean isProtectDeviceKey() {
+            return protectDeviceKey;
+        }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton abortBackButton;
     private javax.swing.JLabel deviceNameLabel;
@@ -655,6 +691,9 @@ public class SetupWizardDialog extends javax.swing.JDialog {
     private javax.swing.JPasswordField passwordTextField;
     private javax.swing.JLabel personalDataLabel;
     private javax.swing.JPanel personalDataPanel;
+    private javax.swing.JCheckBox protectDeviceKeyCheckbox;
+    private javax.swing.JLabel protectDeviceKeyLabel;
+    private javax.swing.JPanel protectDeviceKeyPanel;
     private javax.swing.JButton resetDeviceNameButton;
     private javax.swing.JLabel summaryLabel;
     private javax.swing.JPanel summaryPanel;
