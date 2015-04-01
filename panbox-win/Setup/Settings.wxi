@@ -9,7 +9,7 @@
   <!-- When creating a new release, only change the ProductId below (we use major updates only). -->
   <!-- Note: For the lifetime of a product, through all of its incarnations, the UpgradeCode should never change. -->
   <?define UpgradeCode="F10554B5-7B3D-4642-978E-5D43DADCF226"?>
-  <?define ProductId="75E3B817-501D-4B5D-A4A7-DB69C2FC8616"?>
+  <?define ProductId="7F4AB699-96DD-40CF-A3A4-8388D56916DA"?>
 
   <!-- It should normally not be necessary to change something below this line -->
   <?define Product="Panbox" ?>
@@ -36,5 +36,5 @@
       </DirectoryRef>
     </Fragment>
   -->
-  <?define JreFilesDir="..\..\..\win-installer-dependencies\jre\jre1.8.0_31" ?>
+  <?define JreFilesDir="..\..\..\win-installer-dependencies\jre\jre1.8.0_40" ?>
 </Include>
