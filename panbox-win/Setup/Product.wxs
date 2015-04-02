@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
 
   <?include "Settings.wxi" ?>
 
@@ -153,6 +154,9 @@
       </Component>
       <Component Id="panbox_win.jar">
         <File Source="$(var.DistDir)\panbox-win.jar" />
+        
+        <!-- Adjust local windows firewall in order to let PanBox access the local network ports for LAN pairing -->
+        <fire:FirewallException Id="panbox_firewall" Name="PanBox firewall exceptions" Program="[JreFolder]\bin\javaw.exe" Scope="localSubnet" />
       </Component>
       <Component Id="panbox_splashscreen.png">
         <File Source="$(var.DistDir)\panbox_splashscreen.png" />
