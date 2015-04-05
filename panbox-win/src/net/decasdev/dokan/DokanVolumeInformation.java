@@ -10,27 +10,39 @@ package net.decasdev.dokan;
 
 public class DokanVolumeInformation {
 
-    public int fileSystemFlags;
-    public String fileSystemName;
-    public int maximumComponentLength;
-    public String volumeName;
-    public int volumeSerialNumber;
+	public static final int FILE_CASE_SENSITIVE_SEARCH = 1;
+	public static final int FILE_CASE_PRESERVED_NAMES = 2;
+	public static final int FILE_SUPPORTS_REMOTE_STORAGE = 256;
+	public static final int FILE_UNICODE_ON_DISK = 4;
+	public static final int FILE_PERSISTENT_ACLS = 8;
 
-    public DokanVolumeInformation() {
-    }
+	public int fileSystemFlags;
+	public String fileSystemName;
+	public int maximumComponentLength;
+	public String volumeName;
+	public int volumeSerialNumber;
 
-    public DokanVolumeInformation(final String volumeName, final String fileSystemName, final int maximumComponentLength,
-            final int serialNumber) {
-        this.volumeName = volumeName;
-        this.fileSystemName = fileSystemName;
-        this.maximumComponentLength = maximumComponentLength;
-        volumeSerialNumber = serialNumber;
-    }
+	public DokanVolumeInformation() {
+	}
 
-    @Override
-    public String toString() {
-        return "DokanVolumeInformation(" + "volumeName=" + volumeName + "," + "volumeSerialNumber=" + volumeSerialNumber + ","
-                + "maximumComponentLength=" + maximumComponentLength + "," + "fileSystemFlags=" + fileSystemFlags + ","
-                + "fileSystemName=" + fileSystemName + ")";
-    }
+	public DokanVolumeInformation(final String volumeName,
+			final String fileSystemName, final int maximumComponentLength,
+			final int serialNumber) {
+		this.fileSystemFlags = FILE_CASE_SENSITIVE_SEARCH
+				| FILE_CASE_PRESERVED_NAMES | FILE_SUPPORTS_REMOTE_STORAGE
+				| FILE_UNICODE_ON_DISK | FILE_PERSISTENT_ACLS;
+		this.volumeName = volumeName;
+		this.fileSystemName = fileSystemName;
+		this.maximumComponentLength = maximumComponentLength;
+		this.volumeSerialNumber = serialNumber;
+	}
+
+	@Override
+	public String toString() {
+		return "DokanVolumeInformation(" + "volumeName=" + volumeName + ","
+				+ "volumeSerialNumber=" + volumeSerialNumber + ","
+				+ "maximumComponentLength=" + maximumComponentLength + ","
+				+ "fileSystemFlags=" + fileSystemFlags + ","
+				+ "fileSystemName=" + fileSystemName + ")";
+	}
 }
