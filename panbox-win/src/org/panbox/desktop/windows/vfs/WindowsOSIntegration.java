@@ -24,7 +24,7 @@
  * will apply to all the product.
  * 
  */
-package org.panbox.desktop.windows.service;
+package org.panbox.desktop.windows.vfs;
 
 import java.lang.reflect.InvocationTargetException;
 

@@ -23,7 +23,7 @@ import org.panbox.desktop.common.vfs.backend.IRootVolume;
 import org.panbox.desktop.common.vfs.backend.VFSShare;
 import org.panbox.desktop.common.vfs.backend.VirtualRootVolume;
 import org.panbox.desktop.common.vfs.backend.dropbox.DropboxVirtualVolume;
-import org.panbox.desktop.windows.service.VFSManager;
+import org.panbox.desktop.windows.vfs.VFSManager;
 
 public class PanboxWindowsService extends AbstractPanboxService {
 

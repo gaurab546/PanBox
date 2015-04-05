@@ -24,7 +24,7 @@
  * will apply to all the product.
  * 
  */
-package org.panbox.desktop.windows.service;
+package org.panbox.desktop.windows.vfs;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -33,8 +33,6 @@ import javax.naming.ConfigurationException;
 
 import org.panbox.Settings;
 import org.panbox.desktop.common.vfs.PanboxFS;
-import org.panbox.desktop.windows.vfs.DokanUserFS;
-import org.panbox.desktop.windows.vfs.PanboxFSWindows;
 
 public class VFSManager {
 
