@@ -762,7 +762,9 @@ public class AddShareDialog extends javax.swing.JDialog {
 							@Override
 							public void mouseClicked(MouseEvent e) {
 								try {
-									DesktopApi.browse(new URI("https://support.sirrix.com/otrs/index.pl?Action=AgentFAQZoom;ItemID=141"));
+									DesktopApi
+											.browse(new URI(
+													"https://support.sirrix.com/otrs/index.pl?Action=AgentFAQZoom;ItemID=141"));
 								} catch (URISyntaxException e1) {
 									logger.warn("AddShareDialog : okButtonActionPerformed : Could not open URL. Please visit manually: https://support.sirrix.com/otrs/index.pl?Action=AgentFAQZoom;ItemID=141");
 								}
@@ -793,18 +795,22 @@ public class AddShareDialog extends javax.swing.JDialog {
 
 	private boolean checkPermissionsOnDirectory(String path) {
 		if (OS.getOperatingSystem().isWindows()) {
+			// TODO: This might cause problems in case a domain account was
+			// used!
+			Account currAcc = Advapi32Util.getAccountByName(Advapi32Util
+					.getUserName());
 			ACCESS_ACEStructure[] aces = Advapi32Util.getFileSecurity(path,
 					false);
 			for (ACCESS_ACEStructure ace : aces) {
 				Account acc = Advapi32Util.getAccountBySid(ace.getSID());
 				if (ace instanceof ACCESS_ALLOWED_ACE) {
-					if (acc.sidString.equals("S-1-5-18")) {
+					if (acc.sidString.equals(currAcc.sidString)) {
 						// Found user SYSTEM who has access to the file. Will
 						// proceed!
 						return true;
 					}
 				} else if (ace instanceof ACCESS_DENIED_ACE) {
-					if (acc.sidString.equals("S-1-5-18")) {
+					if (acc.sidString.equals(currAcc.sidString)) {
 						// Found user SYSTEM who has no access to the file. Will
 						// stop!
 						return false;
@@ -859,7 +865,9 @@ public class AddShareDialog extends javax.swing.JDialog {
 								bundle.getString("AddShareDialog.error.ReadingDropboxSyncDir"));
 			}
 		} catch (IOException e) {
-			logger.error("AddShareDialog : Unable to get list of current dropbox folder shares.", e);
+			logger.error(
+					"AddShareDialog : Unable to get list of current dropbox folder shares.",
+					e);
 		}
 
 	}// GEN-LAST:event_sharesComboBoxActionPerformed
