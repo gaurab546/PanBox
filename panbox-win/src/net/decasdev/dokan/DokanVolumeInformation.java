@@ -22,7 +22,6 @@ public class DokanVolumeInformation {
 	public String volumeName;
 	public int volumeSerialNumber;
 
-
 	public DokanVolumeInformation(final String volumeName,
 			final String fileSystemName, final int maximumComponentLength,
 			final int serialNumber) {
@@ -33,6 +32,12 @@ public class DokanVolumeInformation {
 		this.fileSystemName = fileSystemName;
 		this.maximumComponentLength = maximumComponentLength;
 		this.volumeSerialNumber = serialNumber;
+	}
+
+	public DokanVolumeInformation() {
+		this.fileSystemFlags = FILE_CASE_SENSITIVE_SEARCH
+				| FILE_CASE_PRESERVED_NAMES | FILE_SUPPORTS_REMOTE_STORAGE
+				| FILE_UNICODE_ON_DISK | FILE_PERSISTENT_ACLS;
 	}
 
 	@Override
