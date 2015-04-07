@@ -31,13 +31,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-import org.panbox.OS;
 import org.panbox.core.exception.ObfuscationException;
 import org.panbox.core.vfs.backend.VirtualFile;
 import org.panbox.desktop.common.gui.PanboxDesktopGUIConstants;
-import org.panbox.desktop.common.utils.DesktopApi;
 import org.panbox.desktop.common.vfs.backend.IRootVolume;
-import org.panbox.desktop.common.vfs.backend.VirtualRootMultiuserVolume;
 import org.panbox.desktop.common.vfs.backend.VirtualRootVolume;
 import org.panbox.desktop.common.vfs.backend.exceptions.SecretKeyNotFoundException;
 
@@ -59,12 +56,7 @@ public abstract class PanboxFS {
 
 	public PanboxFS(PanboxFSAdapter backend) {
 		this.vfsAdapter = backend;
-		if (OS.getOperatingSystem().isWindows()
-				&& !DesktopApi.isMultiuserModeDisabled()) {
-			this.backingStorage = VirtualRootMultiuserVolume.getInstance();
-		} else {
-			this.backingStorage = VirtualRootVolume.getInstance();
-		}
+		this.backingStorage = VirtualRootVolume.getInstance();
 	}
 
 	private final boolean _mount(final File mountPoint,

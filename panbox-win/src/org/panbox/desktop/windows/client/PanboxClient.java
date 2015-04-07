@@ -39,12 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
-import java.lang.reflect.InvocationTargetException;
 import java.net.BindException;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
@@ -61,7 +56,6 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.panbox.PanboxConstants;
 import org.panbox.Settings;
-import org.panbox.WinRegistry;
 import org.panbox.core.keymgmt.VolumeParams.VolumeParamsFactory;
 import org.panbox.desktop.common.clipboard.ClipboardHandler;
 import org.panbox.desktop.common.clipboard.ClipboardObserver;
@@ -74,11 +68,6 @@ import org.panbox.desktop.common.sharemgmt.IPanboxService;
 import org.panbox.desktop.common.sharemgmt.ShareManagerException;
 import org.panbox.desktop.common.urihandler.PanboxHTTPServer;
 import org.panbox.desktop.common.utils.DesktopApi;
-import org.panbox.desktop.windows.service.PanboxClientSession;
-import org.panbox.desktop.windows.service.PanboxWindowsServiceInterface;
-import org.panbox.desktop.windows.service.VFSManager;
-
-import com.sun.jna.platform.win32.Advapi32Util;
 
 public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 
@@ -115,44 +104,25 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 		logger.debug("PanboxClient : Class constructed");
 	}
 
+	private static PanboxWindowsService service;
+	
 	public static void main(String[] args) {
 		setGuiLookAndFeel();
 
+		// update MountPath for user
+		try {
+//			Settings.getInstance().setMountDir(System.getProperty("user.home") + File.separator +
+//					"panbox");
+			Settings.getInstance().setMountDir("P:\\");
+		} catch (IllegalArgumentException e) {
+			logger.warn("PanboxClient : Could not read Panbox mount point so that mountDir could not be updated!");
+		}
+
 		try {
 			// Connect to the Panbox service
-			PanboxWindowsServiceInterface service = (PanboxWindowsServiceInterface) Naming
-					.lookup("//localhost/PanboxWindowsService");
-			PanboxClientSession session = null;
-			String username = Advapi32Util.getUserName();
-			setupRegistryForAuthentication();
-			String secretLookup = service.askLogin(username);
-			try {
-				session = service.authLogin(username,
-						getSharedSecretFromRegistry(secretLookup));
-				if (session == null) {
-					throw new IllegalAccessException();
-				}
-			} catch (IllegalAccessException e) {
-				logger.error("PanboxClient : Authentication on service failed!");
-				JOptionPane
-						.showMessageDialog(
-								null,
-								bundle.getString("client.startup.serviceAuthFailed.message"),
-								bundle.getString("client.startup.serviceAuthFailed.title"),
-								JOptionPane.ERROR_MESSAGE);
-				System.exit(DesktopApi.EXIT_ERR_SERVICE_AUTH_FAILED);
-			}
-			session.setService(service);
-			PanboxClient client = new PanboxClient(session);
-
-			// update MountPath for user
-			try {
-				Settings.getInstance().setMountDir(
-						VFSManager.getMountPoint() + ":" + File.separator
-								+ System.getProperty("user.name"));
-			} catch (IllegalArgumentException e) {
-				logger.warn("PanboxClient : Could not read Panbox mount point so that mountDir could not be updated!");
-			}
+			service = new PanboxWindowsService();
+			service.startService();
+			PanboxClient client = new PanboxClient(service);
 
 			// if initialization succeeds, we can create and set the gui
 			PanboxClientGUI gui = new PanboxClientGUI(client);
@@ -180,16 +150,6 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 					bundle.getString("client.startup.error.title"),
 					JOptionPane.ERROR_MESSAGE);
 			System.exit(DesktopApi.EXIT_ERR_SERVICE_NOT_AVAILBLE);
-		} catch (MalformedURLException | RemoteException | NotBoundException e) {
-			logger.error("PanboxClient : Could not connect to Panbox Service.",
-					e);
-			JOptionPane
-					.showMessageDialog(
-							null,
-							bundle.getString("client.startup.couldNotConnectService.message"),
-							bundle.getString("client.startup.couldNotConnectService.title"),
-							JOptionPane.ERROR_MESSAGE);
-			System.exit(DesktopApi.EXIT_ERR_SERVICE_NOT_AVAILBLE);
 		} catch (UnsatisfiedLinkError e) {
 			logger.error("PanboxClient : Could not find a specified library.",
 					e);
@@ -207,42 +167,6 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 					bundle.getString("client.startup.error.title"),
 					JOptionPane.ERROR_MESSAGE);
 			System.exit(DesktopApi.EXIT_ERR_UNKNOWN);
-		}
-	}
-
-	private static void setupRegistryForAuthentication() {
-		try {
-			WinRegistry.deleteKey(WinRegistry.HKEY_CURRENT_USER,
-					"SOFTWARE\\Panbox.org\\Panbox\\session");
-		} catch (IllegalArgumentException | IllegalAccessException
-				| InvocationTargetException e) {
-			// ignore
-		}
-
-		try {
-			WinRegistry.createKey(WinRegistry.HKEY_CURRENT_USER,
-					"SOFTWARE\\Panbox.org\\Panbox\\session");
-		} catch (IllegalArgumentException | IllegalAccessException
-				| InvocationTargetException e) {
-			logger.error(
-					"PanboxClient : Failed to setup registry for authentication. Will continue.",
-					e);
-		}
-	}
-
-	private static String getSharedSecretFromRegistry(String secretLookup)
-			throws IllegalAccessException {
-		try {
-			String value = WinRegistry.readString(
-					WinRegistry.HKEY_CURRENT_USER,
-					"SOFTWARE\\Panbox.org\\Panbox\\session", secretLookup);
-			WinRegistry.deleteValue(WinRegistry.HKEY_CURRENT_USER,
-					"SOFTWARE\\Panbox.org\\Panbox\\session", secretLookup);
-			return value;
-		} catch (IllegalArgumentException | IllegalAccessException
-				| InvocationTargetException e) {
-			throw new IllegalAccessException(
-					"Access denied on service. Could not lookup shared secret!");
 		}
 	}
 
@@ -336,17 +260,10 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 			public void actionPerformed(ActionEvent e) {
 				logger.debug("WIN:PanboxClient : openFolderItem action called");
 				try {
-					String mountPoint = VFSManager.getMountPoint();
+					String mountPoint = Settings.getInstance().getMountDir();
 					// try to open panbox folder
-					if (!DesktopApi.open(new File(mountPoint + ":\\"
-							+ System.getProperty("user.name")))) {
-						// if the folder does not exist, user does not have any
-						// shares! open panbox drive then so user will see that
-						// no folder exists
-						DesktopApi.open(new File(mountPoint + ":\\"));
-					}
-				} catch (IllegalArgumentException | IllegalAccessException
-						| InvocationTargetException e1) {
+					DesktopApi.open(new File(mountPoint));
+				} catch (IllegalArgumentException e1) {
 					JOptionPane.showMessageDialog(null,
 							bundle.getString("tray.CouldNotFindPanboxDrive"),
 							bundle.getString("tray.PanboxError"),
@@ -435,6 +352,8 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 		unmountShares();
 
 		stopClipboardHandler();
+		
+		service.shutdownService();
 	}
 
 	@Override
@@ -596,18 +515,17 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 	public void openShareFolder(String name) {
 		logger.debug("WIN:PanboxClient : openFolderItem action called");
 		try {
-			String mountPoint = VFSManager.getMountPoint();
+			String mountPoint = Settings.getInstance().getMountDir();
 			// try to open panbox folder
 			if (!DesktopApi.open(new File(mountPoint + ":\\"
 					+ System.getProperty("user.name") + File.separator + name))) {
 				// if the folder does not exist, user does not have any
 				// shares! open panbox drive then so user will see that
 				// no folder exists
-				DesktopApi.open(new File(mountPoint + ":\\" + File.separator
+				DesktopApi.open(new File(mountPoint + File.separator
 						+ name));
 			}
-		} catch (IllegalArgumentException | IllegalAccessException
-				| InvocationTargetException e1) {
+		} catch (IllegalArgumentException e1) {
 			JOptionPane.showMessageDialog(null,
 					bundle.getString("tray.CouldNotFindPanboxDrive"),
 					bundle.getString("tray.PanboxError"),

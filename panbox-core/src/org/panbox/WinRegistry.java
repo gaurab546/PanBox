@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
 //Source: http://stackoverflow.com/questions/62289/read-write-to-windows-registry-using-java
 public class WinRegistry {
 
-	private static final Logger logger = Logger.getLogger("org.panbox.desktop.windows");
+	private static final Logger logger = Logger.getLogger("org.panbox");
 
 	public static final int HKEY_CURRENT_USER = 0x80000001;
 	public static final int HKEY_LOCAL_MACHINE = 0x80000002;

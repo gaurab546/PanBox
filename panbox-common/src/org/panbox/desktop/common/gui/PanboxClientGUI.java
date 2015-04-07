@@ -68,7 +68,6 @@ import javax.swing.table.DefaultTableModel;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
-import org.panbox.OS;
 import org.panbox.Settings;
 import org.panbox.core.Utils;
 import org.panbox.core.csp.CSPAdapterFactory;
@@ -461,13 +460,6 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 					.getString("client.disabledPairingSlave"));
 			addDeviceButton.removeMouseListener(addDeviceButton
 					.getMouseListeners()[0]);
-		}
-
-		// Don't show these in Windows!
-		if (OS.getOperatingSystem().isWindows()) {
-			panboxFolderLabel.setVisible(false);
-			panboxFolderTextField.setVisible(false);
-			panboxFolderChooseButton.setVisible(false);
 		}
 	}
 
@@ -3380,16 +3372,12 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 			}
 		}
 
-		// Linux only!
-		if (OS.getOperatingSystem().isLinux()) {
-			String newPath = panboxFolderTextField.getText();
-			String oldPath = s.getMountDir();
-			if (!FilenameUtils.equalsNormalizedOnSystem(newPath, oldPath)) {
-				s.setMountDir(newPath);
-				// client.panboxFolderChanged(newPath);
-				restartRequired = true;
-			}
-
+		String newPath = panboxFolderTextField.getText();
+		String oldPath = s.getMountDir();
+		if (!FilenameUtils.equalsNormalizedOnSystem(newPath, oldPath)) {
+			s.setMountDir(newPath);
+			// client.panboxFolderChanged(newPath);
+			restartRequired = true;
 		}
 
 		if (restartRequired) {

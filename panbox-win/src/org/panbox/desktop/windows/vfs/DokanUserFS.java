@@ -111,7 +111,7 @@ public class DokanUserFS implements PanboxFSAdapter, DokanOperations {
 	public AbstractFileInfo createFileInfo(String fileName,
 			boolean isDirectory, long fileSize, long creationTime,
 			long lastAccessTime, long lastWriteTime, long attr,
-			boolean isSymbolic) {
+			boolean isSymbolic) {		
 		return new FileInfo(fileName, isDirectory, fileSize, creationTime,
 				lastAccessTime, lastWriteTime);
 	}
@@ -364,7 +364,9 @@ public class DokanUserFS implements PanboxFSAdapter, DokanOperations {
 		logger.debug(getClass().getName()
 				+ " : onGetVolumeInformation (volumeName: " + volumeName
 				+ ", fileInfo: " + fileInfo + ")");
-		return panboxFS.getVolumeInformation(volumeName, fileInfo);
+		DokanVolumeInformation volInfo = panboxFS.getVolumeInformation(volumeName, fileInfo);
+		logger.debug(getClass().getName() + " : onGetVolumeInformation returned: " + volInfo);
+		return volInfo;
 	}
 
 	@Override
@@ -379,7 +381,7 @@ public class DokanUserFS implements PanboxFSAdapter, DokanOperations {
 	@Override
 	public void onMoveFile(String existingFileName, String newFileName,
 			boolean replaceExisiting, DokanFileInfo fileInfo)
-			throws DokanOperationException {
+			throws DokanOperationException {		
 		logger.debug(getClass().getName() + " : onMoveFile (existingFileName: "
 				+ existingFileName + ", newFileName: " + newFileName
 				+ ", replaceExisiting: " + replaceExisiting + ", fileInfo: "
