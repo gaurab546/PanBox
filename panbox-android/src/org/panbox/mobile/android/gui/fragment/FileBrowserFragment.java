@@ -443,6 +443,7 @@ public class FileBrowserFragment extends Fragment implements
 	public void setPath(String path) {
 		this.path = path;
 	}
+
 	public String getViewPath() {
 		return viewPath;
 	}
@@ -450,7 +451,7 @@ public class FileBrowserFragment extends Fragment implements
 	public void setViewPath(String viewPath) {
 		this.viewPath = viewPath;
 	}
-	
+
 	@Override
 	public void onStart() {
 		Log.v("FileBrowserFragment:", "in onStart()");
@@ -582,8 +583,9 @@ public class FileBrowserFragment extends Fragment implements
 															// EncRandomAccessFile
 				rafc.open();
 				if ((shareKey = panbox.getCachedShareKey()) == null)
-					throw new FileEncryptionException("The share key is not set");
-				
+					throw new FileEncryptionException(
+							"The share key is not set");
+
 				rafc.initWithShareKey(shareKey.key);
 				EncRandomAccessInputStream encryptedInputStream = new EncRandomAccessInputStream(
 						rafc); // creates an inputsream of encrypted file
@@ -835,7 +837,8 @@ public class FileBrowserFragment extends Fragment implements
 						.getPublicKeyForDevice(deviceName);
 
 				PrivateKey privateKeyForDevice = identity
-						.getPrivateKeyForDevice(deviceName);
+						.getPrivateKeyForDevice(
+								KeyConstants.OPEN_KEYSTORE_PASSWORD, deviceName);
 
 				String destination = settings.getConfDir() + File.separator
 						+ Volume.SPL_FILE;
