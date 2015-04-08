@@ -40,7 +40,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.net.BindException;
-import java.rmi.NotBoundException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -177,16 +176,6 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 					bundle.getString("client.startup.error.title"),
 					JOptionPane.ERROR_MESSAGE);
 			System.exit(DesktopApi.EXIT_ERR_SERVICE_NOT_AVAILBLE);
-		} catch (NotBoundException e) {
-			logger.error("PanboxClient : Could not connect to Panbox Service.",
-					e);
-			JOptionPane
-					.showMessageDialog(
-							null,
-							bundle.getString("client.startup.couldNotConnectService.message"),
-							bundle.getString("client.startup.couldNotConnectService.title"),
-							JOptionPane.ERROR_MESSAGE);
-			System.exit(DesktopApi.EXIT_ERR_SERVICE_NOT_AVAILBLE);
 		} catch (UnsatisfiedLinkError e) {
 			logger.error("Could not find a specified library.", e);
 			JOptionPane.showMessageDialog(null,
@@ -232,7 +221,8 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 		logger.info("Finished initialization");
 		if (splash != null) { // Splashscreen is shown!
 			try {
-				// splash.close();
+				splash.close(); // we need to close slpash here because
+								// minimized option could be used
 			} catch (Exception ex) {
 				logger.error("Error closing splash screen.", ex);
 			}
