@@ -246,10 +246,6 @@
       <MergeRef Id="ATLRedist"/>                     <!-- Install ATL runtime environment -->
       <MergeRef Id="CRTRedist"/>                     <!-- Install C/C++ runtime environment -->
     </Feature>
-  
-    <InstallExecuteSequence>
-      <ScheduleReboot After="InstallFinalize"/>
-    </InstallExecuteSequence>  
 
   </Product>
 </Wix>
