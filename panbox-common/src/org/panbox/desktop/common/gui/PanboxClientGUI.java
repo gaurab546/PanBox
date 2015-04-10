@@ -152,8 +152,6 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 
 		initComponents();
 
-		checkIfRemoveDeviceShouldBeEnabled();
-
 		ActionListener changesDetectedActionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -427,10 +425,14 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 							.getDevicePubKeyFingerprint());
 
 					deviceShareList.setModel(client.getDeviceShares(device));
+					
+					checkIfRemoveDeviceShouldBeEnabled();
 				}
 			}
 		});
 		deviceList.setSelectedIndex(0); // always try to select first device
+
+		checkIfRemoveDeviceShouldBeEnabled();
 
 		// expert mode visible/invisible
 		expertModeCheckBoxActionPerformed(null);
@@ -469,9 +471,22 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 					.getString("client.deviceList.removeDevice.disabled")); // NOI18N
 			removeDeviceButton.setEnabled(false);
 		} else {
-			removeDeviceButton.setToolTipText(bundle
-					.getString("client.deviceList.removeDevice")); // NOI18N
-			removeDeviceButton.setEnabled(true);
+			if(deviceList.getSelectedValue() == null) {
+				removeDeviceButton
+				.setToolTipText(bundle
+						.getString("client.deviceList.removeDevice.noDevice")); // NOI18N
+				removeDeviceButton.setEnabled(false);
+			} else if (deviceList.getSelectedValue().getDeviceName()
+							.equals(Settings.getInstance().getDeviceName())) {
+				removeDeviceButton
+						.setToolTipText(bundle
+								.getString("client.deviceList.removeDevice.thisDevice")); // NOI18N
+				removeDeviceButton.setEnabled(false);
+			} else {
+				removeDeviceButton.setToolTipText(bundle
+						.getString("client.deviceList.removeDevice")); // NOI18N
+				removeDeviceButton.setEnabled(true);
+			}
 		}
 	}
 
@@ -2366,6 +2381,8 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 					logger.debug("RemoveDevice : Operation cancled.");
 				}
 			}
+			
+			checkIfRemoveDeviceShouldBeEnabled();
 		} else {
 			logger.error(PanboxClientGUI.class.getName()
 					+ " : Remove device was called even if it should not be possible");
