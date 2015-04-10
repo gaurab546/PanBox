@@ -49,61 +49,6 @@
     <!-- Step 2: Add files to the defined directories -->
     <DirectoryRef Id="TARGETDIR">
       <Directory Id="DesktopFolder" Name="Desktop" />
-      <Component Id="PanboxServiceRegistration">
-        <!-- Registration procrun configuration for windows service -->
-        <RegistryKey Root="HKLM" Key="SOFTWARE\Apache Software Foundation\Procrun 2.0\PanboxService\Parameters\Java" ForceCreateOnInstall="yes">
-          <RegistryValue Type="string" Name="Jvm" Value="[INSTALLLOCATION]jre\bin\client\jvm.dll"/>
-          <RegistryValue Type="string" Name="Classpath" Value=".;[INSTALLLOCATION];[INSTALLLOCATION]lib\*;[INSTALLLOCATION]panbox-win.jar"/>
-          <RegistryValue Type="multiString" Name="Options" Value=""/>
-          <RegistryValue Type="integer" Name="JvmMs" Value="0"/>
-          <RegistryValue Type="integer" Name="JvmMx" Value="0"/>
-          <RegistryValue Type="integer" Name="JvmSs" Value="0"/>
-        </RegistryKey>
-        <RegistryKey Root="HKLM" Key="SOFTWARE\Apache Software Foundation\Procrun 2.0\PanboxService\Parameters\Log" ForceCreateOnInstall="yes">
-          <RegistryValue Type="string" Name="Path" Value="[INSTALLLOCATION]serviceLog"/>
-          <RegistryValue Type="string" Name="StdError" Value="auto"/>
-          <RegistryValue Type="string" Name="StdOutput" Value="auto"/>
-          <RegistryValue Type="string" Name="Level" Value="Info"/>
-          <RegistryValue Type="string" Name="Prefix" Value="commons-daemon"/>
-        </RegistryKey>
-        <RegistryKey Root="HKLM" Key="SOFTWARE\Apache Software Foundation\Procrun 2.0\PanboxService\Parameters\Start" ForceCreateOnInstall="yes">
-          <RegistryValue Type="string" Name="Class" Value="org.panbox.desktop.windows.service.PanboxWindowsService"/>
-          <RegistryValue Type="string" Name="Method" Value="startService"/>
-          <RegistryValue Type="string" Name="Mode" Value="jvm"/>
-        </RegistryKey>
-        <RegistryKey Root="HKLM" Key="SOFTWARE\Apache Software Foundation\Procrun 2.0\PanboxService\Parameters\Stop" ForceCreateOnInstall="yes">
-          <RegistryValue Type="string" Name="Class" Value="org.panbox.desktop.windows.service.PanboxWindowsService"/>
-          <RegistryValue Type="string" Name="Method" Value="stopService"/>
-          <RegistryValue Type="string" Name="Mode" Value="jvm"/>
-        </RegistryKey>
-        <!-- Registration windows service -->
-        <RegistryKey Root="HKLM" Key="SYSTEM\CurrentControlSet\services\PanboxService" ForceCreateOnInstall="yes">
-          <RegistryValue Type="integer" Name="Type" Value="16"/>
-          <RegistryValue Type="integer" Name="Start" Value="2"/>
-          <RegistryValue Type="integer" Name="ErrorControl" Value="1"/>
-          <RegistryValue Type="string" Name="ImagePath" Value="prunsrv.exe //RS//PanboxService"/>
-          <RegistryValue Type="string" Name="DisplayName" Value="Panbox Service"/>
-          <RegistryValue Type="multiString" Name="DependsOnService" Value="Tcpip Afd"/>
-          <RegistryValue Type="string" Name="ObjectName" Value="LocalSystem"/>
-          <?if $(sys.BUILDARCH)=x64?> <!-- Only for 64bit systems. Otherwise the service will not find its configuration in the SysWOW64 section -->
-            <RegistryValue Type="integer" Name="WOW64" Value="1"/>
-          <?endif?>
-        </RegistryKey>
-        <RegistryKey Root="HKLM" Key="SYSTEM\CurrentControlSet\services\PanboxService\Parameters" ForceCreateOnInstall="yes" />
-      </Component>
-      <Component Id="PanboxServiceRegistration64">
-        <RegistryKey Root="HKLM" Key="SYSTEM\CurrentControlSet\services\PanboxService" ForceCreateOnInstall="yes">
-            <RegistryValue Type="integer" Name="WOW64" Value="1"/>
-        </RegistryKey>
-        <Condition><![CDATA[Not Installed AND VersionNT64]]></Condition>
-      </Component>
-      <Component Id="PanboxServiceConfiguration">
-        <RegistryKey Root="HKLM" Key="Software\$(var.Company)\$(var.Product)" ForceCreateOnInstall="yes">
-          <RegistryValue Type="integer" Name="installed" Value="1"/>
-          <RegistryValue Type="string" Name="MountPoint" Value="P"/>
-          <RegistryValue Type="string" Name="debugMode" Value="false"/>
-        </RegistryKey>
-      </Component>
     </DirectoryRef>
     
     <!-- System-service related files -->
@@ -111,12 +56,6 @@
       <Component Id="PathVariable" Guid="107FDD47-5CFC-4252-ABD9-FF3DC19D70F7" Permanent="yes">
         <CreateFolder/>
         <Environment Id="PATH" Name="PATH" Value="[SystemFolder]" Permanent="yes" Part="last" Action="set" System="yes" />
-      </Component>
-      <Component Id="prunmgr.exe" Permanent="yes">
-        <File Source="$(var.DistDir)\prunmgr.exe" />
-      </Component>
-      <Component Id="prunsrv.exe" Permanent="yes">
-        <File Source="$(var.DistDir)\prunsrv.exe" />
       </Component>
       <Component Id="JDokan.dll" Permanent="yes">
         <File Source="$(var.DistDir)\JDokan.dll" />
@@ -257,15 +196,8 @@
                   Arguments="-cp &quot;lib\*;panbox-win.jar&quot; -splash:panbox_splashscreen.png org.panbox.desktop.windows.client.PanboxClient"
                   WorkingDirectory="INSTALLLOCATION"
                   Icon="Panbox.ico" />
-        <Shortcut Id="PanboxAdminShortcut"
-                  Name="$(var.Product) VFS Configuration Utility"
-                  Description="Admin Panbox VFS configuration utility"
-                  Target="[INSTALLLOCATION]jre\bin\javaw.exe"
-                  Arguments="-cp &quot;lib\*;panbox-win.jar&quot; org.panbox.desktop.windows.client.PanboxAdminConfigurator"
-                  WorkingDirectory="INSTALLLOCATION"
-                  Icon="Panbox.ico" />
         <RemoveFolder Id="PanboxProgramsFolder" On="uninstall"/>
-        <RegistryValue Root="HKCU" Key="Software\$(var.Company)\$(var.Product)" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKLM" Key="Software\$(var.Company)\$(var.Product)" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
     </DirectoryRef>
     
@@ -275,9 +207,6 @@
       
       <ComponentRef Id="PanboxShortcuts" />
       <ComponentRef Id="PathVariable" />
-      <ComponentRef Id="PanboxServiceRegistration" />
-      <ComponentRef Id="PanboxServiceRegistration64" />
-      <ComponentRef Id="PanboxServiceConfiguration" />
       
       <ComponentRef Id="JDokan.dll" />
       <ComponentRef Id="jniopencv_core.dll" />
@@ -314,8 +243,6 @@
       <ComponentRef Id="videoinput.jar" />
       <ComponentRef Id="zxingcore.jar" />
       <ComponentRef Id="zxingjavase.jar" />
-      <ComponentRef Id="prunmgr.exe" />
-      <ComponentRef Id="prunsrv.exe" />
       <MergeRef Id="ATLRedist"/>                     <!-- Install ATL runtime environment -->
       <MergeRef Id="CRTRedist"/>                     <!-- Install C/C++ runtime environment -->
     </Feature>
