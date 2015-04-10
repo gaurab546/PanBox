@@ -28,8 +28,8 @@ package org.panbox.desktop.common.gui;
 
 /**
  * Created by Dominik Spychalski on 02.12.14.
+ * Modified and fixed by Clemens A. Schulz on 10.04.15
  */
-import org.panbox.PanboxConstants;
 import org.panbox.desktop.common.PanboxDesktopConstants;
 
 import java.awt.*;
@@ -106,7 +106,7 @@ public class AboutWindow extends javax.swing.JFrame {
 	public String getVersion() {
 		String ret = "";
 
-		for (int i = 0; i < PanboxConstants.PANBOX_VERSION.length; i++) {
+		for (int i = 0; i < PanboxDesktopConstants.PANBOX_VERSION.length; i++) {
 			ret += (char) PanboxDesktopConstants.PANBOX_VERSION[i];
 		}
 		return ret;
