@@ -651,11 +651,14 @@ public class ShareManagerImpl implements IShareManager {
 
 				return resultShare;
 			} catch (SQLException | NoSuchAlgorithmException | IOException e) {
-				logger.error("ShareManagerImpl : addNewShare : Already logging exception: ", e);
+				logger.error(
+						"ShareManagerImpl : addNewShare : Already logging exception: ",
+						e);
 
 				try {
 					// in case of error we need to remove the share again
-					removeShare(share.getName(), share.getPath(), share.getType());
+					removeShare(share.getName(), share.getPath(),
+							share.getType());
 
 					if (shareFolder.exists() && shareDirCreated) {
 						FileUtils.deleteDirectoryTree(shareFolder);
@@ -668,11 +671,14 @@ public class ShareManagerImpl implements IShareManager {
 
 			} catch (ShareMetaDataException | UnrecoverableKeyException
 					| UnknownOwnerException e) {
-				logger.error("ShareManagerImpl : addNewShare : Already logging exception: ", e);
+				logger.error(
+						"ShareManagerImpl : addNewShare : Already logging exception: ",
+						e);
 
 				try {
 					// in case of error we need to remove the share again
-					removeShare(share.getName(), share.getPath(), share.getType());
+					removeShare(share.getName(), share.getPath(),
+							share.getType());
 
 					if (shareFolder.exists() && shareDirCreated) {
 						FileUtils.deleteDirectoryTree(shareFolder);
@@ -798,13 +804,22 @@ public class ShareManagerImpl implements IShareManager {
 
 			if (password != null) {
 				// password was entered
-				p = p.setPrivateDeviceKey(identity.getPrivateKeyForDevice(
-						password, deviceName));
+				try {
+					p = p.setPrivateDeviceKey(identity.getPrivateKeyForDevice(
+							password, deviceName));
+				} catch (UnrecoverableKeyException e) {
+					p = p.setPrivateDeviceKey(identity.getPrivateKeyForDevice(
+							KeyConstants.OPEN_KEYSTORE_PASSWORD, deviceName));
+				}
 			} else {
 				// password was not entered! Try default one!
 				try {
 					p = p.setPrivateDeviceKey(identity.getPrivateKeyForDevice(
 							KeyConstants.OPEN_KEYSTORE_PASSWORD, deviceName));
+					// Looks like the configuration of deviceKeyProtection
+					// has been changed! We need to set this option to true
+					// for next startup!
+					Settings.getInstance().setProtectedDeviceKey(false);
 				} catch (UnrecoverableKeyException e) {
 					logger.warn("Could not get device key with standard password, but standard password was configured.");
 
@@ -1097,11 +1112,33 @@ public class ShareManagerImpl implements IShareManager {
 			password = PasswordEnterDialog
 					.invoke(PasswordEnterDialog.PermissionType.SHARE);
 		}
+
 		p.setKeys(identity, password)
 				.setPublicDeviceKey(identity.getPublicKeyForDevice(deviceName))
-				.setPrivateDeviceKey(
-						identity.getPrivateKeyForDevice(password, deviceName))
 				.setUserAlias(identity.getEmail());
+
+		try {
+			if (Settings.getInstance().isProtectedDeviceKey()) {
+				p.setPrivateDeviceKey(identity.getPrivateKeyForDevice(password,
+						deviceName));
+			} else {
+				p = p.setPrivateDeviceKey(identity.getPrivateKeyForDevice(
+						KeyConstants.OPEN_KEYSTORE_PASSWORD, deviceName));
+			}
+		} catch (UnrecoverableKeyException e) {
+			if (Settings.getInstance().isProtectedDeviceKey()) {
+				p.setPrivateDeviceKey(identity.getPrivateKeyForDevice(
+						KeyConstants.OPEN_KEYSTORE_PASSWORD, deviceName));
+				Settings.getInstance().setProtectedDeviceKey(false);
+				logger.info("ShareManager : createNewShare : Updated device key protection (disabled)!");
+			} else {
+				p = p.setPrivateDeviceKey(identity.getPrivateKeyForDevice(
+						password, deviceName));
+				Settings.getInstance().setProtectedDeviceKey(true);
+				logger.info("ShareManager : createNewShare : Updated device key protection (enabled)!");
+			}
+		}
+
 		pbShare = service.acceptInviation(p);
 		return pbShare;
 	}
@@ -1168,11 +1205,30 @@ public class ShareManagerImpl implements IShareManager {
 					.setDeviceAlias(deviceName)
 					.setPublicDeviceKey(
 							identity.getPublicKeyForDevice(deviceName))
-					.setKeys(identity, password)
-					.setPrivateDeviceKey(
-							identity.getPrivateKeyForDevice(password,
-									deviceName)).setShareName(shareName)
-					.setPath(sharePath).setType(type);
+					.setKeys(identity, password).setPath(sharePath)
+					.setType(type).setShareName(shareName);
+
+			try {
+				if (Settings.getInstance().isProtectedDeviceKey()) {
+					p.setPrivateDeviceKey(identity.getPrivateKeyForDevice(
+							password, deviceName));
+				} else {
+					p = p.setPrivateDeviceKey(identity.getPrivateKeyForDevice(
+							KeyConstants.OPEN_KEYSTORE_PASSWORD, deviceName));
+				}
+			} catch (UnrecoverableKeyException e) {
+				if (Settings.getInstance().isProtectedDeviceKey()) {
+					p.setPrivateDeviceKey(identity.getPrivateKeyForDevice(
+							KeyConstants.OPEN_KEYSTORE_PASSWORD, deviceName));
+					Settings.getInstance().setProtectedDeviceKey(false);
+					logger.info("ShareManager : createNewShare : Updated device key protection (disabled)!");
+				} else {
+					p = p.setPrivateDeviceKey(identity.getPrivateKeyForDevice(
+							password, deviceName));
+					Settings.getInstance().setProtectedDeviceKey(true);
+					logger.info("ShareManager : createNewShare : Updated device key protection (enabled)!");
+				}
+			}
 
 			metaDataFile.mkdirs();
 
