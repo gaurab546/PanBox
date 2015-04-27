@@ -94,6 +94,7 @@
     <string name="pb_user">User</string>
     <string name="pb_contacts_successfully_imported">"Contacts are successfully imported"</string>
     <string name="pb_refresh_content">"Refresh list"</string>
+    <string name="pb_upload_content">"Upload file"</string>
     <string name="pb_name">"Name:"</string>
     <string name="pb_email">"Email:"</string>
     <string name="pb_curr_user">"Current user: "</string>

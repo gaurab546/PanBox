@@ -55,6 +55,7 @@ import android.widget.Toast;
 
 public class DirectoryExplorerActivity extends CustomActionBarActivity implements OnItemClickListener{
 		private boolean isOpenedForExport = false;
+		private boolean isOpenedForUpload = false;
 		private Bundle bundle;
 		private	 LayoutInflater inflater;
 		
@@ -77,7 +78,7 @@ public class DirectoryExplorerActivity extends CustomActionBarActivity implement
 	protected void onCreate(Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);
-		
+		Log.v("DirectoryExplorerActivity:", "in onCreate()");
 		setContentView(R.layout.pb_list_view);
 		this.currentDir = Environment.getExternalStorageDirectory().getPath();
 		
@@ -86,24 +87,33 @@ public class DirectoryExplorerActivity extends CustomActionBarActivity implement
 		
 		bundle = getIntent().getExtras();
 
-		if(bundle!=null && bundle.getString("method").equals("export")){
-			isOpenedForExport = true;
-			LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			LinearLayout chooseLocBtnLayout = (LinearLayout)inflater.inflate(R.layout.pb_choose_dir_button_layout, null);
-			LinearLayout ll = (LinearLayout)findViewById(R.id.pb_listview_parent_layout);
-			ll.addView(chooseLocBtnLayout);
-			Button chooseLocBtn = (Button)findViewById(R.id.pb_choose_location_button);
-			chooseLocBtn.setText(R.string.choose_dir_text);
-			chooseLocBtn.setOnClickListener(new OnClickListener() {				
-				@Override
-				public void onClick(View v) {
-					Intent intent = new Intent();
-					intent.putExtra("targetDir", currentDir);
-					setResult(RESULT_OK, intent);
-					finish();
-				}
-			});
-		} 
+		if(bundle!=null){
+			String method = bundle.getString("method");
+			boolean isUpload = bundle.getBoolean("upload");
+			
+			if(method != null && method.equals("export")){
+		
+				isOpenedForExport = true;
+				LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				LinearLayout chooseLocBtnLayout = (LinearLayout)inflater.inflate(R.layout.pb_choose_dir_button_layout, null);
+				LinearLayout ll = (LinearLayout)findViewById(R.id.pb_listview_parent_layout);
+				ll.addView(chooseLocBtnLayout);
+				Button chooseLocBtn = (Button)findViewById(R.id.pb_choose_location_button);
+				chooseLocBtn.setText(R.string.choose_dir_text);
+				chooseLocBtn.setOnClickListener(new OnClickListener() {				
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent();
+						intent.putExtra("targetDir", currentDir);
+						setResult(RESULT_OK, intent);
+						finish();
+					}
+				});
+			} else if (isUpload == true){
+				isOpenedForUpload = true;
+				Log.v("DirectoryExplorerActivity:onCreate():","opened for upload, set flag");
+			}
+		}
 		
 		getActionBar().hide();
 		
@@ -251,12 +261,18 @@ public class DirectoryExplorerActivity extends CustomActionBarActivity implement
 			currentDir = adapter.getItem(position).getFullPath();
 			displayDirItemObjects(currentDir);
 		}
-		else if(!isOpenedForExport && ( adapter.getItem(position).getItemTypeId() == R.drawable.ic_zip || adapter.getItem(position).getExtension().equals(".vcf" ))){	// if file is a document, then do nothing
+		else if(!isOpenedForExport && !isOpenedForUpload && ( adapter.getItem(position).getItemTypeId() == R.drawable.ic_zip || adapter.getItem(position).getExtension().equals(".vcf" ))){	// if file is a document, then do nothing
 			Intent intent = new Intent();
 			intent.putExtra("fileName", fullPath);
 			setResult(RESULT_OK, intent);
 			finish();
 		} 
+		else if (isOpenedForUpload){
+			Log.v("DirectoryExplorerActivity:onItemClick():","opened for upload");
+			Intent fileBrowserActivity = new Intent(this,FileBrowserActivity.class);
+			fileBrowserActivity.putExtra("uploadFileName", fullPath);
+			startActivity(fileBrowserActivity);
+		}
 //		else if (isOpenedForExport && adapter.getItem(position).getExtension() == ".vcf"){
 //			reuseName = adapter.getItem(position).getName().substring(0,adapter.getItem(position).getName().lastIndexOf("."));
 //			

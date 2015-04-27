@@ -52,6 +52,7 @@ import org.panbox.core.crypto.KeyConstants;
 import org.panbox.core.crypto.Obfuscator;
 import org.panbox.core.crypto.io.AESGCMRandomAccessFileCompat;
 import org.panbox.core.crypto.io.EncRandomAccessInputStream;
+import org.panbox.core.crypto.io.EncRandomAccessOutputStream;
 import org.panbox.core.exception.FileEncryptionException;
 import org.panbox.core.exception.FileIntegrityException;
 import org.panbox.core.exception.ObfuscationException;
@@ -104,6 +105,7 @@ public class FileBrowserFragment extends Fragment implements
 	private final String TAG_CLASS = "FileBrowserFragment:";
 	private final String TAG_GET_FILE = "GetFile:";
 	private final String TAG_SYNC_SHARE_CONTENT = "SyncShareContent:";
+	private final String TAG_UPLOAD_FILE = "UploadFile:";
 
 	private final int ERROR_NOT_OWNER = 0x1;
 	private final int ERROR_COULD_NOT_EXTRACT_KEYS = 0x2;
@@ -118,6 +120,7 @@ public class FileBrowserFragment extends Fragment implements
 	private boolean isGetFileTaskRunning = false;
 	private SyncShareContent shareContentTask;
 	private GetFile getFileTask;
+	private UploadFile uploadFileTask;
 
 	protected Bundle bundle;
 	private PanboxManager panbox;
@@ -129,6 +132,7 @@ public class FileBrowserFragment extends Fragment implements
 	private LinearLayout infoBarContainer;
 	private ListView mainLv = null;
 	private LinearLayout updateButton;
+	private LinearLayout uploadButton;
 	private FileItemAdapter adapter = null;
 	private ArrayList<FileItem> shareContent;
 
@@ -142,7 +146,7 @@ public class FileBrowserFragment extends Fragment implements
 	private String shareName;
 	protected boolean isItemClicked = false;
 
-	private OnTouchListener onUpdateButtonListener;
+	private OnTouchListener onUpdateAndUploadButtonListener;
 
 	private String root;
 	private String viewPath;
@@ -154,7 +158,7 @@ public class FileBrowserFragment extends Fragment implements
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		onUpdateButtonListener = (OnTouchListener) activity;
+		onUpdateAndUploadButtonListener = (OnTouchListener) activity;
 	}
 
 	@Override
@@ -192,9 +196,9 @@ public class FileBrowserFragment extends Fragment implements
 
 	}
 
-	public LinearLayout getUpdateButton() {
-		return updateButton;
-	}
+//	public LinearLayout getUpdateButton() {
+//		return updateButton;
+//	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -221,10 +225,16 @@ public class FileBrowserFragment extends Fragment implements
 			infoBarContainer = (LinearLayout) fragmentLayout
 					.findViewById(R.id.pb_infobar_container);
 
-			updateButton = (LinearLayout) fragmentLayout
-					.findViewById(R.id.pb_update_container);
+			updateButton = (LinearLayout) fragmentLayout.findViewById(R.id.pb_update_container);
+			
+			uploadButton = (LinearLayout) fragmentLayout.findViewById(R.id.pb_upload_container);
+			
+			this.uploadButton.setClickable(true);
+			this.uploadButton.setOnTouchListener(this.onUpdateAndUploadButtonListener);
+			
 			this.updateButton.setClickable(true);
-			this.updateButton.setOnTouchListener(this.onUpdateButtonListener);
+			this.updateButton.setOnTouchListener(this.onUpdateAndUploadButtonListener);
+			
 
 			infoBarLine1 = (LinearLayout) inflater.inflate(
 					R.layout.pb_infobar_line, container, false);
@@ -649,6 +659,93 @@ public class FileBrowserFragment extends Fragment implements
 		}
 	}
 
+	private class UploadFile extends AsyncTask<Void, Void, Boolean> {
+		String fileToUpload;
+		FileBrowserActivity.TaskListener listener;
+		public UploadFile(String fileToUpload, FileBrowserActivity.TaskListener listener){
+			this.fileToUpload = fileToUpload;
+			this.listener = listener;
+		}
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			Log.v(TAG_CLASS + TAG_UPLOAD_FILE, " in onPreExecute()");
+			listener.onPreExecute();
+		}
+		@Override
+		public void onPostExecute(Boolean result) {
+			super.onPostExecute(result);
+			Log.v(TAG_CLASS + TAG_UPLOAD_FILE, " in onPostExecute()");
+			listener.onPostExecute();
+		}
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			Log.v(TAG_CLASS + TAG_UPLOAD_FILE, "uploading file: " + fileToUpload + " to desitnation: " + path);
+			
+			String fileNameToObfuscate = "sergiidev_htc.zip";
+			//panbox.getMyDBCon().uploadFile(fileToUpload, path + File.separator + "filePickerShare" + File.separator + fileToUpload);
+			AbstractObfuscatorFactory aof = null;
+			try {
+				aof = AbstractObfuscatorFactory
+						.getFactory(AndroidObfuscatorFactory.class);
+			} catch (ClassNotFoundException e) {
+				Log.v(TAG_CLASS + TAG_GET_FILE, e.getMessage());
+				accessStatus = ERROR_DEOBFUSCATING;
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				Log.v(TAG_CLASS + TAG_GET_FILE, e.getMessage());
+				accessStatus = ERROR_DEOBFUSCATING;
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				Log.v(TAG_CLASS + TAG_GET_FILE, e.getMessage());
+				accessStatus = ERROR_DEOBFUSCATING;
+				e.printStackTrace();
+			} catch (Exception e) {
+				Log.v(TAG_CLASS + TAG_GET_FILE, e.getMessage());
+				accessStatus = ERROR_DEOBFUSCATING;
+				e.printStackTrace();
+			}
+			try {
+				obfuscator = ((AndroidObfuscatorFactory) aof).getInstance(
+						path, "filePickerShare", panbox.getMyDBCon(), context);
+				//TODO: need to obfuscate only filename
+				String obFileName = obfuscator.obfuscate(fileNameToObfuscate, panbox.getCachedObfuscationKey(), true);
+				
+				Log.v(TAG_CLASS + TAG_UPLOAD_FILE, "obfuscated filename: " + obFileName);
+			} catch (ObfuscationException e) {
+				Log.e("FileBrowserFragment",
+						"Failed to get AndroidObfuscatorFactory.");
+			}
+//			File fileToEncrypt = new File(fileToUpload);
+//			AESGCMRandomAccessFileCompat rafc;
+//			try {
+//				rafc = AESGCMRandomAccessFileCompat
+//						.getInstance(fileToEncrypt, true); // rafc is then an instance of EncRandomAccessFile
+//				rafc.open();			
+//				rafc.initWithShareKey(shareKey.key);
+//				EncRandomAccessOutputStream outStream = new EncRandomAccessOutputStream(rafc);
+//				outStream.write("here bytes of file to be encrypted");
+//				outStream.flush();
+//				outStream.close();
+//			} catch (FileEncryptionException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (FileIntegrityException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} 
+//			
+			return false;
+		}
+		
+	}
+	public void uploadFile(String fileToUpload){
+		uploadFileTask = new UploadFile(fileToUpload,this);
+		uploadFileTask.execute();
+	}
 	private class SyncShareContent extends AsyncTask<Void, Void, Boolean> {
 
 		private FileBrowserActivity.TaskListener listener;

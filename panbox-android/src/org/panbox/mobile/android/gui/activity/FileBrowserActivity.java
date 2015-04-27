@@ -30,6 +30,7 @@ import org.panbox.mobile.android.R;
 import org.panbox.mobile.android.gui.data.PanboxManager;
 import org.panbox.mobile.android.gui.fragment.FileBrowserFragment;
 
+import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -46,6 +47,8 @@ public class FileBrowserActivity extends CustomActionBarActivity implements OnTo
 	    void onPostExecute();
 	}
 	
+	private final int UPLOAD_REQUEST_CODE = 100;
+	private final int UPDATE_REQUEST_CODE = 200;
 	private FileBrowserFragment fbFragment;
 	private FragmentManager fm;
 	private FragmentTransaction ft;
@@ -98,6 +101,7 @@ public class FileBrowserActivity extends CustomActionBarActivity implements OnTo
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		Log.v("FileBrowserActivity:", "in onNewIntent()");
+		
 		String oldShareName = null;
 		highlightActionbarItem(CustomActionBarActivity.ITEMS.FILEBROWSER.getNumVal());
 		
@@ -105,51 +109,60 @@ public class FileBrowserActivity extends CustomActionBarActivity implements OnTo
 		
 		bundle = intent.getExtras();
 		
-		fbFragment = (FileBrowserFragment)fm.findFragmentById(R.id.filebrowser_fragment);
-		
-		if (fbFragment != null) {
-
-			if(fbFragment.getShareContent() == null || fbFragment.getShareContent().isEmpty()) {							
-				Log.v("FileBrowserActivity:onNewIntent()",
-						"removed fragment because file list was empty.");
-				fm.beginTransaction().remove(fbFragment).commit();
-				fbFragment = null;
-			} else if (!lastLanguage.equals(settings.getLanguage()) || !lastAccessToken.equals(settings.getDropboxAuthToken()) ) { // language has changed,
-																// therefore we need to
-																// remove current fragment.	onResume will
-																// then take cares of creating a new fragment								
-				Log.v("FileBrowserActivity:onNewIntent()",
-						"need to remove and add fragment because language has changed");
-				lastLanguage = settings.getLanguage();
-				lastAccessToken = settings.getDropboxAuthToken();
-				bundle = null; // need to remove bundle so that in fragment asyncTask is not started, but rather redirect to shareManagerActivity 
-				fm.beginTransaction().remove(fbFragment).commit();
-				fbFragment = null;
-				Log.v("FileBrowserActivity:",
-						"in onNewIntent(). fragment is removed");
-
-			} else if (bundle != null) { // the user has chosen a new share,
-											// therefore we need to remove
-											// current fragment. onResume will
-											// then take cares of creating a new
-											// fragment
-
-				Log.v("FileBrowserActivity:onNewIntent():", "chosen share is: "
-						+ bundle.getString("chosenShare"));
-
-				oldShareName = fbFragment.getShareName();
-
-				if (oldShareName != null
-						&& oldShareName.equals(bundle.getString("chosenShare"))) {
+		if(bundle != null && bundle.getString("uploadFileName") != null){
+			Log.v("Hurrrrayyyy", "we now can start working on file upload");
+			
+			String fileToUpload = bundle.getString("uploadFileName");
+			Log.v("FileBrowserActivity:", "ready to start uploading file...");
+			if (fbFragment != null)
+				fbFragment.uploadFile(fileToUpload);	
+		}else {
+			fbFragment = (FileBrowserFragment)fm.findFragmentById(R.id.filebrowser_fragment);
+			
+			if (fbFragment != null) {
+	
+				if(fbFragment.getShareContent() == null || fbFragment.getShareContent().isEmpty()) {							
 					Log.v("FileBrowserActivity:onNewIntent()",
-							"no need to remove fragment, since the same share was chosen or fragment already does not exist");
-
-				} else {
+							"removed fragment because file list was empty.");
+					fm.beginTransaction().remove(fbFragment).commit();
+					fbFragment = null;
+				} else if (!lastLanguage.equals(settings.getLanguage()) || !lastAccessToken.equals(settings.getDropboxAuthToken()) ) { // language has changed,
+																	// therefore we need to
+																	// remove current fragment.	onResume will
+																	// then take cares of creating a new fragment								
+					Log.v("FileBrowserActivity:onNewIntent()",
+							"need to remove and add fragment because language has changed");
+					lastLanguage = settings.getLanguage();
+					lastAccessToken = settings.getDropboxAuthToken();
+					bundle = null; // need to remove bundle so that in fragment asyncTask is not started, but rather redirect to shareManagerActivity 
 					fm.beginTransaction().remove(fbFragment).commit();
 					fbFragment = null;
 					Log.v("FileBrowserActivity:",
 							"in onNewIntent(). fragment is removed");
-
+	
+				} else if (bundle != null) { // the user has chosen a new share,
+												// therefore we need to remove
+												// current fragment. onResume will
+												// then take cares of creating a new
+												// fragment
+	
+					Log.v("FileBrowserActivity:onNewIntent():", "chosen share is: "
+							+ bundle.getString("chosenShare"));
+	
+					oldShareName = fbFragment.getShareName();
+	
+					if (oldShareName != null
+							&& oldShareName.equals(bundle.getString("chosenShare"))) {
+						Log.v("FileBrowserActivity:onNewIntent()",
+								"no need to remove fragment, since the same share was chosen or fragment already does not exist");
+	
+					} else {
+						fm.beginTransaction().remove(fbFragment).commit();
+						fbFragment = null;
+						Log.v("FileBrowserActivity:",
+								"in onNewIntent(). fragment is removed");
+	
+					}
 				}
 			}
 		}
@@ -206,7 +219,7 @@ public class FileBrowserActivity extends CustomActionBarActivity implements OnTo
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		v.performClick();
-		
+		Log.v("FileBrowserActivity:onTouch()", "button was clicked");
 		if(v.getId() == R.id.pb_update_container){
 			
 			Log.v("FileBrowserActivity:onTouch()", "update button in FileBrowser was clicked");			
@@ -232,10 +245,27 @@ public class FileBrowserActivity extends CustomActionBarActivity implements OnTo
 				startActivity(fileBrowserActivity);
 			}
 		}
+		if(v.getId() == R.id.pb_upload_container){
+			
+			Log.v("FileBrowserActivity:onTouch()", "upload button in FileBrowser was clicked");			
+			
+			if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				v.setBackgroundResource(R.color.custom_actionbar_item_highlight_bg);
+			}
+			if (event.getAction() == MotionEvent.ACTION_UP) {
+				v.setBackgroundResource(R.color.custom_actionbar_bg);
+				Intent directoryExplorerActivity = new Intent(FileBrowserActivity.this, DirectoryExplorerActivity.class);
+				Bundle b = new Bundle();
+				b.putBoolean("upload", true);
+				directoryExplorerActivity.putExtras(b);
+				directoryExplorerActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				
+				startActivity(directoryExplorerActivity);
+			}
+		}
 		else{
 			super.onTouch(v, event);	//call the onTouch method of the customActionBarActivity
 		}
-		
 		return false;
 	}
 	@Override
@@ -265,4 +295,17 @@ public class FileBrowserActivity extends CustomActionBarActivity implements OnTo
 //	public void setItemClicked(boolean isItemClicked) {
 //		this.isItemClicked = isItemClicked;
 //	}
+
+//	@Override
+//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		Log.v("FileBrowserActivity:", "in onActivityResult()");
+//		if(requestCode == UPLOAD_REQUEST_CODE && resultCode != Activity.RESULT_CANCELED || data != null) {
+//			String fileToUpload = data.getExtras().getString("fileName");
+//			Log.v("FileBrowserActivity:", "ready to start uploading file...");
+//			if (fbFragment != null)
+//				fbFragment.uploadFile(fileToUpload);	
+//		}
+//		super.onActivityResult(requestCode, resultCode, data);
+//	}
+	
 }
