@@ -29,6 +29,7 @@ package org.panbox.mobile.android.gui.fragment;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -550,7 +551,8 @@ public class FileBrowserFragment extends Fragment implements
 			String baseDir;
 
 			String state = Environment.getExternalStorageState();
-
+			baseDir = settings.getConfDir();
+			Log.v("Configuration Dir: ", baseDir);
 			if (!state.equals(Environment.MEDIA_MOUNTED)) {
 
 				Log.v(TAG_CLASS + TAG_GET_FILE,
@@ -681,9 +683,10 @@ public class FileBrowserFragment extends Fragment implements
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			Log.v(TAG_CLASS + TAG_UPLOAD_FILE, "uploading file: " + fileToUpload + " to desitnation: " + path);
-			
-			String fileNameToObfuscate = "sergiidev_htc.zip";
-			//panbox.getMyDBCon().uploadFile(fileToUpload, path + File.separator + "filePickerShare" + File.separator + fileToUpload);
+			String realFileName = fileToUpload.substring(fileToUpload.lastIndexOf("/") + 1, fileToUpload.length());
+			String obfuscatedFileName = null;
+			String ivPath;
+			String iv;
 			AbstractObfuscatorFactory aof = null;
 			try {
 				aof = AbstractObfuscatorFactory
@@ -707,38 +710,67 @@ public class FileBrowserFragment extends Fragment implements
 			}
 			try {
 				obfuscator = ((AndroidObfuscatorFactory) aof).getInstance(
-						path, "filePickerShare", panbox.getMyDBCon(), context);
-				//TODO: need to obfuscate only filename
-				String obFileName = obfuscator.obfuscate(fileNameToObfuscate, panbox.getCachedObfuscationKey(), true);
+						path, shareName, panbox.getMyDBCon(), context);
+
+				String[] obfNameAndIV = obfuscator.obfuscate(realFileName, panbox.getCachedObfuscationKey());
 				
-				Log.v(TAG_CLASS + TAG_UPLOAD_FILE, "obfuscated filename: " + obFileName);
+				obfuscatedFileName = obfNameAndIV[0];
+				ivPath = obfNameAndIV[1];
+				iv = ivPath.substring(ivPath.lastIndexOf("/") + 1, ivPath.length());
+				
+				File ivDir = context.getDir("ivDir", Context.MODE_PRIVATE); //Creating an internal dir;
+				File ivFile = new File(ivDir, iv); //Getting a file within the dir.
+				//TODO: next 2 lines are not necessary
+				FileOutputStream out = new FileOutputStream(ivFile); //Use the stream as usual to write into the file.
+				out.close();
+				Log.v(TAG_CLASS + TAG_UPLOAD_FILE, "obfuscated filename: " + obfuscatedFileName);
+				Log.v(TAG_CLASS + TAG_UPLOAD_FILE, "ivPath: " + ivPath);
+				String locOfIV = ivDir.getAbsolutePath() + File.separator + iv;
+				panbox.getMyDBCon().uploadFile(locOfIV, ivPath);
 			} catch (ObfuscationException e) {
 				Log.e("FileBrowserFragment",
-						"Failed to get AndroidObfuscatorFactory.");
+						"Failed to get AndroidObfuscatorFactory.", e);
+			} catch (FileNotFoundException e) {
+				Log.e("FileBrowserFragment",
+						"Failed to get create new file.", e);
+			} catch (IOException e) {
+				Log.e("FileBrowserFragment",
+						"Failed to create iv.", e);
 			}
-//			File fileToEncrypt = new File(fileToUpload);
-//			AESGCMRandomAccessFileCompat rafc;
-//			try {
-//				rafc = AESGCMRandomAccessFileCompat
-//						.getInstance(fileToEncrypt, true); // rafc is then an instance of EncRandomAccessFile
-//				rafc.open();			
-//				rafc.initWithShareKey(shareKey.key);
-//				EncRandomAccessOutputStream outStream = new EncRandomAccessOutputStream(rafc);
-//				outStream.write("here bytes of file to be encrypted");
-//				outStream.flush();
-//				outStream.close();
-//			} catch (FileEncryptionException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (FileIntegrityException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} 
-//			
-			return false;
+			File fileToEncrypt = new File(fileToUpload);
+			File encDir = context.getDir("encDir", Context.MODE_PRIVATE); //Creating an internal dir;
+			File fileEncrypted = new File(encDir, obfuscatedFileName); //Getting a file within the dir.
+			try {
+				FileOutputStream out = new FileOutputStream(fileEncrypted); //Use the stream as usual to write into the file.
+				out.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			AESGCMRandomAccessFileCompat rafc;
+			try {
+				EncRandomAccessOutputStream outStream = new EncRandomAccessOutputStream(
+						AESGCMRandomAccessFileCompat.create(0, shareKey.key, fileEncrypted));
+
+				BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileToEncrypt));
+				byte[] buf = new byte[1000];
+				int bytesRead = 0;
+				while( bis.read(buf) != -1){
+					outStream.write(buf);
+				}
+				outStream.flush();
+				outStream.close();
+
+				panbox.getMyDBCon().uploadFile(fileEncrypted.getAbsolutePath(), path + File.separator + obfuscatedFileName);
+			} catch (FileEncryptionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return true;
 		}
 		
 	}
