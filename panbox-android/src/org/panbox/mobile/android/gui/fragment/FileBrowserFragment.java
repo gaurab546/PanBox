@@ -718,28 +718,31 @@ public class FileBrowserFragment extends Fragment implements
 				ivPath = obfNameAndIV[1];
 				iv = ivPath.substring(ivPath.lastIndexOf("/") + 1, ivPath.length());
 				
-				File ivDir = context.getDir("ivDir", Context.MODE_PRIVATE); //Creating an internal dir;
+				File ivDir = context.getDir("iv_dir", Context.MODE_PRIVATE); //Creating an internal dir;
 				File ivFile = new File(ivDir, iv); //Getting a file within the dir.
-				//TODO: next 2 lines are not necessary
+				//TODO: emptying the file with help of next two lines is a workaround that is necessary to prevent file not empty exception thrown by AESGCMRandomAccessFileCompat. 
+				// Must be removed as soon as open() of AESGCMRandomAccessFileCompat is used
 				FileOutputStream out = new FileOutputStream(ivFile); //Use the stream as usual to write into the file.
 				out.close();
 				Log.v(TAG_CLASS + TAG_UPLOAD_FILE, "obfuscated filename: " + obfuscatedFileName);
 				Log.v(TAG_CLASS + TAG_UPLOAD_FILE, "ivPath: " + ivPath);
-				String locOfIV = ivDir.getAbsolutePath() + File.separator + iv;
+				String locOfIV = ivFile.getAbsolutePath();
 				panbox.getMyDBCon().uploadFile(locOfIV, ivPath);
 			} catch (ObfuscationException e) {
-				Log.e("FileBrowserFragment",
+				Log.e(TAG_CLASS + TAG_UPLOAD_FILE,
 						"Failed to get AndroidObfuscatorFactory.", e);
 			} catch (FileNotFoundException e) {
-				Log.e("FileBrowserFragment",
+				Log.e(TAG_CLASS + TAG_UPLOAD_FILE,
 						"Failed to get create new file.", e);
 			} catch (IOException e) {
-				Log.e("FileBrowserFragment",
+				Log.e(TAG_CLASS + TAG_UPLOAD_FILE,
 						"Failed to create iv.", e);
 			}
 			File fileToEncrypt = new File(fileToUpload);
-			File encDir = context.getDir("encDir", Context.MODE_PRIVATE); //Creating an internal dir;
-			File fileEncrypted = new File(encDir, obfuscatedFileName); //Getting a file within the dir.
+			File encDir = context.getDir("enc_dir", Context.MODE_PRIVATE);
+			File fileEncrypted = new File(encDir, obfuscatedFileName);
+			//TODO: emptying the file with help of next try block is a workaround that is necessary to prevent file not empty exception thrown by AESGCMRandomAccessFileCompat. 
+			// Must be removed as soon as open() of AESGCMRandomAccessFileCompat is used
 			try {
 				FileOutputStream out = new FileOutputStream(fileEncrypted); //Use the stream as usual to write into the file.
 				out.close();
@@ -747,20 +750,18 @@ public class FileBrowserFragment extends Fragment implements
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			AESGCMRandomAccessFileCompat rafc;
-			try {
-				EncRandomAccessOutputStream outStream = new EncRandomAccessOutputStream(
-						AESGCMRandomAccessFileCompat.create(0, shareKey.key, fileEncrypted));
 
-				BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileToEncrypt));
+			BufferedInputStream bis = null;
+			EncRandomAccessOutputStream outStream = null;
+			try {
+				outStream = new EncRandomAccessOutputStream(
+						AESGCMRandomAccessFileCompat.create(0, shareKey.key, fileEncrypted));
+				bis = new BufferedInputStream(new FileInputStream(fileToEncrypt));
 				byte[] buf = new byte[1000];
-				int bytesRead = 0;
 				while( bis.read(buf) != -1){
 					outStream.write(buf);
 				}
 				outStream.flush();
-				outStream.close();
-
 				panbox.getMyDBCon().uploadFile(fileEncrypted.getAbsolutePath(), path + File.separator + obfuscatedFileName);
 			} catch (FileEncryptionException e) {
 				// TODO Auto-generated catch block
@@ -768,6 +769,16 @@ public class FileBrowserFragment extends Fragment implements
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} finally {
+				try {
+					if (outStream != null)
+						outStream.close();
+					if (bis != null)
+						bis.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			
 			return true;
