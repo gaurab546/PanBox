@@ -228,7 +228,7 @@ public class FileBrowserActivity extends CustomActionBarActivity implements OnTo
 				v.setBackgroundResource(R.color.custom_actionbar_item_highlight_bg);
 			}
 			if (event.getAction() == MotionEvent.ACTION_UP) {
-				v.setBackgroundResource(R.color.custom_actionbar_bg);
+				v.setBackgroundResource(R.color.custom_actionbar_item_click_bg);
 				Intent fileBrowserActivity = new Intent(FileBrowserActivity.this, FileBrowserActivity.class);
 				bundle = new Bundle();
 				bundle.putString("chosenShare", fbFragment.getShareName());
@@ -253,7 +253,7 @@ public class FileBrowserActivity extends CustomActionBarActivity implements OnTo
 				v.setBackgroundResource(R.color.custom_actionbar_item_highlight_bg);
 			}
 			if (event.getAction() == MotionEvent.ACTION_UP) {
-				v.setBackgroundResource(R.color.custom_actionbar_bg);
+				v.setBackgroundResource(R.color.custom_actionbar_item_click_bg);
 				Intent directoryExplorerActivity = new Intent(FileBrowserActivity.this, DirectoryExplorerActivity.class);
 				Bundle b = new Bundle();
 				b.putBoolean("upload", true);
