@@ -237,14 +237,7 @@ public abstract class PanboxClient {
 				splashGraphics.drawString(splashLoading, 120, 250);
 				splash.update();
 			} catch (IllegalStateException e) {
-				logger.error(
-						"Encountered error while trying to render splash screen. Will try to close ..",
-						e);
-				try {
-					splash.close();
-				} catch (Exception ex) {
-					logger.error("Error closing splash screen.", ex);
-				}
+				// Splash screen has been closed already by showing dialog!
 			}
 		}
 	}

@@ -39,7 +39,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.panbox.PanboxConstants;
 import org.panbox.core.crypto.CryptCore;
 import org.panbox.core.crypto.KeyConstants;
 import org.panbox.core.identitymgmt.exceptions.ContactExistsException;
