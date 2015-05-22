@@ -26,6 +26,7 @@
  */
 package org.panbox.core.identitymgmt;
 
+import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -193,7 +194,9 @@ public class Identity extends AbstractIdentity {
 	}
 
 	/**
-	 * Stores a given device key in the keystore of this identity
+	 * Stores a given device key in the keystore of this identity.
+	 * The given device key will be protected with the well known
+	 * secret.
 	 * 
 	 * @param ownerKeySign
 	 *            - Keypair representing the device key
@@ -210,6 +213,34 @@ public class Identity extends AbstractIdentity {
 
 			this.keyStore.setKeyEntry(deviceName, deviceKey.getPrivate(),
 					KeyConstants.OPEN_KEYSTORE_PASSWORD,
+					new java.security.cert.Certificate[] { certChain });
+
+		} catch (KeyStoreException e) {
+			logger.error("Could not add device key for device " + deviceName
+					+ " to identity's keystore", e);
+		}
+	}
+
+	/**
+	 * Stores a given device key in the keystore of this identity.
+	 * The given device key will be protected with the provided
+	 * password.
+	 * 
+	 * @param ownerKeySign
+	 *            - Keypair representing the device key
+	 * @param deviceName
+	 *            - name of the device where the key will be used
+	 */
+	@Override
+	public void addDeviceKey(KeyPair deviceKey, String deviceName, char[] password) {
+
+		try {
+			X509Certificate certChain = CryptCore
+					.createSelfSignedX509Certificate(deviceKey.getPrivate(),
+							deviceKey.getPublic(), this);
+
+			this.keyStore.setKeyEntry(deviceName, deviceKey.getPrivate(),
+					password,
 					new java.security.cert.Certificate[] { certChain });
 
 		} catch (KeyStoreException e) {
@@ -394,16 +425,15 @@ public class Identity extends AbstractIdentity {
 	 *            - name of the device to retrieve the private key for
 	 * @return - private key for deviceName or null if we run on a different
 	 *         device
+	 * @throws GeneralSecurityException 
 	 */
 	@Override
-	public PrivateKey getPrivateKeyForDevice(String deviceName) {
+	public PrivateKey getPrivateKeyForDevice(char[] password, String deviceName) throws UnrecoverableKeyException {
 
 		PrivateKey key = null;
 		try {
-			key = (PrivateKey) this.keyStore.getKey(deviceName,
-					KeyConstants.OPEN_KEYSTORE_PASSWORD);
-		} catch (UnrecoverableKeyException | KeyStoreException
-				| NoSuchAlgorithmException e) {
+			key = (PrivateKey) this.keyStore.getKey(deviceName, password);
+		} catch (KeyStoreException | NoSuchAlgorithmException e) {
 			logger.error("Could not fetch private key for device " + deviceName
 					+ " from identity's keystore", e);
 		}

@@ -237,14 +237,7 @@ public abstract class PanboxClient {
 				splashGraphics.drawString(splashLoading, 120, 250);
 				splash.update();
 			} catch (IllegalStateException e) {
-				logger.error(
-						"Encountered error while trying to render splash screen. Will try to close ..",
-						e);
-				try {
-					splash.close();
-				} catch (Exception ex) {
-					logger.error("Error closing splash screen.", ex);
-				}
+				// Splash screen has been closed already by showing dialog!
 			}
 		}
 	}
@@ -831,6 +824,7 @@ public abstract class PanboxClient {
 				KeyPair deviceKey = CryptCore.generateKeypair();
 				char[] password = dialog.getPassword();
 				String deviceName = dialog.getDevicename();
+				boolean protectDeviceKey = dialog.isProtectDeviceKey();
 
 				id.setOwnerKeySign(ownerKeySign, password);
 				id.setOwnerKeyEnc(ownerKeyEnc, password);
@@ -842,8 +836,18 @@ public abstract class PanboxClient {
 
 				try {
 					deviceManager.setIdentity(id);
-					deviceManager.addThisDevice(deviceName, deviceKey,
-							DeviceType.DESKTOP);
+
+					if (protectDeviceKey) {
+						Settings.getInstance().setProtectedDeviceKey(true);
+						// use identity password for protection
+						deviceManager.addThisDevice(deviceName, deviceKey,
+								DeviceType.DESKTOP, password);
+					} else {
+						Settings.getInstance().setProtectedDeviceKey(false);
+						// use well known secret for protection
+						deviceManager.addThisDevice(deviceName, deviceKey,
+								DeviceType.DESKTOP);
+					}
 					refreshDeviceListModel();
 				} catch (DeviceManagerException ex) {
 					// Simply ignore this for now!

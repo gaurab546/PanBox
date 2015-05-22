@@ -66,6 +66,17 @@ public class Settings {
 	private boolean mailtoSchemeSupported;
 	private boolean clipboardHandlerSupported;
 
+	/*
+	 * In case protected device key option has been activated the device key
+	 * will also be encrypted with the identity password instead of using a well
+	 * known password - this gives some extra security, but lowers the usability
+	 * since identity password is needed to get entered on each PanBox app
+	 * startup. Default value is false.
+	 */
+	// TODO: We need some extra check if old value was false and it has been set
+	// to true afterwards - Re-encryption of the device key is needed!
+	private boolean protectedDeviceKey;
+
 	private final Preferences prefs;
 	private final static String PANBOX_DEFAULT_CONF_DIR = System
 			.getProperty("user.home") + File.separator + ".panbox";
@@ -73,6 +84,9 @@ public class Settings {
 	private Settings(Preferences prefs) {
 		this.prefs = prefs;
 		language = prefs.get("language", Locale.getDefault().toString());
+
+		protectedDeviceKey = Boolean.valueOf(prefs.get("protectedDeviceKey",
+				"false"));
 
 		panboxMountDir = prefs.get("mountDir", System.getProperty("user.home")
 				+ File.separator + "panbox");
@@ -119,14 +133,15 @@ public class Settings {
 		clipboardHandlerSupported = Boolean.valueOf(prefs.get(
 				"clipboardHandlerSupported", "true"));
 
-		String pairingAddressStr = prefs.get("pairingAddress", "127.0.0.1");		
-		
-		if(pairingAddressStr.equals("127.0.0.1")) {
+		String pairingAddressStr = prefs.get("pairingAddress", "127.0.0.1");
+
+		if (pairingAddressStr.equals("127.0.0.1")) {
 			setPairingAddressAndInterface();
 		} else {
 			try {
 				pairingAddress = InetAddress.getByName(pairingAddressStr);
-				pairingInterface = NetworkInterface.getByInetAddress(pairingAddress);
+				pairingInterface = NetworkInterface
+						.getByInetAddress(pairingAddress);
 			} catch (UnknownHostException | SocketException e) {
 				logger.warn("Old network configuration has changed. Will reconfigure it now!");
 				setPairingAddressAndInterface();
@@ -203,7 +218,9 @@ public class Settings {
 					// try to connect to *somewhere*
 					socket.connect(new InetSocketAddress("panbox.org", 80));
 				} catch (IOException ex) {
-					logger.warn("Could not use network address " + address.getHostAddress(), ex);
+					logger.warn(
+							"Could not use network address "
+									+ address.getHostAddress(), ex);
 					continue;
 				}
 
@@ -407,5 +424,15 @@ public class Settings {
 
 	public boolean isMaster() {
 		return pairingType == PairingType.MASTER;
+	}
+
+	public boolean isProtectedDeviceKey() {
+		return protectedDeviceKey;
+	}
+
+	public void setProtectedDeviceKey(boolean protectedDeviceKey) {
+		this.protectedDeviceKey = protectedDeviceKey;
+		prefs.put("protectedDeviceKey",
+				Boolean.toString(this.protectedDeviceKey));
 	}
 }

@@ -94,15 +94,30 @@ public abstract class AbstractIdentity implements IPerson {
 	public abstract void setOwnerKeyEnc(KeyPair ownerKeyEnc, char[] password);
 
 	/**
-	 * Stores a given device key of this identity and protects it by the given
-	 * password
+	 * Stores a given device key in the keystore of this identity.
+	 * The given device key will be protected with the well known
+	 * secret.
 	 * 
-	 * @param password
-	 *            - to protect the private key
+	 * @param ownerKeySign
+	 *            - Keypair representing the device key
 	 * @param deviceName
 	 *            - name of the device where the key will be used
 	 */
 	public abstract void addDeviceKey(KeyPair deviceKey, String deviceName);
+
+	/**
+	 * Stores a given device key in the keystore of this identity.
+	 * The given device key will be protected with the provided
+	 * password.
+	 * 
+	 * @param ownerKeySign
+	 *            - Keypair representing the device key
+	 * @param deviceName
+	 *            - name of the device where the key will be used
+	 * @param password
+	 *            - the password used to protect the device key
+	 */
+	public abstract void addDeviceKey(KeyPair deviceKey, String deviceName, char[] password);
 
 	public abstract void addDeviceKey(KeyPair deviceKey,
 			Certificate deviceCert, String deviceName);
@@ -182,8 +197,9 @@ public abstract class AbstractIdentity implements IPerson {
 	 *            - name of the device to retrieve the private key for
 	 * @return - private key for deviceName or null if we run on a different
 	 *         device
+	 * @throws UnrecoverableKeyException 
 	 */
-	public abstract PrivateKey getPrivateKeyForDevice(String deviceName);
+	public abstract PrivateKey getPrivateKeyForDevice(char[] password, String deviceName) throws UnrecoverableKeyException;
 
 	/**
 	 * Retrieve the public key of a device with name deviceName

@@ -736,7 +736,7 @@ public class AddShareDialog extends javax.swing.JDialog {
 				String path = directoryTextField.getText();
 				File metadata = new File(path,
 						PanboxConstants.PANBOX_SHARE_METADATA_DIRECTORY);
-				if (!metadata.exists() && new File(path).list().length > 0) {
+				if (!metadata.exists() && new File(path).list() != null && new File(path).list().length > 0) {
 					JOptionPane.showMessageDialog(this, bundle
 							.getString("AddShareDialog.ShareFolderNotEmpty"));
 				} else if (path.equals("")) {
@@ -774,7 +774,7 @@ public class AddShareDialog extends javax.swing.JDialog {
 								bundle.getString("error"),
 								JOptionPane.ERROR_MESSAGE);
 					} else {
-						if (!(f).exists()) { // in case someone just types a
+						if (!f.exists()) { // in case someone just types a
 												// path
 							// and expects it to be created
 							f.mkdirs();

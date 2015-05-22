@@ -46,5 +46,8 @@ public interface IDeviceManager {
 	void addThisDevice(String name, KeyPair deviceKeyPair, DeviceType type)
 			throws DeviceManagerException;
 
+	void addThisDevice(String name, KeyPair deviceKeyPair, DeviceType type,
+			char[] password) throws DeviceManagerException;
+
 	PanboxDevice getDeviceIgnoreCase(String name) throws DeviceManagerException;
 }
