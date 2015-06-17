@@ -31,6 +31,7 @@ import ezvcard.property.StructuredName;
 
 import org.panbox.Settings;
 import org.panbox.core.identitymgmt.AbstractAddressbookManager;
+import org.panbox.core.identitymgmt.PanboxContact;
 import org.panbox.desktop.common.PanboxClient;
 
 import javax.swing.*;
@@ -388,6 +389,17 @@ public class ImportIdentitiesWoPINDialog extends javax.swing.JDialog {
 				tableModel.setRowCount(0);
 
 				for (VCard vc : vclist) {
+					if (AbstractAddressbookManager.vcard2Contact(vc, false)
+							.getCertEnc() == null
+							|| AbstractAddressbookManager.vcard2Contact(vc,
+									false).getCertSign() == null) {
+						importContactsTable.setModel(new DefaultTableModel());
+						JOptionPane.showMessageDialog(this,
+								bundle.getString("error.no.panbox.vcard.file"),
+								bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+
 					tableModel.addRow(new Object[] { vc });
 				}
 			} else {
