@@ -27,9 +27,17 @@
 package org.panbox.desktop.common.gui.devices;
 
 import javax.swing.*;
+
+import org.panbox.Settings;
+
 import java.awt.*;
+import java.util.ResourceBundle;
 
 public class DeviceListCellRenderer implements ListCellRenderer<PanboxDevice> {
+
+	private static final ResourceBundle bundle = ResourceBundle.getBundle(
+			"org.panbox.desktop.common.gui.Messages", Settings.getInstance()
+					.getLocale());
 
 	public DeviceListCellRenderer() {
 	}
@@ -39,8 +47,11 @@ public class DeviceListCellRenderer implements ListCellRenderer<PanboxDevice> {
 			JList<? extends PanboxDevice> list, PanboxDevice value, int index,
 			boolean isSelected, boolean cellHasFocus) {
 		JPanel panel = new JPanel(new GridLayout(1, 1));
-		JLabel label = new JLabel(value.getDeviceName(), value.getIcon(),
-				JLabel.LEFT);
+		String devName = (value.getDeviceName().equals(Settings.getInstance()
+				.getDeviceName())) ? (value.getDeviceName() + " ("
+				+ bundle.getString("devicelist.this.device") + ")") : (value
+				.getDeviceName());
+		JLabel label = new JLabel(devName, value.getIcon(), JLabel.LEFT);
 		if (isSelected) {
 			panel.setBackground(Color.LIGHT_GRAY);
 		} else {
