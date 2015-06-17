@@ -3371,9 +3371,13 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 			}
 		}
 
-		InetAddress address = (InetAddress) networkAddressComboBox.getModel()
-				.getSelectedItem();
-		s.setPairingAddress(address);
+		// If this is not true currently no IP-Address is available. So use the current one.
+		if(networkAddressComboBox.getModel()
+				.getSelectedItem() instanceof InetAddress) {
+			InetAddress address = (InetAddress) networkAddressComboBox.getModel()
+					.getSelectedItem();
+			s.setPairingAddress(address);
+		}
 
 		// save csp specific settings
 		if (selectedCSPContentPanel.getComponentCount() > 0) {

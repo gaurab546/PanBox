@@ -359,7 +359,7 @@ public abstract class AbstractAddressbookManager {
 	public static PersonRole getRoleFromVCard(VCard vc) {
 		PersonRole role = PersonRole.NONE;
 		List<Role> roles = vc.getRoles();
-		
+
 		if ((null != roles) && (roles.size() == 1)) {
 			// we assume there is be only one role defined per vcard
 			Role ref = roles.get(0);
@@ -370,9 +370,9 @@ public abstract class AbstractAddressbookManager {
 			} else {
 				role = PersonRole.NONE;
 			}
-		} else if ((null != roles) &&  roles.size() > 1) {
+		} else if ((null != roles) && roles.size() > 1) {
 			logger.error("VCard contains more than one role!");
-		}		
+		}
 		return role;
 	}
 
