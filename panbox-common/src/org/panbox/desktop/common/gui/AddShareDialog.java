@@ -730,7 +730,7 @@ public class AddShareDialog extends javax.swing.JDialog {
 					JOptionPane
 							.showMessageDialog(
 									this,
-									bundle.getString("AddShareDialog.directoryCannotBeEmpty"));
+									bundle.getString("AddShareDialog.noShareSelected"));
 				}
 			} else if (typeComboBox.getSelectedItem().equals("Directory")) {
 				String path = directoryTextField.getText();
