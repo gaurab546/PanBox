@@ -32,6 +32,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
@@ -52,6 +54,9 @@ public class AddDeviceFileActionListener implements ActionListener {
 
 	private final JFrame clientGuiFrame;
 	private final PanboxClient client;
+
+	static CharsetEncoder asciiEncoder = Charset.forName("US-ASCII")
+			.newEncoder();
 
 	private static final ResourceBundle bundle = ResourceBundle.getBundle(
 			"org.panbox.desktop.common.gui.Messages", Settings.getInstance()
@@ -94,7 +99,9 @@ public class AddDeviceFileActionListener implements ActionListener {
 		}
 
 		JFileChooser chooser = new JFileChooser();
-		chooser.setSelectedFile(new File(deviceNameField.getText().trim().replace(' ', '_') + ".zip"));
+		chooser.setSelectedFile(new File(deviceNameField.getText().trim()
+				.replace(' ', '_')
+				+ ".zip"));
 		int retVal = chooser.showSaveDialog(clientGuiFrame);
 		if (retVal == JFileChooser.APPROVE_OPTION) {
 			File file = null;
@@ -147,6 +154,14 @@ public class AddDeviceFileActionListener implements ActionListener {
 				} while (password.length < 8);
 			} else {
 				password = PasswordEnterDialog.invoke(PermissionType.DEVICE);
+			}
+
+			if (asciiEncoder.canEncode(new String(password))) {
+				JOptionPane.showMessageDialog(null,
+						bundle.getString("PanboxClient.nonAsciiPassword"),
+						bundle.getString("PanboxClient.nonAsciiPasswordTitle"),
+						JOptionPane.ERROR_MESSAGE);
+				return;
 			}
 
 			client.showTrayMessage(bundle.getString("PleaseWait"),
