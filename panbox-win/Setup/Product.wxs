@@ -178,6 +178,7 @@
     </DirectoryRef>
     
     <Icon Id="Panbox.ico" SourceFile="$(var.DistDir)\Panbox.ico" />
+    <Property Id="ARPPRODUCTICON" Value="Panbox.ico" />
     
     <DirectoryRef Id="PanboxProgramsFolder">
       <Component Id="PanboxShortcuts">
