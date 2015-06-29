@@ -197,6 +197,7 @@
                   WorkingDirectory="INSTALLLOCATION"
                   Icon="Panbox.ico" />
         <RemoveFolder Id="PanboxProgramsFolder" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\$(var.Company)\$(var.Product)" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
     </DirectoryRef>
     
