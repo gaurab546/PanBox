@@ -156,7 +156,7 @@ public class AddDeviceFileActionListener implements ActionListener {
 				password = PasswordEnterDialog.invoke(PermissionType.DEVICE);
 			}
 
-			if (asciiEncoder.canEncode(new String(password))) {
+			if (!asciiEncoder.canEncode(new String(password))) {
 				JOptionPane.showMessageDialog(null,
 						bundle.getString("PanboxClient.nonAsciiPassword"),
 						bundle.getString("PanboxClient.nonAsciiPasswordTitle"),
