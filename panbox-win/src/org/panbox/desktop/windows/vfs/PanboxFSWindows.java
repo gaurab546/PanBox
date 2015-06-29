@@ -650,8 +650,29 @@ public class PanboxFSWindows extends PanboxFS {
 	}
 
 	public synchronized void setFileTime(String fileName, long creationTime,
-			long lastAccessTime, long lastWriteTime, DokanFileInfo fileInfo) {
+			long lastAccessTime, long lastWriteTime, DokanFileInfo fileInfo) throws FileNotFoundException {
 		logger.debug("PanboxFS : setFileTime : No implementation executed!");
+		logger.debug("PanboxFS : setFileTime : " + fileName + ", fileInfo: "
+				+ fileInfo + ", creatinTime: " + creationTime + ", lastAccessTime: "
+				+ lastAccessTime + ", lastWriteTime: " + lastWriteTime
+				+ ", fileInfo: " + fileInfo);
+
+		VirtualRandomAccessFile v = fileInstanceTable.get(fileInfo.handle);
+		if (v != null) {
+			logger.debug("PanboxFS : setFileTime : Found an instance with the handle number. Will set file times now!");
+
+			try {
+				v.setLastAccessTime(lastAccessTime);
+				v.setModifiedTime(lastWriteTime);
+			} catch (IOException e) {
+				logger.error("PanboxFS : setFileTime : Failed to set file time to file " + fileName + ". Exception: ", e);
+			}
+		} else {
+			logger.error("PanboxFS : setFileTime : Could not find instance for setting fileTime. Ignored request.");
+			throw new FileNotFoundException(
+					"PanboxFS : setFileTime : Could not find handle for request: VirtualFile("
+							+ fileName + ").");
+		}
 	}
 
 	public synchronized void unlockFile(String fileName, long byteOffset,
@@ -667,7 +688,7 @@ public class PanboxFSWindows extends PanboxFS {
 
 		VirtualRandomAccessFile v = fileInstanceTable.get(fileInfo.handle);
 		if (v != null) {
-			logger.debug("PanboxFS : writeFile : Found an instance with the handle number. Will delete it now!");
+			logger.debug("PanboxFS : writeFile : Found an instance with the handle number. Will writeFile to it now!");
 
 			logger.debug("PanboxFS : writeFile : File: " + v + ", buffersize: "
 					+ buffer.remaining() + ", offset: " + offset);

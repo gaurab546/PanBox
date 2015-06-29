@@ -472,8 +472,14 @@ public class DokanUserFS implements PanboxFSAdapter, DokanOperations {
 				+ fileName + ", creationTime: " + creationTime
 				+ ", lastAccessTime: " + lastAccessTime + ", lastWriteTime: "
 				+ lastWriteTime + ", fileInfo: " + fileInfo + ")");
-		panboxFS.setFileTime(fileName, creationTime, lastAccessTime,
-				lastWriteTime, fileInfo);
+		try {
+			panboxFS.setFileTime(fileName, creationTime, lastAccessTime,
+					lastWriteTime, fileInfo);
+		} catch (FileNotFoundException e) {
+			logger.error(getClass().getName()
+					+ " : onSetFileTime : Exception: ", e);
+			throw new DokanOperationException(ERROR_FILE_NOT_FOUND);
+		}
 	}
 
 	@Override
