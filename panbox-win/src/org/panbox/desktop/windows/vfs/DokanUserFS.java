@@ -168,6 +168,10 @@ public class DokanUserFS implements PanboxFSAdapter, DokanOperations {
 			logger.error(getClass().getName()
 					+ " : onCreateDirectory : Exception: ", e);
 			throw new DokanOperationException(ERROR_FILE_NOT_FOUND);
+		} catch (FilenameExceededRangeException e) {
+			logger.debug(getClass().getName()
+					+ " : onCreateFile : Path including directoryname was too long on backend. Will return max filename length exceeded error. " + e.getMessage());
+			throw new DokanOperationException(ERROR_FILENAME_EXCED_RANGE);
 		} catch (Exception e) {
 			logger.error(getClass().getName()
 					+ " : onCreateDirectory : Unknown Exception: ", e);

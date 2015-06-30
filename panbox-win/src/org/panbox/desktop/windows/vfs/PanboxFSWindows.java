@@ -147,13 +147,19 @@ public class PanboxFSWindows extends PanboxFS {
 
 	public synchronized void createDirectory(String fileName,
 			DokanFileInfo fileInfo) throws SecretKeyNotFoundException,
-			FileNotFoundException, PanboxCreateFailedException {
+			FileNotFoundException, PanboxCreateFailedException, FilenameExceededRangeException {
 		logger.debug("PanboxFS : createDirectory : " + fileName);
 		try {
 			// Only create directory if it does not exist already!
-			if (!getVirtualFileForFileName(fileName, true).exists()) {
-				boolean success = getVirtualFileForFileName(fileName, true)
-						.createNewDirectory();
+			VirtualFile directory = getVirtualFileForFileName(fileName, true);
+			if (!directory.exists()) {
+				
+				// Check if directoryname is too long for backend Windows path
+				if(directory.getFile().getAbsolutePath().length() >= 255) {
+					throw new FilenameExceededRangeException( directory.getFile().getAbsolutePath().length() );
+				}
+				
+				boolean success = directory.createNewDirectory();
 				if (!success) {
 					throw new PanboxCreateFailedException(
 							"Failed to create directory '" + fileName + "'.");
