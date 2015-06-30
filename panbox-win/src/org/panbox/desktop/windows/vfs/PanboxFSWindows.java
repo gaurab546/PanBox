@@ -172,7 +172,7 @@ public class PanboxFSWindows extends PanboxFS {
 			int creationDisposition, int flagsAndAttributes,
 			boolean shareModeDeletable, boolean deleteOnClose,
 			DokanFileInfo fileInfo) throws PanboxCreateFailedException,
-			PathNotFoundException {
+			PathNotFoundException, FilenameExceededRangeException {
 		final FileCreationFlags disposition = fromDokan(creationDisposition);
 
 		logger.debug("PanboxFS : createFile : fileName: " + fileName
@@ -199,6 +199,11 @@ public class PanboxFSWindows extends PanboxFS {
 					@SuppressWarnings("resource")
 					// will be closed in close call!
 					VirtualRandomAccessFile file = (VirtualRandomAccessFile) virt;
+					
+					// Check if filename is too long for backend Windows path
+					if(file.getFile().getAbsolutePath().length() >= 255) {
+						throw new FilenameExceededRangeException( file.getFile().getAbsolutePath().length() );
+					}
 
 					if (!file.exists()) {
 						if (!getVirtualFileForFileName(
