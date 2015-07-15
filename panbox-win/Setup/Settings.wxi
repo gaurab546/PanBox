@@ -36,5 +36,5 @@
       </DirectoryRef>
     </Fragment>
   -->
-  <?define JreFilesDir="..\..\..\win-installer-dependencies\jre\jre1.8.0_45" ?>
+  <?define JreFilesDir="..\..\..\win-installer-dependencies\jre\jre1.8.0_51" ?>
 </Include>
