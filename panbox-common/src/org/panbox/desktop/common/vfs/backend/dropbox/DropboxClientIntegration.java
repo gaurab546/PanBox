@@ -93,11 +93,15 @@ public class DropboxClientIntegration implements ICSPClientIntegration {
 	 */
 	public File readSyncDirFromMetadata() throws IOException {
 
-		File dropboxConfigDir = getClientConfigDir();
+		File dropboxConfigDir = getUserConfigDir();
 		if ((dropboxConfigDir != null) && dropboxConfigDir.exists()
 				&& dropboxConfigDir.isDirectory() && dropboxConfigDir.canRead()) {
 			File hostdb = new File(dropboxConfigDir,
 					DropboxConstants.DROPBOX_HOST_DB);
+			if (!hostdb.exists()) {
+				hostdb = new File(dropboxConfigDir,
+						DropboxConstants.DROPBOX_HOST_DB_NEW);
+			}
 			if (hostdb.exists() && hostdb.canRead()) {
 				BufferedReader reader = new BufferedReader(new FileReader(
 						hostdb));
@@ -200,8 +204,18 @@ public class DropboxClientIntegration implements ICSPClientIntegration {
 			}
 		} else if (OS.getOperatingSystem().isWindows()) {
 			try {
-				return (new File(getClientConfigDir() + File.separator
-						+ DropboxConstants.WINDOWS_DB_BIN_PATH)).exists();
+				File configDir = getClientConfigDir();
+				if (configDir.getAbsolutePath().endsWith("..")) {
+					// User wide installation
+					return (new File(configDir + File.separator
+							+ DropboxConstants.WINDOWS_DB_BIN_PATH_USER))
+							.exists();
+				} else {
+					// Computer wide installation
+					return (new File(configDir + File.separator
+							+ DropboxConstants.WINDOWS_DB_BIN_PATH_PC))
+							.exists();
+				}
 			} catch (NullPointerException ex) {
 				return false;
 			}
@@ -224,13 +238,39 @@ public class DropboxClientIntegration implements ICSPClientIntegration {
 				String installPath = WinRegistry.readString(
 						WinRegistry.HKEY_CURRENT_USER, "Software\\Dropbox",
 						"InstallPath");
-				return new File(installPath + File.separator + "..");
+				if (installPath == null) {
+					// Dropbox can also be installed PC-wide instead of for each
+					// user since 3.6.9
+					installPath = WinRegistry.readString(
+							WinRegistry.HKEY_LOCAL_MACHINE,
+							"Software\\Dropbox", "InstallPath");
+					return new File(installPath + File.separator);
+				} else {
+					return new File(installPath + File.separator + "..");
+				}
 			} catch (IllegalArgumentException | IllegalAccessException
 					| InvocationTargetException e) {
 				logger.error("Error reading installation path from registry!",
 						e);
 				throw new IOException(e);
 			}
+		}
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.panbox.core.csp.ICSPClientIntegration#getUserConfigDir()
+	 */
+	@Override
+	public File getUserConfigDir() throws IOException {
+		if (OS.getOperatingSystem().isLinux()) {
+			return new File(System.getProperty("user.home") + File.separator
+					+ ".dropbox");
+		} else if (OS.getOperatingSystem().isWindows()) {
+			return new File(System.getenv("APPDATA") + File.separator
+					+ "Dropbox");
 		}
 		return null;
 	}
@@ -263,14 +303,15 @@ public class DropboxClientIntegration implements ICSPClientIntegration {
 				String tmp = null;
 
 				while ((tmp = br.readLine()) != null) {
-					//System.out.println(tmp);
+					// System.out.println(tmp);
 					if (tmp.toLowerCase().contains("dropbox.exe")) {
 						return true;
 					}
 				}
 				p.waitFor();
 			} catch (IOException | InterruptedException e) {
-				logger.error("Failed to execute check for running Dropbox.exe: ", e);
+				logger.error(
+						"Failed to execute check for running Dropbox.exe: ", e);
 			}
 			return false;
 		}

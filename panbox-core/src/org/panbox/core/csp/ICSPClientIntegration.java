@@ -83,7 +83,7 @@ public interface ICSPClientIntegration extends ICSPIntegration {
 	public List<File> getClientSyncDirs() throws Exception;
 
 	/**
-	 * Returns a client applications local configuration directory
+	 * Returns a client applications local app configuration directory
 	 * 
 	 * @return configuration directory of the client application
 	 * @throws Exception
@@ -91,6 +91,16 @@ public interface ICSPClientIntegration extends ICSPIntegration {
 	 *             dir could not be read
 	 */
 	public File getClientConfigDir() throws Exception;
+
+	/**
+	 * Returns a client applications local user configuration directory
+	 * 
+	 * @return configuration directory of the client application
+	 * @throws Exception
+	 *             if the client application was installed but the configuration
+	 *             dir could not be read
+	 */
+	public File getUserConfigDir() throws Exception;
 
 	/**
 	 * Method determines whether the specific CSP client application is
