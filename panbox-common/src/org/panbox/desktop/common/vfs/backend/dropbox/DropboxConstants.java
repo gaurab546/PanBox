@@ -65,6 +65,7 @@ public enum DropboxConstants {
 	public static final String APP_SECRET = "bg768wuoswhk54n";
 
 	public final static String DROPBOX_HOST_DB = "host.db";
+	public final static String DROPBOX_HOST_DB_NEW = "host.dbx";
 
 	public final static String LOCK_SUFFIX = ".lock";
 	public final static String TEMP_LOCK_SUFFIX = ".lock.temp";
@@ -83,7 +84,8 @@ public enum DropboxConstants {
 	/**
 	 * Windows default relative installation location in %APPDATA%\Dropbox\bin
 	 */
-	public static final String WINDOWS_DB_BIN_PATH = "bin\\Dropbox.exe";
+	public static final String WINDOWS_DB_BIN_PATH_USER = "bin\\Dropbox.exe";
+	public static final String WINDOWS_DB_BIN_PATH_PC = "Dropbox.exe";
 
 	public static final String LINUX_PID_FILE = "dropbox.pid";
 }
