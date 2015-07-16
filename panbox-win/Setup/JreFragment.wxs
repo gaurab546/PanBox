@@ -5,7 +5,7 @@
     
     <Fragment>
       <DirectoryRef Id="INSTALLLOCATION">
-        <Directory Id="JreFolder">
+        <Directory Id="JreFolder" Name="jre">
             <Directory Id="dirDABB266983440463A59E5E023AC8BD87" Name="bin" />
             <Directory Id="dir58CDCBEAA6F4BC2551F1750B380F7FCD" Name="lib" />
         </Directory>
