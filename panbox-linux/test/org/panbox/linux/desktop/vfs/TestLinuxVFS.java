@@ -90,7 +90,7 @@ public class TestLinuxVFS extends AbstractTest {
 	private SecretKey symKey;
 	private ShareKey sk;
 
-	private PublicKey	  mKey_pub;
+	private PublicKey mKey_pub;
 	private PrivateKey mKey_priv;
 	private PublicKey devKey_pub;
 	private PrivateKey devKey_priv;
