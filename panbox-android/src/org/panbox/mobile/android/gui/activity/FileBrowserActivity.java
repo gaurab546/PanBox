@@ -30,7 +30,6 @@ import org.panbox.mobile.android.R;
 import org.panbox.mobile.android.gui.data.PanboxManager;
 import org.panbox.mobile.android.gui.fragment.FileBrowserFragment;
 
-import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -43,10 +42,10 @@ import android.view.View.OnTouchListener;
 public class FileBrowserActivity extends CustomActionBarActivity implements OnTouchListener{
 
 	public static interface TaskListener {
-	    void onPreExecute();
-	    void onPostExecute();
+		void onPreExecute();
+		void onPostExecute();
 	}
-	
+
 	private final int UPLOAD_REQUEST_CODE = 100;
 	private final int UPDATE_REQUEST_CODE = 200;
 	private FileBrowserFragment fbFragment;
@@ -61,28 +60,27 @@ public class FileBrowserActivity extends CustomActionBarActivity implements OnTo
 		Log.v("FileBrowserActivity:"," in onCreate()");
 		setContentView(R.layout.pb_fragment_share_content);
 		getActionBar().show();
-		
+
 		lastLanguage = settings.getLanguage();
 		lastAccessToken = settings.getDropboxAuthToken();
-		
+
 		updateActionbarBehaviour();
-		
+
 		fm = getFragmentManager();
 		ft = fm.beginTransaction();
-		
+
 		if ( (fbFragment = (FileBrowserFragment)fm.findFragmentById(R.id.filebrowser_fragment)) == null){
 			fbFragment = new FileBrowserFragment();
-		    ft.add(R.id.filebrowser_fragment, fbFragment);
-		    ft.commit();
+			ft.add(R.id.filebrowser_fragment, fbFragment);
+			ft.commit();
 		}
-				
+
 		context = getApplicationContext();
-			
 		panbox = PanboxManager.getInstance(context);
-		
+
 		highlightActionbarItem(CustomActionBarActivity.ITEMS.FILEBROWSER.getNumVal());
 	}
-	
+
 	/**
 	 * this is a callback method called by the fragment when fragment creates itself in its onCreate()
 	 * @return bundle that will be also used by the fragment
@@ -91,7 +89,7 @@ public class FileBrowserActivity extends CustomActionBarActivity implements OnTo
 	public Bundle getBundleFromIntent(){
 		return bundle == null ? getIntent().getExtras() : bundle;
 	}
-	
+
 	/**
 	 * Since the FileBrowsereActivity runs as a singleTask, an intent to start this activity results in the OS making call to the onNewIntent method instead of the onCreate.
 	 * In this method we check if share chosen by the user is the same as the previous one. If this is the case, then we just show the current fragment. 
@@ -101,27 +99,24 @@ public class FileBrowserActivity extends CustomActionBarActivity implements OnTo
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		Log.v("FileBrowserActivity:", "in onNewIntent()");
-		
+
 		String oldShareName = null;
 		highlightActionbarItem(CustomActionBarActivity.ITEMS.FILEBROWSER.getNumVal());
-		
-		updateActionbarBehaviour();		
-		
+		updateActionbarBehaviour();
+
 		bundle = intent.getExtras();
-		
+
 		if(bundle != null && bundle.getString("uploadFileName") != null){
-			Log.v("Hurrrrayyyy", "we now can start working on file upload");
-			
 			String fileToUpload = bundle.getString("uploadFileName");
 			Log.v("FileBrowserActivity:", "ready to start uploading file...");
 			if (fbFragment != null)
-				fbFragment.uploadFile(fileToUpload);	
+				fbFragment.uploadFile(fileToUpload);
 		}else {
 			fbFragment = (FileBrowserFragment)fm.findFragmentById(R.id.filebrowser_fragment);
-			
+
 			if (fbFragment != null) {
-	
-				if(fbFragment.getShareContent() == null || fbFragment.getShareContent().isEmpty()) {							
+
+				if(fbFragment.getShareContent() == null || fbFragment.getShareContent().isEmpty()) {
 					Log.v("FileBrowserActivity:onNewIntent()",
 							"removed fragment because file list was empty.");
 					fm.beginTransaction().remove(fbFragment).commit();
@@ -139,42 +134,41 @@ public class FileBrowserActivity extends CustomActionBarActivity implements OnTo
 					fbFragment = null;
 					Log.v("FileBrowserActivity:",
 							"in onNewIntent(). fragment is removed");
-	
+
 				} else if (bundle != null) { // the user has chosen a new share,
 												// therefore we need to remove
 												// current fragment. onResume will
 												// then take cares of creating a new
 												// fragment
-	
-					Log.v("FileBrowserActivity:onNewIntent():", "chosen share is: "
-							+ bundle.getString("chosenShare"));
-	
+
+					Log.v("FileBrowserActivity:onNewIntent():", "chosen share is: " + bundle.getString("chosenShare"));
+
 					oldShareName = fbFragment.getShareName();
-	
+
 					if (oldShareName != null
 							&& oldShareName.equals(bundle.getString("chosenShare"))) {
 						Log.v("FileBrowserActivity:onNewIntent()",
 								"no need to remove fragment, since the same share was chosen or fragment already does not exist");
-	
+
 					} else {
 						fm.beginTransaction().remove(fbFragment).commit();
 						fbFragment = null;
 						Log.v("FileBrowserActivity:",
 								"in onNewIntent(). fragment is removed");
-	
+
 					}
 				}
 			}
 		}
 		
 	}
-	
+
 	@Override
 	protected void onDestroy(){
 		super.onDestroy();
 		Log.v("FileBrowserActivity:", "in onDestroy()");
 	}
-	
+
 //######################################################################################
 
 	@Override
@@ -183,47 +177,26 @@ public class FileBrowserActivity extends CustomActionBarActivity implements OnTo
 		Log.v("FileBrowserActivity:", "in onResume()");
 		
 		fbFragment = (FileBrowserFragment)fm.findFragmentById(R.id.filebrowser_fragment);
-//		fm.beginTransaction().replace(R.id.filebrowser_fragment, fragment,null).commit();
-						
+
 		if (settings.isDropboxAuthTokenSet()) {
-
 			if (panbox.getMyDBCon().isLinked() || panbox.getMyDBCon().resume()) {
-
 				if (fbFragment == null) {
 					Log.v("FileBrowserActivity:onResume()", "fragment is null, creating a new one");
 					fbFragment = new FileBrowserFragment();
-					fm.beginTransaction()
-							.add(R.id.filebrowser_fragment, fbFragment).commit(); // the fragement will take care of initializing the adapter and populating the listview
+					fm.beginTransaction().add(R.id.filebrowser_fragment, fbFragment).commit(); // the fragement will take care of initializing the adapter and populating the listview
 				} 
-				else {
-//					if (fragment.getShareContent() == null
-//							|| fragment.getShareContent().isEmpty()) {
-//
-//						fm.beginTransaction()
-//								.replace(R.id.filebrowser_fragment, fragment,
-//										null).commit();
-//					}
-				}
-
 			}
-		} else { // need to clean listview
-
-			if (fbFragment != null) {
+		} else if(fbFragment != null){ // need to clean listview
 				Log.v("FileBrowserActivity:onResume()", " remove fragment");
 				fm.beginTransaction().remove(fbFragment).commit();
-			}
-
 		}
 	}
-	
+
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		v.performClick();
 		Log.v("FileBrowserActivity:onTouch()", "button was clicked");
 		if(v.getId() == R.id.pb_update_container){
-			
-			Log.v("FileBrowserActivity:onTouch()", "update button in FileBrowser was clicked");			
-			
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
 				v.setBackgroundResource(R.color.custom_actionbar_item_highlight_bg);
 			}
@@ -236,19 +209,16 @@ public class FileBrowserActivity extends CustomActionBarActivity implements OnTo
 				bundle.putString("viewPath",fbFragment.getViewPath());
 				fileBrowserActivity.putExtras(bundle);
 				fileBrowserActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						
+
 				fbFragment = (FileBrowserFragment)fm.findFragmentById(R.id.filebrowser_fragment);
-				
 				if (fbFragment != null)
 					fm.beginTransaction().remove(fbFragment).commit();
-				
+
 				startActivity(fileBrowserActivity);
 			}
 		}
 		if(v.getId() == R.id.pb_upload_container){
-			
 			Log.v("FileBrowserActivity:onTouch()", "upload button in FileBrowser was clicked");			
-			
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
 				v.setBackgroundResource(R.color.custom_actionbar_item_highlight_bg);
 			}
@@ -259,7 +229,7 @@ public class FileBrowserActivity extends CustomActionBarActivity implements OnTo
 				b.putBoolean("upload", true);
 				directoryExplorerActivity.putExtras(b);
 				directoryExplorerActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				
+
 				startActivity(directoryExplorerActivity);
 			}
 		}
@@ -273,39 +243,18 @@ public class FileBrowserActivity extends CustomActionBarActivity implements OnTo
 		super.onStop();
 		Log.v("FileBrowserActivity:", "in onStop()");
 	}
-	
+
 	@Override
 	public void onBackPressed() {
-	   
 		Intent shareManager = new Intent(FileBrowserActivity.this,ShareManagerActivity.class);
 		startActivity(shareManager);
-		
-	    return;
+		return;
 	}
-	
+
 	public Bundle getBundle() {
 		return bundle;
 	}
 	public void setBundle(Bundle bundle) {
 		this.bundle = bundle;
 	}
-//	public boolean isItemClicked() {
-//		return isItemClicked;
-//	}
-//	public void setItemClicked(boolean isItemClicked) {
-//		this.isItemClicked = isItemClicked;
-//	}
-
-//	@Override
-//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//		Log.v("FileBrowserActivity:", "in onActivityResult()");
-//		if(requestCode == UPLOAD_REQUEST_CODE && resultCode != Activity.RESULT_CANCELED || data != null) {
-//			String fileToUpload = data.getExtras().getString("fileName");
-//			Log.v("FileBrowserActivity:", "ready to start uploading file...");
-//			if (fbFragment != null)
-//				fbFragment.uploadFile(fileToUpload);	
-//		}
-//		super.onActivityResult(requestCode, resultCode, data);
-//	}
-	
 }

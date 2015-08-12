@@ -58,41 +58,36 @@ public class DirectoryExplorerActivity extends CustomActionBarActivity implement
 		private boolean isOpenedForUpload = false;
 		private Bundle bundle;
 		private	 LayoutInflater inflater;
-		
+
 		private int itemPosition;
 		/**	
 		 * Displays information about user or shares
 		 */
 		private LinearLayout infoBarLine;
 		private LinearLayout infoBarContainer;
-		
 		private FileItemAdapter adapter = null;
-		
 		protected ListView mainLv = null;
 
 		protected String currentDir;
 //		protected String reuseName;
-		
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
 		super.onCreate(savedInstanceState);
 		Log.v("DirectoryExplorerActivity:", "in onCreate()");
 		setContentView(R.layout.pb_list_view);
 		this.currentDir = Environment.getExternalStorageDirectory().getPath();
-		
+
 		LinearLayout updateButton = (LinearLayout)findViewById(R.id.pb_update_container);
 		((RelativeLayout)updateButton.getParent()).removeView(updateButton);
-		
+
 		bundle = getIntent().getExtras();
 
 		if(bundle!=null){
 			String method = bundle.getString("method");
 			boolean isUpload = bundle.getBoolean("upload");
-			
+
 			if(method != null && method.equals("export")){
-		
 				isOpenedForExport = true;
 				LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				LinearLayout chooseLocBtnLayout = (LinearLayout)inflater.inflate(R.layout.pb_choose_dir_button_layout, null);
@@ -114,21 +109,14 @@ public class DirectoryExplorerActivity extends CustomActionBarActivity implement
 				Log.v("DirectoryExplorerActivity:onCreate():","opened for upload, set flag");
 			}
 		}
-		
+
 		getActionBar().hide();
-		
 		setMainLv(R.id.pb_listview);
-		
-		
 		inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);	// get an inflator
-						
 		infoBarContainer = (LinearLayout)findViewById(R.id.pb_infobar_container);
 		infoBarLine= (LinearLayout)inflater.inflate(R.layout.pb_infobar_line, infoBarContainer, true);
-		//infoBarContainer.addView(infoBarLine);
 		((TextView)infoBarLine.findViewById(R.id.pb_infobar_line_name)).setText("sfdsdf");
-		//currentDir = Environment.getExternalStorageDirectory();
 		displayDirItemObjects(currentDir);	// draw the listview
-		
 	}
 	/**
 	 * This function displays the content of the current directory. 
@@ -139,35 +127,25 @@ public class DirectoryExplorerActivity extends CustomActionBarActivity implement
 	 * @param curDirectory
 	 */
 	protected void displayDirItemObjects(String currDir){
-		
 		File currDirFile = new File(currDir);
-		
 		ArrayList<FileItem> dirItems = new ArrayList<FileItem>();		// define it as a local variable, so that memory is freed upon exiting the function
 
 		int amountOfDirItems = 0;
 		String lastModified = null;
-		
+
 		try {
-			
 			File[] files = currDirFile.listFiles();	// obtain a list of file objects
-			
 			for(File file : files){	
-			
 				// if file is a directory, then set it directory icon, otherwise file icon
 				if (file.isDirectory()){	
-				
 					File[] its = file.listFiles();
-					
 					if (its != null)
-					
 						amountOfDirItems = its.length;
 				}
-				
 				// obtain file creation date
 				SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy , hh:mm:ss",Locale.US);	 
-				
 				lastModified = dateFormat.format(new Date(currDirFile.lastModified())); 
-				
+
 				// based on file properties retrieved initialize FileItem object, and add it to the list of FileItem objects
 				dirItems.add( new FileItem( file.getName(), 
 											file.getAbsolutePath(),  
@@ -177,56 +155,41 @@ public class DirectoryExplorerActivity extends CustomActionBarActivity implement
 											file.isDirectory()
 											)
 							);
-				
 			}	// for loop
-			
-			
+
 			// on the top of the list, should always be a back-to-parent control. 
 			//Its isDirectory must be true, to have "up to the parent" activated
 			if (currDir.equals(Environment.getExternalStorageDirectory().getPath()))
 				dirItems.add(0, new FileItem("/", currDirFile.getParent(), "", "", "0", true));
 			else 	
 				dirItems.add(0, new FileItem("..", currDirFile.getParent(), "", "", "0", true));
-						
-			
 		}catch(Exception e){
-			
 			e.printStackTrace();
-			
 		}
-		
 		setInfoBarView(R.id.pb_infobar_container, getString(R.string.pb_path) + ": ", currDir + "/", infoBarLine);
-				
 		setAdapter(dirItems);
-		
 		mainLv.setAdapter(adapter);	// specify the adapter for this listview
-		
 		mainLv.setOnItemClickListener(this);
-		
 	}
-	
+
 	public String getCurrentDir() {
 		return currentDir;
 	}
-	
+
 	public void setCurrentDir(String currentDir) {
 		this.currentDir = currentDir;
 	}
-	
+
 	/**
 	 * Set adapter by supplying it with objects to be displayed in the listview
 	 * @param dbList
 	 */
+	
 	public void setAdapter(ArrayList<FileItem> items){
-		
-		adapter = new FileItemAdapter(this, R.layout.pb_list_item, items);		// at this step the objects to be mapped to views are instantiated, so we can use our adapter to convert them to views
-		
+		// at this step the objects to be mapped to views are instantiated, so we can use our adapter to convert them to views
+		adapter = new FileItemAdapter(this, R.layout.pb_list_item, items);
 	}
-	public FileItemAdapter getAdapter(){
-		
-		return adapter;
-		
-	}
+	public FileItemAdapter getAdapter(){ return adapter; }
 	
 	/**
 	 * 
@@ -241,22 +204,18 @@ public class DirectoryExplorerActivity extends CustomActionBarActivity implement
 		nameView.setTextColor(getResources().getColor(R.color.black));
 		valueView.setText(value);
 		valueView.setTextColor(getResources().getColor(R.color.black));
-	}	
-	
-	public ListView getMainLv() {
-		return mainLv;
 	}
-	
-	public void setMainLv(int id) {
-		this.mainLv = (ListView) findViewById(id);
-	}
+
+	public ListView getMainLv() { return mainLv; }
+
+	public void setMainLv(int id) { this.mainLv = (ListView) findViewById(id); }
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Log.v("DirectoryExplorerActivity:","in onItemClick()");
 		itemPosition = position;
 		String fullPath = adapter.getItem(itemPosition).getFullPath();
-		
+
 		if( !adapter.getItem(position).getFullPath().equals("/") && adapter.getItem(position).isDirectory()){	// if we are not in the root and this is directory, then can go back and forth	
 			currentDir = adapter.getItem(position).getFullPath();
 			displayDirItemObjects(currentDir);

@@ -167,13 +167,9 @@ public class FileBrowserFragment extends Fragment implements
 		Log.v("FileBrowserFragment:", "in onCreate()");
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
-		settings = AndroidSettings.getInstance(); // no need to check for
-													// exceptions here. It is
-													// already done in the
-													// parent activity
+		settings = AndroidSettings.getInstance(); // no need to check for exceptions here. It is already done in the parent activity
 		// we get bundle and generate volume only once and only when fragment is
-		// created,
-		// therefore they are initialized as long as the fragment lives
+		// created,therefore they are initialized as long as the fragment lives
 		// if fragment is destroyed as well as the activity while activity was
 		// stopped, then need to conduct pairing again
 		bundle = ((FileBrowserActivity) getActivity()).getBundleFromIntent();
@@ -197,10 +193,6 @@ public class FileBrowserFragment extends Fragment implements
 
 	}
 
-//	public LinearLayout getUpdateButton() {
-//		return updateButton;
-//	}
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -209,25 +201,19 @@ public class FileBrowserFragment extends Fragment implements
 		// On orientation change the activity is destroyed and created again,
 		// however the fragment is not destroyed and during activity creation
 		// fragment's onCreateView is called
-		if (!isGetFileTaskRunning) { // if this task is running, than per
+		if (!isGetFileTaskRunning) { 	// if this task is running, than per
 										// definition the fragment is there as
 										// well as listview
 
 			context = getActivity();
-
 			panbox = PanboxManager.getInstance(context);
-
 			identity = panbox.getIdentity();
-
 			deviceName = settings.getDeviceName();
-
-			fragmentLayout = inflater.inflate(R.layout.pb_list_view, container,
-					false);
+			fragmentLayout = inflater.inflate(R.layout.pb_list_view, container, false);
 			infoBarContainer = (LinearLayout) fragmentLayout
 					.findViewById(R.id.pb_infobar_container);
 
 			updateButton = (LinearLayout) fragmentLayout.findViewById(R.id.pb_update_container);
-			
 			uploadButton = (LinearLayout) fragmentLayout.findViewById(R.id.pb_upload_container);
 			
 			this.uploadButton.setClickable(true);
@@ -235,12 +221,9 @@ public class FileBrowserFragment extends Fragment implements
 			
 			this.updateButton.setClickable(true);
 			this.updateButton.setOnTouchListener(this.onUpdateAndUploadButtonListener);
-			
 
-			infoBarLine1 = (LinearLayout) inflater.inflate(
-					R.layout.pb_infobar_line, container, false);
-			infoBarLine2 = (LinearLayout) inflater.inflate(
-					R.layout.pb_infobar_line, container, false);
+			infoBarLine1 = (LinearLayout) inflater.inflate( R.layout.pb_infobar_line, container, false);
+			infoBarLine2 = (LinearLayout) inflater.inflate( R.layout.pb_infobar_line, container, false);
 
 			infoBarContainer.addView(infoBarLine1);
 			infoBarContainer.addView(infoBarLine2);
@@ -257,12 +240,8 @@ public class FileBrowserFragment extends Fragment implements
 		Log.v("FileBrowserFragment:", "in onActivityCreated()");
 		super.onActivityCreated(savedInstanceState);
 
-		if (bundle != null
-				|| (bundle = ((FileBrowserActivity) getActivity())
-						.getBundleFromIntent()) != null) {
-
+		if (bundle != null 	|| (bundle = ((FileBrowserActivity) getActivity()).getBundleFromIntent()) != null) {
 			setInfoBarView();
-
 			// If we are returning here from a screen orientation
 			// and the AsyncTask is still working, re-create and display the
 			// progress dialog.
@@ -271,7 +250,6 @@ public class FileBrowserFragment extends Fragment implements
 						getString(R.string.pb_loading),
 						getString(R.string.pb_please_wait));
 			} else {
-
 				if (shareContent != null) {
 					populateListView(shareContent);
 				} else {
@@ -308,14 +286,11 @@ public class FileBrowserFragment extends Fragment implements
 
 	@Override
 	public void onDetach() {
-		// All dialogs should be closed before leaving the activity in order to
-		// avoid
-		// the: Activity has leaked window com.android.internal.policy...
-		// exception
+		// All dialogs should be closed before leaving the activity in order to avoid
+		// the: Activity has leaked window com.android.internal.policy... exception
 		if (progressDialog != null && progressDialog.isShowing()) {
 			progressDialog.dismiss();
 		}
-
 		super.onDetach();
 	}
 
@@ -359,18 +334,8 @@ public class FileBrowserFragment extends Fragment implements
 			}
 		} else { // position !=0
 
-			DropboxVirtualFile file = dbList.get((int) (id - 1)); // id - 1 is
-																	// needed
-																	// because
-																	// the
-																	// "UptoParent"
-																	// listview
-																	// entry as
-																	// the first
-																	// entry in
-																	// the
-																	// listview
-																	// is added
+			DropboxVirtualFile file = dbList.get((int) (id - 1)); 	// id - 1 is needed because the "UptoParent" listview
+																	// entry as the first entry in the listview is added
 
 			String decName = shareContent.get((int) id).getName();
 
@@ -402,23 +367,15 @@ public class FileBrowserFragment extends Fragment implements
 	}
 
 	private void setInfoBarView() {
-		addInfoBarLine(R.id.pb_infobar_container, getString(R.string.pb_share)
-				+ ":\t\t\t", shareName, infoBarLine1);
-		addInfoBarLine(R.id.pb_infobar_container, getString(R.string.pb_path)
-				+ ":\t\t\t", viewPath, infoBarLine2);
+		addInfoBarLine(R.id.pb_infobar_container, getString(R.string.pb_share) + ":\t\t\t", shareName, infoBarLine1);
+		addInfoBarLine(R.id.pb_infobar_container, getString(R.string.pb_path) + ":\t\t\t", viewPath, infoBarLine2);
 	}
 
 	/**
-	 * 
-	 * @param id
-	 *            - id of the infobar container to inflate
-	 * @param name
-	 *            - name of the line
-	 * @param value
-	 *            - value of the line
-	 * @param view
-	 *            - LinearLayout - layout to which name and value textviews are
-	 *            added
+	 * @param id   - id of the infobar container to inflate
+	 * @param name - name of the line
+	 * @param value- value of the line
+	 * @param view - LinearLayout - layout to which name and value textviews are added
 	 */
 	public void addInfoBarLine(int id, String name, String value,
 			LinearLayout infoBarLine) {
@@ -461,21 +418,15 @@ public class FileBrowserFragment extends Fragment implements
 	public void setViewPath(String viewPath) {
 		this.viewPath = viewPath;
 	}
-	
+
 	@Override
 	public void onStart() {
 		Log.v("FileBrowserFragment:", "in onStart()");
 		super.onStart();
 		if (bundle == null
 				&& (bundle = ((FileBrowserActivity) getActivity())
-						.getBundleFromIntent()) == null) { // need to retrieve
-															// bundle also here,
-															// because it is the
-															// only method that
-															// is called when
-															// activity's
-															// onNewIntent() is
-															// called
+						.getBundleFromIntent()) == null) { // need to retrieve bundle also here, because it is the only 
+															// method that is called when activity's onNewIntent() is called
 			Intent shareManager = new Intent(getActivity(),
 					ShareManagerActivity.class);
 			startActivity(shareManager);
@@ -549,22 +500,17 @@ public class FileBrowserFragment extends Fragment implements
 		protected Boolean doInBackground(Void... arg0) {
 			Log.v(TAG_CLASS + TAG_GET_FILE, "in doInBackground()");
 			String baseDir;
-
 			String state = Environment.getExternalStorageState();
 			baseDir = settings.getConfDir();
 			Log.v("Configuration Dir: ", baseDir);
+
 			if (!state.equals(Environment.MEDIA_MOUNTED)) {
-
-				Log.v(TAG_CLASS + TAG_GET_FILE,
-						"No external storage available, store files in the internal memory");
-
+				Log.v(TAG_CLASS + TAG_GET_FILE, "No external storage available, store files in the internal memory");
 				baseDir = settings.getConfDir();
-
 			} else
 				baseDir = Environment.getExternalStorageDirectory().getPath();
 
-			File encryptedFile = new File(baseDir + path + File.separator
-					+ encName);
+			File encryptedFile = new File(baseDir + path + File.separator + encName);
 
 			encryptedFile.getParentFile().mkdirs();
 
@@ -578,14 +524,9 @@ public class FileBrowserFragment extends Fragment implements
 						"Error while creating a new file ");
 				e.printStackTrace();
 			}
-
 			Log.v(TAG_CLASS + TAG_GET_FILE, "File successfully created:");
-
-			panbox.getMyDBCon().downloadFile(path + File.separator + encName,
-					encryptedFile.getPath());
-
+			panbox.getMyDBCon().downloadFile(path + File.separator + encName, encryptedFile.getPath());
 			Log.v(TAG_CLASS + TAG_GET_FILE, "File downloaded:");
-
 			try {
 
 				AESGCMRandomAccessFileCompat rafc = AESGCMRandomAccessFileCompat
@@ -713,7 +654,7 @@ public class FileBrowserFragment extends Fragment implements
 						path, shareName, panbox.getMyDBCon(), context);
 
 				String[] obfNameAndIV = obfuscator.obfuscate(realFileName, panbox.getCachedObfuscationKey());
-				
+
 				obfuscatedFileName = obfNameAndIV[0];
 				ivPath = obfNameAndIV[1];
 				iv = ivPath.substring(ivPath.lastIndexOf("/") + 1, ivPath.length());
@@ -780,10 +721,10 @@ public class FileBrowserFragment extends Fragment implements
 					e.printStackTrace();
 				}
 			}
-			
+
 			return true;
 		}
-		
+
 	}
 	public void uploadFile(String fileToUpload){
 		uploadFileTask = new UploadFile(fileToUpload,this);
@@ -838,14 +779,9 @@ public class FileBrowserFragment extends Fragment implements
 
 			Log.v(TAG_CLASS + TAG_SYNC_SHARE_CONTENT, "path: " + path);
 			Log.v(TAG_CLASS + TAG_SYNC_SHARE_CONTENT, "shareName: " + shareName);
-			if (path.equals(File.separator + shareName)) { // if we are not in
-															// root directory
-															// any more, then if
-															// share folder was
-															// clicked, in this
-															// case parent
-															// points to root
-															// dir
+			if (path.equals(File.separator + shareName)) { // if we are not in root directory any more, then if
+															// share folder was clicked, in this case parent
+															// points to root dir
 
 				IPerson owner = checkOwnership();
 				if (owner != null) { // OK, user is an owner of the share, start
@@ -871,18 +807,11 @@ public class FileBrowserFragment extends Fragment implements
 
 					return false;
 				}
-
 				deobfuscateFiles(fileNameList, aof);
-
 			} else { // we have clicked a folder in the share
-
 				deobfuscateFiles(fileNameList, aof);
-
 				long timeAfter = System.currentTimeMillis();
-
-				System.err.println("Files in dir: " + fileNameList.size()
-						+ " time needed for deobfuscation: "
-						+ (timeAfter - timeBefore));
+				System.err.println("Files in dir: " + fileNameList.size() + " time needed for deobfuscation: " + (timeAfter - timeBefore));
 			}
 
 			return true;
@@ -1082,8 +1011,7 @@ public class FileBrowserFragment extends Fragment implements
 			String deobfuscated;
 			String modified;
 
-			if (accessStatus != ERROR_COULD_NOT_EXTRACT_KEYS
-					&& accessStatus != ERROR_NOT_OWNER) {
+			if (accessStatus != ERROR_COULD_NOT_EXTRACT_KEYS && accessStatus != ERROR_NOT_OWNER) {
 				try {
 					dbList = new ArrayList<DropboxVirtualFile>();
 					obfuscator = ((AndroidObfuscatorFactory) aof).getInstance(
@@ -1122,23 +1050,16 @@ public class FileBrowserFragment extends Fragment implements
 											.isDirectory()));
 							dbList.add(dbf);
 						}
-
 					} catch (ObfuscationException e) {
-						Log.v("FileBrowserFragment",
-								"Could not deobfuscate file. Will ignore this one: "
-										+ dbf.getFileName());
+						Log.v("FileBrowserFragment", "Could not deobfuscate file. Will ignore this one: " + dbf.getFileName());
 					}
 				}
 				if (path.equals(root)) {
-					shareContent.add(0, new FileItem("/", path, "", "", "0",
-							true)); // no way up, because already
-									// in the root
+					shareContent.add(0, new FileItem("/", path, "", "", "0", true)); // no way up, because already in the root
 				}
 
 				else {
-					shareContent.add(0, new FileItem("..", path, "", "", "0",
-							true)); // still can go at least
-									// one level up
+					shareContent.add(0, new FileItem("..", path, "", "", "0", true)); // still can go at least one level up
 				}
 			}
 		}
@@ -1147,10 +1068,7 @@ public class FileBrowserFragment extends Fragment implements
 		public void onPostExecute(Boolean result) {
 			super.onPostExecute(result);
 			Log.v(TAG_CLASS + TAG_SYNC_SHARE_CONTENT, " in onPostExecute()");
-			panbox = PanboxManager.getInstance(context); // TODO:Here need to
-															// make sure that
-															// the context is
-															// available
+			panbox = PanboxManager.getInstance(context); // TODO:Here need to make sure that the context is available
 
 			if (accessStatus == ERROR_NOT_OWNER) {
 				Toast.makeText(context,
@@ -1177,7 +1095,6 @@ public class FileBrowserFragment extends Fragment implements
 				populateListView(shareContent);
 
 			listener.onPostExecute();
-
 		}
 	}
 }
