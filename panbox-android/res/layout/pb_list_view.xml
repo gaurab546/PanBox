@@ -35,7 +35,7 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_gravity="center_vertical"
-	        android:layout_alignParentEnd="true"
+	        android:layout_toStartOf="@+id/pb_upload_container"
 	        android:padding="0dip"
 			android:layout_margin="0dip">
 	 
@@ -50,6 +50,27 @@
 				android:layout_margin="10dip"/>
 	   	</LinearLayout>
     
+        <LinearLayout
+	        android:id="@+id/pb_upload_container"
+	        android:layout_centerVertical="true"
+	        android:orientation="horizontal"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center_vertical"
+	        android:layout_alignParentEnd="true"
+	        android:padding="0dip"
+			android:layout_margin="0dip">
+	 
+            <ImageView 
+			    android:id="@+id/pb_upload_icon"
+			    android:contentDescription="@string/pb_upload_content"
+			    android:src="@drawable/cloud_upload"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:layout_gravity="center"
+			    android:padding="0dip"
+				android:layout_margin="10dip"/>
+	   	</LinearLayout>
     </RelativeLayout>
     
     <ListView 

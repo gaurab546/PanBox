@@ -208,13 +208,13 @@ public class DropboxConnector extends CSPConnector {
 			fis.close();
 			return true;
 		} catch (DropboxUnlinkedException e) {
-			Log.e(String.valueOf(R.string.app_name), "User has unlinked.");
+			Log.d(String.valueOf(R.string.app_name), "User has unlinked.",e);
 			return false;
 		} catch (DropboxException e) {
-			Log.e(String.valueOf(R.string.app_name), "Something went wrong while uploading.");
+			Log.d(String.valueOf(R.string.app_name), "Something went wrong while uploading.",e);
 			return false;
 		} catch (FileNotFoundException e) {
-			Log.e(String.valueOf(R.string.app_name), "File not found.");
+			Log.d(String.valueOf(R.string.app_name), "File not found.",e);
 			return false;
 		} catch (IOException e) {
 			e.printStackTrace();

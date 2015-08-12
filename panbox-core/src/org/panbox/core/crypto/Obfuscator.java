@@ -56,6 +56,8 @@ import org.panbox.core.Utils;
 import org.panbox.core.exception.MissingIVException;
 import org.panbox.core.exception.ObfuscationException;
 
+import sun.security.action.GetLongAction;
+
 public class Obfuscator {
 
 	private static Cipher encryptCipher;
@@ -69,7 +71,8 @@ public class Obfuscator {
 	private String shareName;
 	private AbstractObfuscatorIVPool ivPoolImpl;
 	private OperatingSystem os;
-
+	private String lastIVForAndroid;
+	private String obfuscatedFile;
 	public Obfuscator(String sharePath, AbstractObfuscatorIVPool ivPoolImpl,
 			String shareName) throws ObfuscationException {
 		this.sharePath = sharePath;
@@ -254,6 +257,8 @@ public class Obfuscator {
 		// java based file creation
 		File ivFile = new File(dirs.getAbsolutePath() + File.separator
 				+ lookupHashStr + ivhex);
+		lastIVForAndroid = ivFile.getAbsolutePath();
+		obfuscatedFile = encryptedName;
 		try {
 			ivFile.createNewFile();
 		} catch (IOException e) {
@@ -262,7 +267,18 @@ public class Obfuscator {
 					e);
 		}
 	}
-
+	public synchronized String[] obfuscate(String str, SecretKey key) throws ObfuscationException {
+		String[] pair = new String[2];
+		try{
+			obfuscate(str,key,true);
+		} catch (ObfuscationException e){
+			e.printStackTrace();
+		} finally {
+			pair[0] = obfuscatedFile;
+			pair[1] = lastIVForAndroid;
+		}
+		return pair;
+	}
 	/**
 	 * Obfuscates a string with the given key and encodes it with a fixed
 	 * encoding
