@@ -102,6 +102,11 @@ public class DropboxClientIntegration implements ICSPClientIntegration {
 				hostdb = new File(dropboxConfigDir,
 						DropboxConstants.DROPBOX_HOST_DB_NEW);
 			}
+			if (!hostdb.exists() && OS.getOperatingSystem().isWindows()) {
+				dropboxConfigDir = getWindowsAlternativeUserConfigDir();
+				hostdb = new File(dropboxConfigDir,
+						DropboxConstants.DROPBOX_HOST_DB_NEW);
+			}
 			if (hostdb.exists() && hostdb.canRead()) {
 				BufferedReader reader = new BufferedReader(new FileReader(
 						hostdb));
@@ -125,14 +130,14 @@ public class DropboxClientIntegration implements ICSPClientIntegration {
 					}
 				}
 			} else {
-				logger.error("getDropboxSyncDir: Couldn't read dropbox host.db file!");
+				logger.warn("getDropboxSyncDir: Couldn't read dropbox host.db file!");
 			}
 		} else {
 			if (dropboxConfigDir != null) {
-				logger.error("getDropboxSyncDir: Couldn't access dropbox config directory: "
+				logger.warn("getDropboxSyncDir: Couldn't access dropbox config directory: "
 						+ dropboxConfigDir.getAbsolutePath());
 			} else {
-				logger.error("getDropboxSyncDir: Couldn't access dropbox config directory");
+				logger.warn("getDropboxSyncDir: Couldn't access dropbox config directory");
 			}
 		}
 		return null;
@@ -270,6 +275,15 @@ public class DropboxClientIntegration implements ICSPClientIntegration {
 					+ ".dropbox");
 		} else if (OS.getOperatingSystem().isWindows()) {
 			return new File(System.getenv("APPDATA") + File.separator
+					+ "Dropbox");
+		}
+		return null;
+	}
+	
+	
+	public File getWindowsAlternativeUserConfigDir() throws IOException {
+		if (OS.getOperatingSystem().isWindows()) {
+			return new File(System.getenv("LOCALAPPDATA") + File.separator
 					+ "Dropbox");
 		}
 		return null;

@@ -74,7 +74,9 @@ public class DropboxWizardDialog extends javax.swing.JDialog {
 		try {
 			dropboxSyncDirPath = dcIntegration.readSyncDirFromMetadata()
 					.getAbsolutePath();
-			syncDirTextField.setText(dropboxSyncDirPath);
+			if( dropboxSyncDirPath != null ) {
+				syncDirTextField.setText(dropboxSyncDirPath);
+			}
 		} catch (IOException e) {
 			// if dropbox path could not be determined automatically we will
 			// need to set it manually!
