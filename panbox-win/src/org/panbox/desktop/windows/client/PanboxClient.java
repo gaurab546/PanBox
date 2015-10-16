@@ -190,7 +190,12 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 		this.session = session;
 		logger.debug("WIN:PanboxClient : PanboxClient");
 		if (splash != null) { // Splashscreen is shown!
-			splash.close();
+			try {
+				splash.close();
+			} catch( Exception e ) {
+				// This should be ignored as this means that the splashScreen has been closed already!
+				logger.debug("WIN:PanboxClient : Tried to close splashscreen but there was none available.");
+			}
 		}
 	}
 
