@@ -221,10 +221,11 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 		logger.info("Finished initialization");
 		if (splash != null) { // Splashscreen is shown!
 			try {
-				splash.close(); // we need to close slpash here because
+				splash.close(); // we need to close splash here because
 								// minimized option could be used
 			} catch (Exception ex) {
-				logger.error("Error closing splash screen.", ex);
+				// This should be ignored as this means that the splashScreen has been closed already!
+				logger.debug("LIN:PanboxClient : Tried to close splashscreen but there was none available.");
 			}
 		}
 	}
