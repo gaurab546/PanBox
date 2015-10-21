@@ -172,9 +172,6 @@
           <File Source="$(var.DistDir)\lib\zxing-javase-3.1.0.jar" />
         </Component>
       </Directory>
-      <!-- CRT for opencv and JDokan.dll (VS2010) -->
-      <Merge Id="CRTRedist" SourceFile="$(env.ProgramFiles)\Common Files\Merge Modules\Microsoft_VC100_CRT_x86.msm" DiskId="1" Language="0"/>
-      <Merge Id="ATLRedist" SourceFile="$(env.ProgramFiles)\Common Files\Merge Modules\Microsoft_VC100_ATL_x86.msm" DiskId="1" Language="0"/>
     </DirectoryRef>
     
     <Icon Id="Panbox.ico" SourceFile="$(var.DistDir)\Panbox.ico" />
@@ -244,8 +241,6 @@
       <ComponentRef Id="videoinput.jar" />
       <ComponentRef Id="zxingcore.jar" />
       <ComponentRef Id="zxingjavase.jar" />
-      <MergeRef Id="ATLRedist"/>                     <!-- Install ATL runtime environment -->
-      <MergeRef Id="CRTRedist"/>                     <!-- Install C/C++ runtime environment -->
     </Feature>
 
   </Product>
