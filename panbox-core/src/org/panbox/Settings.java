@@ -179,6 +179,11 @@ public class Settings {
 				logger.warn("Problems determining if loopback device. Will ignore it.");
 				continue;
 			}
+			
+			// we should skip interfaces from VirtualBox
+			if(interface_.toString().contains("VirtualBox")) {
+				continue;
+			}
 
 			// if you don't expect the interface to be up you can skip this
 			// though it would question the usability of the rest of the code
@@ -211,12 +216,17 @@ public class Settings {
 				try (SocketChannel socket = SocketChannel.open()) {
 					// again, use a big enough timeout
 					socket.socket().setSoTimeout(3000);
+					//socket.socket().setReuseAddress(true);
+					socket.socket().setKeepAlive(false);
+					socket.configureBlocking(false);
 
 					// bind the socket to your local interface
 					socket.bind(new InetSocketAddress(address, 8080));
 
 					// try to connect to *somewhere*
 					socket.connect(new InetSocketAddress("panbox.org", 80));
+					
+					socket.close();
 				} catch (IOException ex) {
 					logger.warn(
 							"Could not use network address "
