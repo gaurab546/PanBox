@@ -26,18 +26,25 @@
  */
 package org.panbox.desktop.windows.vfs;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ResourceBundle;
 
+import org.apache.log4j.Logger;
+import org.panbox.Settings;
 import org.panbox.WinRegistry;
 
 public class WindowsOSIntegration {
 
-//	private static final Logger logger = Logger
-//			.getLogger("org.panbox.desktop.windows");
+	private static final Logger logger = Logger
+			.getLogger("org.panbox");
+	
+	private static final ResourceBundle bundle = ResourceBundle.getBundle(
+			"org.panbox.desktop.common.gui.Messages", Settings.getInstance()
+					.getLocale());
 
-//	private static final String EXPLORER_DRIVE_ICONS = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\DriveIcons\\";
-
-//	private static final String PANBOX_LOCATION = "SOFTWARE\\Panbox.org\\Panbox";
+	private static final String EXPLORER_DRIVE_ICONS = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\DriveIcons\\";
+	
 	public static final String SYSTEM_FOLDER_NAME;
 	
 	static {
@@ -60,63 +67,38 @@ public class WindowsOSIntegration {
 		return false;
 	}
 	
-//	public static void registerVFS(String mountPoint) {
-//		try {
-//			// Register custom Label and Icon in Explorer
-//			WinRegistry.createKey(WinRegistry.HKEY_LOCAL_MACHINE,
-//					EXPLORER_DRIVE_ICONS + mountPoint + "\\DefaultIcon");
-//			WinRegistry.createKey(WinRegistry.HKEY_LOCAL_MACHINE,
-//					EXPLORER_DRIVE_ICONS + mountPoint + "\\DefaultLabel");
-//			WinRegistry.writeStringValue(WinRegistry.HKEY_LOCAL_MACHINE,
-//					EXPLORER_DRIVE_ICONS + mountPoint + "\\DefaultIcon", "",
-//					System.getenv("SYSTEMROOT") + File.separator
-//							+ SYSTEM_FOLDER_NAME + File.separator
-//							+ "Panbox.ico");
-//			WinRegistry.writeStringValue(WinRegistry.HKEY_LOCAL_MACHINE,
-//					EXPLORER_DRIVE_ICONS + mountPoint + "\\DefaultLabel", "",
-//					bundle.getString("PanboxDocuments"));
-//		} catch (Exception ex) {
-//			logger.error("WindowsOSIntegration : registerVFS : Exception: "
-//					+ ex.getMessage());
-//		}
-//	}
-//
-//	public static void unregisterVFS(String mountPoint) {
-//		try {
-//			WinRegistry.deleteKey(WinRegistry.HKEY_LOCAL_MACHINE,
-//					EXPLORER_DRIVE_ICONS + mountPoint + "\\DefaultIcon");
-//			WinRegistry.deleteKey(WinRegistry.HKEY_LOCAL_MACHINE,
-//					EXPLORER_DRIVE_ICONS + mountPoint + "\\DefaultLabel");
-//			WinRegistry.deleteKey(WinRegistry.HKEY_LOCAL_MACHINE,
-//					EXPLORER_DRIVE_ICONS + mountPoint);
-//		} catch (Exception ex) {
-//			logger.error("WindowsOSIntegration : unregisterVFS : Exception: "
-//					+ ex.getMessage());
-//		}
-//	}
+	public static void registerVFS(String mountPoint) {
+		try {
+			// Register custom Label and Icon in Explorer
+			WinRegistry.createKey(WinRegistry.HKEY_CURRENT_USER,
+					EXPLORER_DRIVE_ICONS + mountPoint + "\\DefaultIcon");
+			WinRegistry.createKey(WinRegistry.HKEY_CURRENT_USER,
+					EXPLORER_DRIVE_ICONS + mountPoint + "\\DefaultLabel");
+			WinRegistry.writeStringValue(WinRegistry.HKEY_CURRENT_USER,
+					EXPLORER_DRIVE_ICONS + mountPoint + "\\DefaultIcon", "",
+					System.getenv("SYSTEMROOT") + File.separator
+							+ SYSTEM_FOLDER_NAME + File.separator
+							+ "Panbox.ico");
+			WinRegistry.writeStringValue(WinRegistry.HKEY_CURRENT_USER,
+					EXPLORER_DRIVE_ICONS + mountPoint + "\\DefaultLabel", "",
+					bundle.getString("PanboxDocuments"));
+		} catch (Exception ex) {
+			logger.error("WindowsOSIntegration : registerVFS : Exception: "
+					+ ex.getMessage());
+		}
+	}
 
-	// ----------- GET/SET Panbox Mount Point Drive Letter -----------
-//	public static String getPanboxMountPoint() throws ConfigurationException,
-//			IllegalArgumentException, IllegalAccessException,
-//			InvocationTargetException {
-//		String retval = WinRegistry.readString(WinRegistry.HKEY_LOCAL_MACHINE,
-//				PANBOX_LOCATION, "MountPoint");
-//		if (retval == null) {
-//			throw new ConfigurationException(
-//					"Panbox Drive letter has not been configured. Can't start Panbox Service without knowing where to set the mountpoint to.");
-//		}
-//		return retval;
-//	}
-//
-//	public static void setPanboxMountPoint(String mountPoint) {
-//		try {
-//			WinRegistry.createKey(WinRegistry.HKEY_LOCAL_MACHINE,
-//					PANBOX_LOCATION);
-//			WinRegistry.writeStringValue(WinRegistry.HKEY_LOCAL_MACHINE,
-//					PANBOX_LOCATION, "MountPoint", mountPoint);
-//		} catch (Exception ex) {
-//			logger.error("WindowsOSIntegration : getPanllllboxMountPoint : Exception: "
-//					+ ex.getMessage());
-//		}
-//	}
+	public static void unregisterVFS(String mountPoint) {
+		try {
+			WinRegistry.deleteKey(WinRegistry.HKEY_CURRENT_USER,
+					EXPLORER_DRIVE_ICONS + mountPoint + "\\DefaultIcon");
+			WinRegistry.deleteKey(WinRegistry.HKEY_CURRENT_USER,
+					EXPLORER_DRIVE_ICONS + mountPoint + "\\DefaultLabel");
+			WinRegistry.deleteKey(WinRegistry.HKEY_CURRENT_USER,
+					EXPLORER_DRIVE_ICONS + mountPoint);
+		} catch (Exception ex) {
+			logger.error("WindowsOSIntegration : unregisterVFS : Exception: "
+					+ ex.getMessage());
+		}
+	}
 }
