@@ -88,12 +88,16 @@ public class Settings {
 		protectedDeviceKey = Boolean.valueOf(prefs.get("protectedDeviceKey",
 				"false"));
 
-		panboxMountDir = prefs.get("mountDir", System.getProperty("user.home")
-				+ File.separator + "panbox");
-		if (!dirExists(panboxMountDir) && OS.getOperatingSystem().isLinux()) {
-			logger.error("Panbox mount-directory (" + panboxMountDir
-					+ ") does not exist!");
-			new File(panboxMountDir).mkdir();
+		if(OS.getOperatingSystem().isWindows()) {
+			panboxMountDir = prefs.get("mountDir", "P:\\");
+		} else if(OS.getOperatingSystem().isLinux()) {
+			panboxMountDir = prefs.get("mountDir", System.getProperty("user.home")
+					+ File.separator + "panbox");
+			if (!dirExists(panboxMountDir)) {
+				logger.warn("Panbox mount-directory (" + panboxMountDir
+						+ ") does not exist. Will create it now!");
+				new File(panboxMountDir).mkdir();
+			}
 		}
 
 		panboxConfDir = prefs.get("confDir", "");

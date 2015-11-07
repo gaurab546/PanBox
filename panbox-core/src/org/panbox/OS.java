@@ -41,6 +41,14 @@ public class OS {
 		public boolean isLinux() {
 			return (equals(LINUX32) || equals(LINUX64));
 		}
+		
+		public boolean isAndroid() {
+			return (equals(ANDROID));
+		}
+		
+		public boolean isOSX() {
+			return (equals(OSX32));
+		}
 	}
 
 	public static OperatingSystem getOperatingSystem() {

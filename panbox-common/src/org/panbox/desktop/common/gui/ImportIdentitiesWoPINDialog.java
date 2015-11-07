@@ -31,7 +31,6 @@ import ezvcard.property.StructuredName;
 
 import org.panbox.Settings;
 import org.panbox.core.identitymgmt.AbstractAddressbookManager;
-import org.panbox.core.identitymgmt.PanboxContact;
 import org.panbox.desktop.common.PanboxClient;
 
 import javax.swing.*;

@@ -109,13 +109,12 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 	public static void main(String[] args) {
 		setGuiLookAndFeel();
 
-		// update MountPath for user
-		try {
-//			Settings.getInstance().setMountDir(System.getProperty("user.home") + File.separator +
-//					"panbox");
-			Settings.getInstance().setMountDir("P:\\");
-		} catch (IllegalArgumentException e) {
-			logger.warn("PanboxClient : Could not read Panbox mount point so that mountDir could not be updated!");
+		// check and update MountPath for user from Version 1.0.0 (which was set to some Linux used value)
+		if(Settings.getInstance().getMountDir().length() != 3) {
+			//TODO: Make some dialog popup?
+			//JOptionPane.showMessageDialog(null, "PanBox drive letter has been resettet to P:\\. If you want to change this please configure the mount point in the PanBox GUI.");
+			logger.warn("PanboxClient : Detected old mount point configuration. Reset mount point to drive letter P. If you want to reconfigure this please change the mount directory to a proper drive letter in PanBox settings.");
+			Settings.getInstance().setMountDir("P:\\");	
 		}
 
 		try {
@@ -190,7 +189,12 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 		this.session = session;
 		logger.debug("WIN:PanboxClient : PanboxClient");
 		if (splash != null) { // Splashscreen is shown!
-			splash.close();
+			try {
+				splash.close();
+			} catch( Exception e ) {
+				// This should be ignored as this means that the splashScreen has been closed already!
+				logger.debug("WIN:PanboxClient : Tried to close splashscreen but there was none available.");
+			}
 		}
 	}
 
