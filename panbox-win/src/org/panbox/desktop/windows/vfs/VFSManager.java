@@ -36,8 +36,6 @@ import org.panbox.desktop.common.vfs.PanboxFS;
 
 public class VFSManager {
 
-	//private static final Logger logger = Logger.getLogger("org.panbox");
-
 	private static VFSManager instance;
 
 	private PanboxFSWindows vfs;
@@ -67,17 +65,16 @@ public class VFSManager {
 
 		File mountFile = new File(mountpoint);
 		
-//		if(mountFile == null || !mountFile.exists()) {
-//			logger.fatal("VFSManager : The configured Mountpoint '" + mountpoint + "' does not exist.");
-//			System.exit(1000);
-//		}
-		
-		vfs.mount(mountFile, false, null);
+		if( vfs.mount(mountFile, false, null) )
+		{
+			WindowsOSIntegration.registerVFS(mountpoint.substring(0, 1));
+		}
 	}
 
 	public synchronized void stopVFS() {
 		if (vfs != null) {
 			vfs.unmount();
+			WindowsOSIntegration.unregisterVFS(mountpoint.substring(0, 1));
 
 			vfs = null;
 		}

@@ -88,12 +88,16 @@ public class Settings {
 		protectedDeviceKey = Boolean.valueOf(prefs.get("protectedDeviceKey",
 				"false"));
 
-		panboxMountDir = prefs.get("mountDir", System.getProperty("user.home")
-				+ File.separator + "panbox");
-		if (!dirExists(panboxMountDir) && OS.getOperatingSystem().isLinux()) {
-			logger.error("Panbox mount-directory (" + panboxMountDir
-					+ ") does not exist!");
-			new File(panboxMountDir).mkdir();
+		if(OS.getOperatingSystem().isWindows()) {
+			panboxMountDir = prefs.get("mountDir", "P:\\");
+		} else if(OS.getOperatingSystem().isLinux()) {
+			panboxMountDir = prefs.get("mountDir", System.getProperty("user.home")
+					+ File.separator + "panbox");
+			if (!dirExists(panboxMountDir)) {
+				logger.warn("Panbox mount-directory (" + panboxMountDir
+						+ ") does not exist. Will create it now!");
+				new File(panboxMountDir).mkdir();
+			}
 		}
 
 		panboxConfDir = prefs.get("confDir", "");
@@ -179,6 +183,11 @@ public class Settings {
 				logger.warn("Problems determining if loopback device. Will ignore it.");
 				continue;
 			}
+			
+			// we should skip interfaces from VirtualBox
+			if(interface_.toString().contains("VirtualBox")) {
+				continue;
+			}
 
 			// if you don't expect the interface to be up you can skip this
 			// though it would question the usability of the rest of the code
@@ -211,12 +220,17 @@ public class Settings {
 				try (SocketChannel socket = SocketChannel.open()) {
 					// again, use a big enough timeout
 					socket.socket().setSoTimeout(3000);
+					//socket.socket().setReuseAddress(true);
+					socket.socket().setKeepAlive(false);
+					socket.configureBlocking(false);
 
 					// bind the socket to your local interface
 					socket.bind(new InetSocketAddress(address, 8080));
 
 					// try to connect to *somewhere*
 					socket.connect(new InetSocketAddress("panbox.org", 80));
+					
+					socket.close();
 				} catch (IOException ex) {
 					logger.warn(
 							"Could not use network address "
