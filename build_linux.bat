@@ -1,9 +1,9 @@
 @echo off
 cd panbox-core
-ant
+call ant
 cd ../panbox-common
-ant
+call ant
 cd ../panbox-linux
-ant
-mv installer/output/panbox.zip ..
+call ant
+move installer\output\panbox.zip ..
 echo Finished building PanBox client. The panbox.zip is ready to use.
