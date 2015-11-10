@@ -68,6 +68,7 @@ import javax.swing.table.DefaultTableModel;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
+import org.panbox.OS;
 import org.panbox.Settings;
 import org.panbox.core.Utils;
 import org.panbox.core.csp.CSPAdapterFactory;
@@ -425,7 +426,7 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 							.getDevicePubKeyFingerprint());
 
 					deviceShareList.setModel(client.getDeviceShares(device));
-					
+
 					checkIfRemoveDeviceShouldBeEnabled();
 				}
 			}
@@ -463,6 +464,13 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 			addDeviceButton.removeMouseListener(addDeviceButton
 					.getMouseListeners()[0]);
 		}
+
+		if (OS.getOperatingSystem().isWindows()) {
+			panboxFolderLabel.setText(bundle
+					.getString("client.settings.panboxDrive")); // NOI18N
+			
+			panboxFolderChooseButton.setVisible(false);
+		}
 	}
 
 	private void checkIfRemoveDeviceShouldBeEnabled() {
@@ -471,13 +479,12 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 					.getString("client.deviceList.removeDevice.disabled")); // NOI18N
 			removeDeviceButton.setEnabled(false);
 		} else {
-			if(deviceList.getSelectedValue() == null) {
-				removeDeviceButton
-				.setToolTipText(bundle
+			if (deviceList.getSelectedValue() == null) {
+				removeDeviceButton.setToolTipText(bundle
 						.getString("client.deviceList.removeDevice.noDevice")); // NOI18N
 				removeDeviceButton.setEnabled(false);
 			} else if (deviceList.getSelectedValue().getDeviceName()
-							.equals(Settings.getInstance().getDeviceName())) {
+					.equals(Settings.getInstance().getDeviceName())) {
 				removeDeviceButton
 						.setToolTipText(bundle
 								.getString("client.deviceList.removeDevice.thisDevice")); // NOI18N
@@ -2381,7 +2388,7 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 					logger.debug("RemoveDevice : Operation cancled.");
 				}
 			}
-			
+
 			checkIfRemoveDeviceShouldBeEnabled();
 		} else {
 			logger.error(PanboxClientGUI.class.getName()
@@ -3371,11 +3378,11 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 			}
 		}
 
-		// If this is not true currently no IP-Address is available. So use the current one.
-		if(networkAddressComboBox.getModel()
-				.getSelectedItem() instanceof InetAddress) {
-			InetAddress address = (InetAddress) networkAddressComboBox.getModel()
-					.getSelectedItem();
+		// If this is not true currently no IP-Address is available. So use the
+		// current one.
+		if (networkAddressComboBox.getModel().getSelectedItem() instanceof InetAddress) {
+			InetAddress address = (InetAddress) networkAddressComboBox
+					.getModel().getSelectedItem();
 			s.setPairingAddress(address);
 		}
 
