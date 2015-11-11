@@ -103,6 +103,7 @@
 	<!-- Fehelrmeldungen Ende-->
 	
 	<string name="pb_refresh_content">"Aktualisiere Liste"</string>
+    <string name="pb_upload_content">"Datei hochladen"</string>
 	<string name="pb_contacts_successfully_imported">"Kontakte erfolgreich importiert"</string>
 	 
 	<string name="pb_name">"Name:"</string>
