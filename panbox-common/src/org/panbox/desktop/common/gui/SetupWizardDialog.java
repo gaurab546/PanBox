@@ -475,12 +475,12 @@ public class SetupWizardDialog extends javax.swing.JDialog {
 			panel = devicePasswordPanel;
 			break;
 		case 3:
+			nextFinishButton.setText(bundle.getString("Next"));
 			panel = passwordPanel;
 			break;
 		case 4:
-			nextFinishButton.setText(bundle.getString("Next"));
-			panel = protectDeviceKeyPanel;
-			break;
+//			panel = protectDeviceKeyPanel;
+//			break;
 		case 5:
 			firstname = firstnameTextField.getText();
 			finishedFirstname.setText(firstname);
@@ -540,7 +540,7 @@ public class SetupWizardDialog extends javax.swing.JDialog {
 	}// GEN-LAST:event_abortBackButtonActionPerformed
 
 	private void nextFinishButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_nextFinishButtonActionPerformed
-		if (step == 5) {
+		if (step == 5 || step == 4) { //this is for device key protection in the future!
 			// finish
 			canceled = false;
 			dispose();
