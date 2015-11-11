@@ -4,7 +4,7 @@ PanBox OSE Changelog
 Version 1.1
 -----------
 
-Released on XXth November 2015 for Windows, Linux and Android
+Released on 11th November 2015 for Windows, Linux and Android
 
 Desktop:
 
