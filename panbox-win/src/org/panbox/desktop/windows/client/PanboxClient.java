@@ -111,10 +111,9 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 
 		// check and update MountPath for user from Version 1.0.0 (which was set to some Linux used value)
 		if(Settings.getInstance().getMountDir().length() != 3) {
-			//TODO: Make some dialog popup?
-			//JOptionPane.showMessageDialog(null, "PanBox drive letter has been resettet to P:\\. If you want to change this please configure the mount point in the PanBox GUI.");
+			Settings.getInstance().setMountDir("P:\\");
 			logger.warn("PanboxClient : Detected old mount point configuration. Reset mount point to drive letter P. If you want to reconfigure this please change the mount directory to a proper drive letter in PanBox settings.");
-			Settings.getInstance().setMountDir("P:\\");	
+			JOptionPane.showMessageDialog(null, bundle.getString("PanboxClient.windows.resetDriveLetter"));	
 		}
 
 		try {
