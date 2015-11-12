@@ -79,7 +79,7 @@ public class PanboxWindowsService extends AbstractPanboxService {
 	public String getOnlineFilename(VolumeParams p, String fileName)
 			throws RemoteException, FileNotFoundException, ObfuscationException {
 		String shareid = FilenameUtils.getName(p.path); // Dropbox share name
-		String path = File.separator + p.shareName + File.separator + fileName;
+		String path = File.separator + fileName;
 		PanboxFS fs;
 		try {
 			fs = VFSManager.getInstance().getVFS();
