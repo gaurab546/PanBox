@@ -1,6 +1,13 @@
 PanBox OSE Changelog
 ====================
 
+Version 1.1.1
+-------------
+
+Released on 17th November 2015 for Windows
+
+* Windows: Fixed issue on some systems 'Not enough disk space on the destination drive.'
+
 Version 1.1
 -----------
 
