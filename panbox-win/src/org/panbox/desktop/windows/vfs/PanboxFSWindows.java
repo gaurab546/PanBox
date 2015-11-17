@@ -662,7 +662,6 @@ public class PanboxFSWindows extends PanboxFS {
 
 	public synchronized void setFileTime(String fileName, long creationTime,
 			long lastAccessTime, long lastWriteTime, DokanFileInfo fileInfo) throws FileNotFoundException {
-		logger.debug("PanboxFS : setFileTime : No implementation executed!");
 		logger.debug("PanboxFS : setFileTime : " + fileName + ", fileInfo: "
 				+ fileInfo + ", creatinTime: " + creationTime + ", lastAccessTime: "
 				+ lastAccessTime + ", lastWriteTime: " + lastWriteTime

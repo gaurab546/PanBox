@@ -66,12 +66,6 @@ import org.panbox.desktop.common.utils.DesktopApi;
 import org.panbox.desktop.common.vfs.backend.dropbox.DropboxAdapterFactory;
 import org.panbox.desktop.common.vfs.backend.dropbox.DropboxClientIntegration;
 
-import com.sun.jna.platform.win32.Advapi32Util;
-import com.sun.jna.platform.win32.Advapi32Util.Account;
-import com.sun.jna.platform.win32.WinNT.ACCESS_ACEStructure;
-import com.sun.jna.platform.win32.WinNT.ACCESS_ALLOWED_ACE;
-import com.sun.jna.platform.win32.WinNT.ACCESS_DENIED_ACE;
-
 public class AddShareDialog extends javax.swing.JDialog {
 
 	/**
@@ -795,30 +789,10 @@ public class AddShareDialog extends javax.swing.JDialog {
 
 	private boolean checkPermissionsOnDirectory(String path) {
 		if (OS.getOperatingSystem().isWindows()) {
-			// TODO: This might cause problems in case a domain account was
-			// used!
-			Account currAcc = Advapi32Util.getAccountByName(Advapi32Util
-					.getUserName());
-			ACCESS_ACEStructure[] aces = Advapi32Util.getFileSecurity(path,
-					false);
-			for (ACCESS_ACEStructure ace : aces) {
-				Account acc = Advapi32Util.getAccountBySid(ace.getSID());
-				if (ace instanceof ACCESS_ALLOWED_ACE) {
-					if (acc.sidString.equals(currAcc.sidString)) {
-						// Found user SYSTEM who has access to the file. Will
-						// proceed!
-						return true;
-					}
-				} else if (ace instanceof ACCESS_DENIED_ACE) {
-					if (acc.sidString.equals(currAcc.sidString)) {
-						// Found user SYSTEM who has no access to the file. Will
-						// stop!
-						return false;
-					}
-				}
-			}
-			return false; // SYSTEM was not found in DACL -> Has no access!
+			// TODO: Impl real check
+			return true;
 		} else if (OS.getOperatingSystem().isLinux()) {
+			// TODO: Impl real check
 			return true;
 		} else {
 			logger.error("AddShareDialog : checkPermissionsOnDirectory : Not running on Linux and Windows!");
