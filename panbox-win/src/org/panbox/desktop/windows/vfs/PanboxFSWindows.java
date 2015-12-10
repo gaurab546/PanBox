@@ -285,14 +285,14 @@ public class PanboxFSWindows extends PanboxFS {
 							logger.debug("PanboxFS : createFile : VirtualFile("
 									+ fileName
 									+ ") should be deletable. Therefor it has not been opened!");
-							if (System.getProperty("os.version").equals("6.2")
-									|| System.getProperty("os.version").equals(
-											"6.3")) {
-								// Windows 8, 8.1, 2012 Server, 2012 R2 Server
-								// workaround!
+							long osVersion = Long.valueOf(System.getProperty("os.version"));
+							if ( osVersion >= 6.2 ) {
+								// This is a workaround for Windows 8/2012 Server and newer
+								
+								// This includes Windows 8.1, 2012 R2 Server, 10, 2016 Server and more
 
 								// The DeleteFile call is not working in Dokan
-								// on Windows 8 so we need to run this
+								// on Windows 8+ so we need to run this
 								// workaround here in order to remove the file!
 								boolean deleted = file.delete();
 								if (deleted) {
