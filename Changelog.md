@@ -1,6 +1,13 @@
 PanBox OSE Changelog
 ====================
 
+Version 1.1.2
+-------------
+
+Released on 10th December 2015 for Windows
+
+* Windows 10/Server 2016: Fixed issue that no files/folders can be deleted
+
 Version 1.1.1
 -------------
 
