@@ -161,6 +161,9 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 			if (showGui) {
 				instance.showGui();
 			}
+			
+			instance.executeVersionCheck();
+			
 			instance.showTrayMessage(bundle
 					.getString("PanboxClient.panboxStartedMessage"));
 

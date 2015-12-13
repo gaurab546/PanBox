@@ -136,6 +136,8 @@ public class PanboxClient extends org.panbox.desktop.common.PanboxClient {
 			if (autoStartGui) {
 				gui.setVisible(true);
 			}
+			
+			client.executeVersionCheck();
 		} catch (OperationAbortedException e) {
 			logger.error("PanboxClient : Wizard has been aborted.");
 			System.exit(DesktopApi.EXIT_ERR_WIZARD_ABORTED);

@@ -76,6 +76,7 @@ import javax.bluetooth.ServiceRecord;
 import javax.crypto.Cipher;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.LookAndFeel;
@@ -158,6 +159,7 @@ import org.panbox.desktop.common.utils.DesktopApi;
 import org.panbox.desktop.common.utils.FileUtils;
 import org.panbox.desktop.common.utils.SingleInstanceLock;
 import org.panbox.desktop.common.utils.SingleInstanceLockWMIC;
+import org.panbox.desktop.common.utils.VersionUtils;
 import org.panbox.desktop.common.vfs.backend.dropbox.DropboxAdapterFactory;
 import org.panbox.desktop.common.vfs.backend.dropbox.DropboxClientIntegration;
 
@@ -167,9 +169,8 @@ public abstract class PanboxClient {
 
 	protected static final Logger logger = Logger.getLogger("org.panbox");
 
-	protected static final ResourceBundle bundle = ResourceBundle.getBundle(
-			"org.panbox.desktop.common.gui.Messages", Settings.getInstance()
-					.getLocale());
+	protected static final ResourceBundle bundle = ResourceBundle.getBundle("org.panbox.desktop.common.gui.Messages",
+			Settings.getInstance().getLocale());
 
 	protected final ShareListModel shareList = new ShareListModel();
 
@@ -185,11 +186,9 @@ public abstract class PanboxClient {
 
 	public final DeviceManagerImpl deviceManager;
 
-	private final ExecutorService executor = Executors
-			.newSingleThreadExecutor();
+	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-	private final ScheduledExecutorService canceller = Executors
-			.newSingleThreadScheduledExecutor();
+	private final ScheduledExecutorService canceller = Executors.newSingleThreadScheduledExecutor();
 
 	private Future<?> task = null;
 
@@ -209,24 +208,18 @@ public abstract class PanboxClient {
 			try {
 				String splashLoading = null;
 				if (state == SplashScreenState.CHECK_ALREADY_RUNNING) {
-					splashLoading = bundle
-							.getString("splashscreen.checkingInstance");
+					splashLoading = bundle.getString("splashscreen.checkingInstance");
 				} else if (state == SplashScreenState.LOADING_IDENTITY) {
-					splashLoading = bundle
-							.getString("splashscreen.loadingIdentity");
+					splashLoading = bundle.getString("splashscreen.loadingIdentity");
 				} else if (state == SplashScreenState.LOADING_SHARES) {
-					splashLoading = bundle
-							.getString("splashscreen.loadingShares");
+					splashLoading = bundle.getString("splashscreen.loadingShares");
 				} else if (state == SplashScreenState.LOADING_DEVICES) {
-					splashLoading = bundle
-							.getString("splashscreen.loadingDevices");
+					splashLoading = bundle.getString("splashscreen.loadingDevices");
 				} else if (state == SplashScreenState.LOADING_CONTACTS) {
-					splashLoading = bundle
-							.getString("splashscreen.loadingContacts");
+					splashLoading = bundle.getString("splashscreen.loadingContacts");
 				} else if (state == SplashScreenState.ABOUT) {
 					splashLoading = "Version: "
-							+ new String(PanboxDesktopConstants.PANBOX_VERSION,
-									StandardCharsets.UTF_8);
+							+ new String(PanboxDesktopConstants.PANBOX_VERSION, StandardCharsets.UTF_8);
 				} else {
 					splashLoading = "Loading...";
 				}
@@ -298,8 +291,7 @@ public abstract class PanboxClient {
 		// Set language to de_DE or en_US since only those two are supported for
 		// now!
 		Settings settings = Settings.getInstance();
-		if (settings.getLocale().getLanguage()
-				.equals(new Locale("de").getLanguage())) {
+		if (settings.getLocale().getLanguage().equals(new Locale("de").getLanguage())) {
 			settings.setLanguage("de_DE");
 		} else {
 			settings.setLanguage("en_US");
@@ -326,10 +318,8 @@ public abstract class PanboxClient {
 		if (!checkSupportedKeySize()) {
 			logger.error("Symmetric key of " + KeyConstants.SYMMETRIC_KEY_SIZE
 					+ " not supported by this JVM. Application will exit...");
-			JOptionPane.showMessageDialog(null,
-					bundle.getString("client.startup.invalidkeysize"),
-					bundle.getString("client.startup.error.title"),
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, bundle.getString("client.startup.invalidkeysize"),
+					bundle.getString("client.startup.error.title"), JOptionPane.ERROR_MESSAGE);
 			System.exit(DesktopApi.EXIT_INVALID_KEY_LENGTH);
 		}
 
@@ -339,48 +329,32 @@ public abstract class PanboxClient {
 					if (checkPanboxProcessesRunning()) {
 						// panbox processes running in background
 
-						JOptionPane
-								.showMessageDialog(
-										null,
-										bundle.getString("PanboxClient.alreadyRunning"));
+						JOptionPane.showMessageDialog(null, bundle.getString("PanboxClient.alreadyRunning"));
 						System.exit(DesktopApi.EXIT_ERR_ALREADY_RUNNING);
 					} else {
 						// file-lock detected and no panbox processes running in
 						// background -> system crash
 
 						if (panboxMounted()) {
-							int ret = JOptionPane
-									.showConfirmDialog(
-											null,
-											bundle.getString("PanboxClient.crashDetected"),
-											bundle.getString("PanboxClient.unmountPanbox"),
-											JOptionPane.YES_NO_OPTION);
+							int ret = JOptionPane.showConfirmDialog(null,
+									bundle.getString("PanboxClient.crashDetected"),
+									bundle.getString("PanboxClient.unmountPanbox"), JOptionPane.YES_NO_OPTION);
 
 							if (ret == JOptionPane.YES_OPTION) {
 								boolean umount = mountPointHandler();
 
 								if (!umount) {
-									JOptionPane
-											.showMessageDialog(
-													null,
-													MessageFormat.format(
-															bundle.getString("PanboxClient.unmountNotPossible"),
-															Settings.getInstance()
-																	.getMountDir(),
-															Settings.getInstance()
-																	.getMountDir()));
+									JOptionPane.showMessageDialog(null,
+											MessageFormat.format(bundle.getString("PanboxClient.unmountNotPossible"),
+													Settings.getInstance().getMountDir(),
+													Settings.getInstance().getMountDir()));
 									System.exit(DesktopApi.EXIT_CRASH_DETECTED);
 								}
 
-							} else if (ret == JOptionPane.NO_OPTION
-									|| ret == JOptionPane.CLOSED_OPTION) {
-								JOptionPane
-										.showMessageDialog(
-												null,
-												MessageFormat.format(
-														bundle.getString("PanboxClient.unmountDirectory"),
-														Settings.getInstance()
-																.getMountDir()));
+							} else if (ret == JOptionPane.NO_OPTION || ret == JOptionPane.CLOSED_OPTION) {
+								JOptionPane.showMessageDialog(null,
+										MessageFormat.format(bundle.getString("PanboxClient.unmountDirectory"),
+												Settings.getInstance().getMountDir()));
 								System.exit(DesktopApi.EXIT_CRASH_DETECTED);
 							}
 						}
@@ -389,16 +363,13 @@ public abstract class PanboxClient {
 
 				}
 			} catch (IOException e) {
-				logger.error(
-						"PanboxClient : Exception thrown while determining if program is already running: ",
-						e);
+				logger.error("PanboxClient : Exception thrown while determining if program is already running: ", e);
 				System.exit(DesktopApi.EXIT_ERR_UNKNOWN);
 			}
 		} else {
 			// Windows uses WMIC implementation
 			if (!SingleInstanceLockWMIC.lock()) {
-				JOptionPane.showMessageDialog(null,
-						bundle.getString("PanboxClient.alreadyRunning"));
+				JOptionPane.showMessageDialog(null, bundle.getString("PanboxClient.alreadyRunning"));
 				System.exit(DesktopApi.EXIT_ERR_ALREADY_RUNNING);
 			}
 		}
@@ -433,8 +404,7 @@ public abstract class PanboxClient {
 			splash = SplashScreen.getSplashScreen();
 			if (splash == null) {
 				splashGraphics = null;
-				System.out
-						.println("SplashScreen.getSplashScreen() returned null");
+				System.out.println("SplashScreen.getSplashScreen() returned null");
 			} else {
 				splashGraphics = splash.createGraphics();
 				if (splashGraphics == null) {
@@ -451,12 +421,9 @@ public abstract class PanboxClient {
 			refreshShareListModel();
 		} catch (Exception e) {
 			logger.error("Unable to initialize share list!", e);
-			JOptionPane
-					.showMessageDialog(
-							getMainWindow(),
-							bundle.getString("PanboxClient.initialLoadingOfSharesFailed"),
-							bundle.getString("client.error"),
-							JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(getMainWindow(),
+					bundle.getString("PanboxClient.initialLoadingOfSharesFailed"), bundle.getString("client.error"),
+					JOptionPane.ERROR_MESSAGE);
 		}
 
 		renderSplashFrame(SplashScreenState.LOADING_DEVICES);
@@ -464,14 +431,9 @@ public abstract class PanboxClient {
 		try {
 			refreshDeviceListModel();
 		} catch (Exception e) {
-			logger.error(bundle.getString("PanboxClient.unableInitDeviceList"),
-					e);
-			JOptionPane
-					.showMessageDialog(
-							getMainWindow(),
-							bundle.getString("PanboxClient.initialDeviceSetupFailed"),
-							bundle.getString("client.error"),
-							JOptionPane.ERROR_MESSAGE);
+			logger.error(bundle.getString("PanboxClient.unableInitDeviceList"), e);
+			JOptionPane.showMessageDialog(getMainWindow(), bundle.getString("PanboxClient.initialDeviceSetupFailed"),
+					bundle.getString("client.error"), JOptionPane.ERROR_MESSAGE);
 		}
 
 		renderSplashFrame(SplashScreenState.LOADING_CONTACTS);
@@ -480,12 +442,8 @@ public abstract class PanboxClient {
 			refreshContactListModel();
 		} catch (Exception e) {
 			logger.error("Unable to initialize contact list!", e);
-			JOptionPane
-					.showMessageDialog(
-							getMainWindow(),
-							bundle.getString("PanboxClient.initialContactSetupFailed"),
-							bundle.getString("client.error"),
-							JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(getMainWindow(), bundle.getString("PanboxClient.initialContactSetupFailed"),
+					bundle.getString("client.error"), JOptionPane.ERROR_MESSAGE);
 		}
 
 		setup();
@@ -520,8 +478,7 @@ public abstract class PanboxClient {
 		return shareList;
 	}
 
-	public ShareParticipantListModel getShareParticipantListForShare(
-			PanboxShare share) {
+	public ShareParticipantListModel getShareParticipantListForShare(PanboxShare share) {
 		return share.generatePermissionsModel(myId);
 	}
 
@@ -553,68 +510,44 @@ public abstract class PanboxClient {
 	 */
 	public PanboxShare checkShareIntegrity(PanboxShare share) {
 		if (share.isOwner()) {
-			Collection<PanboxContact> coll = shareManager
-					.checkShareDeviceListIntegrity(share);
+			Collection<PanboxContact> coll = shareManager.checkShareDeviceListIntegrity(share);
 			char[] password = null;
 			PanboxShare retShare = null;
 			try {
 				for (Iterator<PanboxContact> it = coll.iterator(); it.hasNext();) {
 					PanboxContact contact = (PanboxContact) it.next();
-					int ret = JOptionPane
-							.showConfirmDialog(
-									getMainWindow(),
-									MessageFormat.format(
-											bundle.getString("client.checkShareIntegrity.devicelistreset"),
-											contact.getEmail()), bundle
-											.getString("client.warn"),
-									JOptionPane.YES_NO_OPTION,
-									JOptionPane.WARNING_MESSAGE);
+					int ret = JOptionPane.showConfirmDialog(getMainWindow(),
+							MessageFormat.format(bundle.getString("client.checkShareIntegrity.devicelistreset"),
+									contact.getEmail()),
+							bundle.getString("client.warn"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
 					if (ret == JOptionPane.YES_OPTION) {
 						if (password == null) {
-							password = PasswordEnterDialog
-									.invoke(PermissionType.SHARE);
+							password = PasswordEnterDialog.invoke(PermissionType.SHARE);
 						}
-						logger.info("Will try to reinitialize share device list for contact "
-								+ contact.getEmail()
-								+ " in share "
-								+ share.getName() + " ...");
+						logger.info("Will try to reinitialize share device list for contact " + contact.getEmail()
+								+ " in share " + share.getName() + " ...");
 
 						try {
-							retShare = shareManager.resetShareInvitation(share,
-									contact.getEmail(), password);
+							retShare = shareManager.resetShareInvitation(share, contact.getEmail(), password);
 						} catch (UnrecoverableKeyException e) {
-							logger.error(
-									"Re-initializing share device list failed due to unrecoverable key!",
-									e);
-							JOptionPane
-									.showMessageDialog(
-											getMainWindow(),
-											bundle.getString("PanboxClient.unableToRecoverKeys"),
-											bundle.getString("client.error"),
-											JOptionPane.ERROR_MESSAGE);
+							logger.error("Re-initializing share device list failed due to unrecoverable key!", e);
+							JOptionPane.showMessageDialog(getMainWindow(),
+									bundle.getString("PanboxClient.unableToRecoverKeys"),
+									bundle.getString("client.error"), JOptionPane.ERROR_MESSAGE);
 						} catch (ShareManagerException | ShareMetaDataException e) {
-							logger.error(
-									"Re-initializing share device list failed!",
-									e);
-							JOptionPane
-									.showMessageDialog(
-											getMainWindow(),
-											MessageFormat.format(
-													bundle.getString("client.checkShareIntegrity.devicelistresetfailed"),
-													contact.getEmail()), bundle
-													.getString("client.error"),
-											JOptionPane.ERROR_MESSAGE);
+							logger.error("Re-initializing share device list failed!", e);
+							JOptionPane.showMessageDialog(getMainWindow(),
+									MessageFormat.format(
+											bundle.getString("client.checkShareIntegrity.devicelistresetfailed"),
+											contact.getEmail()),
+									bundle.getString("client.error"), JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						JOptionPane
-								.showMessageDialog(
-										getMainWindow(),
-										MessageFormat.format(
-												bundle.getString("client.checkShareIntegrity.devicelistnotreset"),
-												contact.getEmail()), bundle
-												.getString("client.warn"),
-										JOptionPane.WARNING_MESSAGE);
+						JOptionPane.showMessageDialog(getMainWindow(),
+								MessageFormat.format(bundle.getString("client.checkShareIntegrity.devicelistnotreset"),
+										contact.getEmail()),
+								bundle.getString("client.warn"), JOptionPane.WARNING_MESSAGE);
 					}
 				}
 			} finally {
@@ -636,9 +569,7 @@ public abstract class PanboxClient {
 		try {
 			shareNames = shareManager.getInstalledShares();
 		} catch (ShareManagerException sme) {
-			logger.error(
-					"Could not obtain list of installed share names! No shares will be loaded ...",
-					sme);
+			logger.error("Could not obtain list of installed share names! No shares will be loaded ...", sme);
 			throw sme;
 		}
 
@@ -653,34 +584,27 @@ public abstract class PanboxClient {
 				shareWatchService.registerShare(share);
 				shareList.addElement(share);
 			} catch (ShareDoesNotExistException e) {
-				logger.error(
-						"Share does not exist in the local database! Sharename: "
-								+ shareName, e);
+				logger.error("Share does not exist in the local database! Sharename: " + shareName, e);
 				succ = false;
 			} catch (ShareInaccessibleException e) {
-				logger.error("Unable to access backend diretory for share "
-						+ shareName
+				logger.error("Unable to access backend diretory for share " + shareName
 						+ ". Trying to remove share from local database", e);
 				try {
 					shareManager.removeShareFromDB(shareName);
-					logger.info("Share entry " + shareName
-							+ " has been removed from local database!");
+					logger.info("Share entry " + shareName + " has been removed from local database!");
 				} catch (ShareManagerException e2) {
-					logger.error("Unable to remove share entry " + shareName
-							+ " from local database!");
+					logger.error("Unable to remove share entry " + shareName + " from local database!");
 				}
 				succ = false;
 			}
 
 			catch (UnrecoverableKeyException | ShareMetaDataException e) {
-				logger.error("Unable to load share " + shareName
-						+ ". Share metadata may be corrupt", e);
+				logger.error("Unable to load share " + shareName + ". Share metadata may be corrupt", e);
 				succ = false;
 			}
 		}
 		if (!succ) {
-			throw new ShareManagerException(
-					"Encountered error while loading one or more shares.");
+			throw new ShareManagerException("Encountered error while loading one or more shares.");
 		}
 	}
 
@@ -692,8 +616,7 @@ public abstract class PanboxClient {
 		contactList.addElement(new PanboxMyContact(myId));
 
 		// load & add remaining contacts
-		Collection<org.panbox.core.identitymgmt.PanboxContact> contacts = myId
-				.getAddressbook().getContacts();
+		Collection<org.panbox.core.identitymgmt.PanboxContact> contacts = myId.getAddressbook().getContacts();
 		for (org.panbox.core.identitymgmt.PanboxContact c : contacts) {
 			contactList.addElement(new PanboxGUIContact(c));
 		}
@@ -771,13 +694,10 @@ public abstract class PanboxClient {
 			pocDialog.setVisible(true);
 
 			if (pocDialog.isPairing() == null) {
-				JOptionPane.showMessageDialog(null,
-						bundle.getString("client.setupwizard.aborted.msg"),
-						bundle.getString("client.warn"),
-						JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(null, bundle.getString("client.setupwizard.aborted.msg"),
+						bundle.getString("client.warn"), JOptionPane.WARNING_MESSAGE);
 				logger.debug("Panbox setup wizard has been aborted.");
-				throw new OperationAbortedException(
-						"The setup wizard has been aborted.");
+				throw new OperationAbortedException("The setup wizard has been aborted.");
 			} else if (pocDialog.isPairing()) {
 				PairThisDeviceDialog pairDialog = new PairThisDeviceDialog(null);
 				pairDialog.setVisible(true);
@@ -787,8 +707,7 @@ public abstract class PanboxClient {
 					loadPairingFile(pFile);
 				} else {
 					try {
-						String pairingPassword = pairDialog
-								.getPairingPassword();
+						String pairingPassword = pairDialog.getPairingPassword();
 
 						runGeneralPairingRequester(pairingPassword);
 					} catch (OperationAbortedException ex) {
@@ -797,8 +716,7 @@ public abstract class PanboxClient {
 				}
 
 				this.identityManager.init(addressbookManager);
-				this.myId = identityManager
-						.loadMyIdentity(new SimpleAddressbook());
+				this.myId = identityManager.loadMyIdentity(new SimpleAddressbook());
 			} else {
 				SetupWizardDialog dialog = new SetupWizardDialog(null, true);
 				dialog.setLocationRelativeTo(null);
@@ -810,14 +728,12 @@ public abstract class PanboxClient {
 				}
 
 				// show please wait dialog
-				PleaseWaitDialog loadDialog = new PleaseWaitDialog(null,
-						bundle.getString("PanboxGeneratingIdentity"));
+				PleaseWaitDialog loadDialog = new PleaseWaitDialog(null, bundle.getString("PanboxGeneratingIdentity"));
 				loadDialog.setLocationRelativeTo(null);
 				loadDialog.setVisible(true);
 
 				// create identity and initial keypairs
-				Identity id = new Identity(new SimpleAddressbook(),
-						dialog.getEmail(), dialog.getFirstname(),
+				Identity id = new Identity(new SimpleAddressbook(), dialog.getEmail(), dialog.getFirstname(),
 						dialog.getLastname());
 				KeyPair ownerKeySign = CryptCore.generateKeypair();
 				KeyPair ownerKeyEnc = CryptCore.generateKeypair();
@@ -840,13 +756,11 @@ public abstract class PanboxClient {
 					if (protectDeviceKey) {
 						Settings.getInstance().setProtectedDeviceKey(true);
 						// use identity password for protection
-						deviceManager.addThisDevice(deviceName, deviceKey,
-								DeviceType.DESKTOP, password);
+						deviceManager.addThisDevice(deviceName, deviceKey, DeviceType.DESKTOP, password);
 					} else {
 						Settings.getInstance().setProtectedDeviceKey(false);
 						// use well known secret for protection
-						deviceManager.addThisDevice(deviceName, deviceKey,
-								DeviceType.DESKTOP);
+						deviceManager.addThisDevice(deviceName, deviceKey, DeviceType.DESKTOP);
 					}
 					refreshDeviceListModel();
 				} catch (DeviceManagerException ex) {
@@ -871,31 +785,22 @@ public abstract class PanboxClient {
 		DropboxClientIntegration dropboxClientIntegration = (DropboxClientIntegration) dropboxAdapterFactory
 				.getClientAdapter();
 		if (dropboxClientIntegration.isClientInstalled()) {
-			DropboxWizardDialog dialog = new DropboxWizardDialog(mainWindow,
-					true);
-			dialog.setAccessToken(Settings.getInstance()
-					.getDropboxAccessToken());
-			if (!Settings.getInstance().getDropboxSynchronizationDir()
-					.equals("")) {
-				dialog.setDropboxSyncDirPath(Settings.getInstance()
-						.getDropboxSynchronizationDir());
+			DropboxWizardDialog dialog = new DropboxWizardDialog(mainWindow, true);
+			dialog.setAccessToken(Settings.getInstance().getDropboxAccessToken());
+			if (!Settings.getInstance().getDropboxSynchronizationDir().equals("")) {
+				dialog.setDropboxSyncDirPath(Settings.getInstance().getDropboxSynchronizationDir());
 			}
 			dialog.setVisible(true);
 
-			if (dialog.getAccessToken() != null
-					&& dialog.getDropboxSyncDirPath() != null) {
-				Settings.getInstance().setDropboxAccessToken(
-						dialog.getAccessToken());
-				Settings.getInstance().setDropboxSynchronizationDir(
-						dialog.getDropboxSyncDirPath());
+			if (dialog.getAccessToken() != null && dialog.getDropboxSyncDirPath() != null) {
+				Settings.getInstance().setDropboxAccessToken(dialog.getAccessToken());
+				Settings.getInstance().setDropboxSynchronizationDir(dialog.getDropboxSyncDirPath());
 			}
 		}
 
 		// Show message about the successful client setup!
-		JOptionPane.showMessageDialog(null,
-				bundle.getObject("client.setupwizard.success.msg"),
-				bundle.getString("client.setupwizard.title"),
-				JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(null, bundle.getObject("client.setupwizard.success.msg"),
+				bundle.getString("client.setupwizard.title"), JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	// ==================== CLIENT SPECIFIC EVENTS ====================
@@ -916,59 +821,33 @@ public abstract class PanboxClient {
 									// this event!
 		} catch (CreateShareNotAllowedException e) {
 			logger.error("Slave tried to create a new share!", e);
-			JOptionPane
-					.showMessageDialog(getMainWindow(), bundle
-							.getString("client.slaveCreateShareNotAllowed"),
-							bundle.getString("client.error"),
-							JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(getMainWindow(), bundle.getString("client.slaveCreateShareNotAllowed"),
+					bundle.getString("client.error"), JOptionPane.ERROR_MESSAGE);
 		} catch (UnrecoverableKeyException e) {
 			logger.error("Unable to recover key!", e);
-			JOptionPane
-					.showMessageDialog(getMainWindow(), bundle
-							.getString("PanboxClient.unableToRecoverKeys"),
-							bundle.getString("client.error"),
-							JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(getMainWindow(), bundle.getString("PanboxClient.unableToRecoverKeys"),
+					bundle.getString("client.error"), JOptionPane.ERROR_MESSAGE);
 		} catch (ShareMetaDataException e) {
 			logger.error("Error in share metadata", e);
-			JOptionPane
-					.showMessageDialog(
-							getMainWindow(),
-							bundle.getString("PanboxClient.errorWhileAccessingShareMetadata"),
-							bundle.getString("client.error"),
-							JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(getMainWindow(),
+					bundle.getString("PanboxClient.errorWhileAccessingShareMetadata"), bundle.getString("client.error"),
+					JOptionPane.ERROR_MESSAGE);
 		} catch (ShareNameAlreadyExistsException e) {
 			logger.error("Share name already exists", e);
-			JOptionPane
-					.showMessageDialog(getMainWindow(), bundle
-							.getString("PanboxClient.shareNameAlreadyExists"),
-							bundle.getString("client.error"),
-							JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(getMainWindow(), bundle.getString("PanboxClient.shareNameAlreadyExists"),
+					bundle.getString("client.error"), JOptionPane.ERROR_MESSAGE);
 		} catch (SharePathAlreadyExistsException e) {
 			logger.error("Share path has already been configured!", e);
-			JOptionPane
-					.showMessageDialog(
-							getMainWindow(),
-							bundle.getString("PanboxClient.sharePathAlreadyConfigured"),
-							bundle.getString("client.error"),
-							JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(getMainWindow(), bundle.getString("PanboxClient.sharePathAlreadyConfigured"),
+					bundle.getString("client.error"), JOptionPane.ERROR_MESSAGE);
 		} catch (UnknownOwnerException ex) {
-			logger.error(
-					"PanboxClient : addShare : UnknownOwnerException occured: ",
-					ex);
-			JOptionPane
-					.showMessageDialog(getMainWindow(),
-							bundle.getString("PanboxClient.shareOwnerUnknown"),
-							bundle.getString("client.error"),
-							JOptionPane.ERROR_MESSAGE);
+			logger.error("PanboxClient : addShare : UnknownOwnerException occured: ", ex);
+			JOptionPane.showMessageDialog(getMainWindow(), bundle.getString("PanboxClient.shareOwnerUnknown"),
+					bundle.getString("client.error"), JOptionPane.ERROR_MESSAGE);
 		} catch (ShareManagerException ex) {
-			logger.error(
-					"PanboxClient : addShare : ShareManagerException occured: ",
-					ex);
-			JOptionPane
-					.showMessageDialog(getMainWindow(),
-							bundle.getString("client.error.addShare"),
-							bundle.getString("client.error"),
-							JOptionPane.ERROR_MESSAGE);
+			logger.error("PanboxClient : addShare : ShareManagerException occured: ", ex);
+			JOptionPane.showMessageDialog(getMainWindow(), bundle.getString("client.error.addShare"),
+					bundle.getString("client.error"), JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
 			logger.error("PanboxClient : addShare : Exception occured: ", e);
 		}
@@ -978,22 +857,16 @@ public abstract class PanboxClient {
 
 	public void removeShare(PanboxShare share) {
 		try {
-			ShareManagerImpl.getInstance().removeShare(share.getName(),
-					share.getPath(), share.getType());
+			ShareManagerImpl.getInstance().removeShare(share.getName(), share.getPath(), share.getType());
 			shareWatchService.removeShare(share);
 			shareList.removeElement(share);
 			informRemoveShare(share); // inform OS specific implementation
 			// about
 			// // this event!
 		} catch (ShareManagerException ex) {
-			logger.error(
-					"PanboxClient : removeShare : ShareManagerException occured: ",
-					ex);
-			JOptionPane
-					.showMessageDialog(null,
-							bundle.getString("client.error.removeShare"),
-							bundle.getString("client.error"),
-							JOptionPane.ERROR_MESSAGE);
+			logger.error("PanboxClient : removeShare : ShareManagerException occured: ", ex);
+			JOptionPane.showMessageDialog(null, bundle.getString("client.error.removeShare"),
+					bundle.getString("client.error"), JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
 			logger.error("PanboxClient : removeShare : Exception occured: ", e);
 		}
@@ -1003,8 +876,7 @@ public abstract class PanboxClient {
 
 	// Share participants list events
 
-	public void removePermissionFromShare(PanboxShare share,
-			PanboxSharePermission permission, char[] password) {
+	public void removePermissionFromShare(PanboxShare share, PanboxSharePermission permission, char[] password) {
 
 		// first panbox release does not support permission removal. disabled
 		// for now
@@ -1054,23 +926,20 @@ public abstract class PanboxClient {
 
 	}
 
-	public PanboxShare addPermissionToShare(PanboxShare share,
-			PanboxSharePermission permission, char[] password)
-			throws UnrecoverableKeyException, ShareDoesNotExistException,
-			ShareManagerException, ShareMetaDataException {
+	public PanboxShare addPermissionToShare(PanboxShare share, PanboxSharePermission permission, char[] password)
+			throws UnrecoverableKeyException, ShareDoesNotExistException, ShareManagerException,
+			ShareMetaDataException {
 
 		if (permission instanceof DeviceShareParticipant) {
 			// New device has been added to share
 			DeviceShareParticipant dPermission = (DeviceShareParticipant) permission;
 			PanboxDevice device = dPermission.getDevice();
-			share = ShareManagerImpl.getInstance().addDevicePermission(share,
-					device.getDeviceName(), password);
+			share = ShareManagerImpl.getInstance().addDevicePermission(share, device.getDeviceName(), password);
 		} else if (permission instanceof ContactShareParticipant) {
 			// New contact has been added to share
 			ContactShareParticipant cPermission = (ContactShareParticipant) permission;
 			PanboxGUIContact contact = cPermission.getContact();
-			share = ShareManagerImpl.getInstance().addContactPermission(share,
-					contact.getEmail(), password);
+			share = ShareManagerImpl.getInstance().addContactPermission(share, contact.getEmail(), password);
 		}
 
 		// update sharelist contents
@@ -1084,8 +953,7 @@ public abstract class PanboxClient {
 		return share;
 	}
 
-	public void saveMyContact(ArrayList<CloudProviderInfo> removedCSPs,
-			ArrayList<CloudProviderInfo> addedCSPs) {
+	public void saveMyContact(ArrayList<CloudProviderInfo> removedCSPs, ArrayList<CloudProviderInfo> addedCSPs) {
 		for (CloudProviderInfo csp : removedCSPs) {
 			this.myId.delCloudProviderByProviderName(csp);
 		}
@@ -1097,9 +965,8 @@ public abstract class PanboxClient {
 
 	// Contact list events
 	// public void saveContact(String mail, String newFirstName, String newName,
-	public void saveContact(PanboxGUIContact contact, String newFirstName,
-			String newName, ArrayList<CloudProviderInfo> removedCSPs,
-			ArrayList<CloudProviderInfo> addedCSPs, boolean verified) {
+	public void saveContact(PanboxGUIContact contact, String newFirstName, String newName,
+			ArrayList<CloudProviderInfo> removedCSPs, ArrayList<CloudProviderInfo> addedCSPs, boolean verified) {
 		// org.panbox.core.identitymgmt.PanboxContact contact = this.myId
 		// .getAddressbook().contactExists(mail);
 		contact.setFirstName(newFirstName);
@@ -1115,8 +982,7 @@ public abstract class PanboxClient {
 		} else {
 			contact.setTrustLevel(PanboxContact.UNTRUSTED_CONTACT);
 		}
-		addressbookManager.persistContacts(this.myId.getAddressbook()
-				.getContacts(), this.myId.getID());
+		addressbookManager.persistContacts(this.myId.getAddressbook().getContacts(), this.myId.getID());
 	}
 
 	public void importContacts(VCard[] vcs, boolean authVerified) {
@@ -1127,14 +993,11 @@ public abstract class PanboxClient {
 			List<PanboxContact> existingContacts = e.getContacts();
 			for (PanboxContact c : existingContacts) {
 				b.append("- ");
-				b.append(c.getFirstName() + " " + c.getName() + " ("
-						+ c.getEmail() + ")");
+				b.append(c.getFirstName() + " " + c.getName() + " (" + c.getEmail() + ")");
 				b.append("\n");
 			}
-			JOptionPane.showMessageDialog(getMainWindow(), MessageFormat
-					.format(bundle
-							.getString("PanboxClient.contactAlreadyExists"), b
-							.toString()), "Info",
+			JOptionPane.showMessageDialog(getMainWindow(),
+					MessageFormat.format(bundle.getString("PanboxClient.contactAlreadyExists"), b.toString()), "Info",
 					JOptionPane.INFORMATION_MESSAGE);
 		} finally {
 			identityManager.storeMyIdentity(this.myId);
@@ -1170,17 +1033,13 @@ public abstract class PanboxClient {
 
 			if (sharesToBeRemoved.size() > 0) {
 				// there still are share to be removed
-				JCheckBox checkbox = new JCheckBox(
-						bundle.getString("client.shareList.removeShareDirectoryMessage"));
-				String message = MessageFormat.format(bundle
-						.getString("PanboxClient.shareOwnerRemoveMessage"),
+				JCheckBox checkbox = new JCheckBox(bundle.getString("client.shareList.removeShareDirectoryMessage"));
+				String message = MessageFormat.format(bundle.getString("PanboxClient.shareOwnerRemoveMessage"),
 						slist.toString());
 				Object[] params = { message, checkbox };
 
-				int reallyRemove = JOptionPane.showConfirmDialog(
-						getMainWindow(), params,
-						bundle.getString("PanboxClient.reallyRemoveShares"),
-						JOptionPane.YES_NO_OPTION);
+				int reallyRemove = JOptionPane.showConfirmDialog(getMainWindow(), params,
+						bundle.getString("PanboxClient.reallyRemoveShares"), JOptionPane.YES_NO_OPTION);
 
 				if (reallyRemove == JOptionPane.YES_OPTION) {
 					// user chose to remove shares
@@ -1188,25 +1047,18 @@ public abstract class PanboxClient {
 						PleaseWaitDialog d = null;
 						if (checkbox.isSelected()) {
 							try {
-								d = new PleaseWaitDialog(
-										getMainWindow(),
+								d = new PleaseWaitDialog(getMainWindow(),
 										bundle.getString("PanboxClient.operationInProgress"));
 								d.setLocationRelativeTo(getMainWindow());
 								d.setVisible(true);
-								FileUtils.deleteDirectoryTree(new File(share
-										.getPath()));
+								FileUtils.deleteDirectoryTree(new File(share.getPath()));
 								// FileUtils.deleteDirectory(new File(share
 								// .getPath()));
 							} catch (IOException e) {
-								logger.error(
-										"Failed to remove share source directory!",
-										e);
-								JOptionPane
-										.showMessageDialog(
-												getMainWindow(),
-												bundle.getString("PanboxClient.deleteShareContentsFailed"),
-												bundle.getString("error"),
-												JOptionPane.ERROR_MESSAGE);
+								logger.error("Failed to remove share source directory!", e);
+								JOptionPane.showMessageDialog(getMainWindow(),
+										bundle.getString("PanboxClient.deleteShareContentsFailed"),
+										bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
 							} finally {
 								if (d != null) {
 									d.dispose();
@@ -1221,13 +1073,11 @@ public abstract class PanboxClient {
 					return;
 				}
 			}
-		} catch (NullPointerException | ShareManagerException
-				| UnrecoverableKeyException | ShareMetaDataException e) {
+		} catch (NullPointerException | ShareManagerException | UnrecoverableKeyException | ShareMetaDataException e) {
 			logger.error("Could not obtain list of installed shares!", e);
-			int ret = JOptionPane.showConfirmDialog(getMainWindow(), bundle
-					.getString("PanboxClient.unableToDetermineIfUserIsOwner"),
-					bundle.getString("PanboxClient.unableToReadShares"),
-					JOptionPane.YES_NO_OPTION);
+			int ret = JOptionPane.showConfirmDialog(getMainWindow(),
+					bundle.getString("PanboxClient.unableToDetermineIfUserIsOwner"),
+					bundle.getString("PanboxClient.unableToReadShares"), JOptionPane.YES_NO_OPTION);
 			if (ret == JOptionPane.NO_OPTION) {
 				return;
 			}
@@ -1235,12 +1085,9 @@ public abstract class PanboxClient {
 
 		// try to remove contact
 		if (!this.myId.deleteContact(contact.getEmail())) {
-			JOptionPane
-					.showMessageDialog(
-							getMainWindow(),
-							bundle.getString("PanboxClient.couldNotDeleteFromAddressbook"),
-							bundle.getString("client.error"),
-							JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(getMainWindow(),
+					bundle.getString("PanboxClient.couldNotDeleteFromAddressbook"), bundle.getString("client.error"),
+					JOptionPane.ERROR_MESSAGE);
 		} else {
 			identityManager.storeMyIdentity(this.myId);
 			// operation was successful, refresh view
@@ -1248,34 +1095,27 @@ public abstract class PanboxClient {
 		}
 	}
 
-	public void exportContacts(List<PanboxGUIContact> contacts, File vcardFile,
-			char[] exportPIN) {
+	public void exportContacts(List<PanboxGUIContact> contacts, File vcardFile, char[] exportPIN) {
 		Collection<VCard> vcards = new LinkedList<VCard>();
 		for (PanboxGUIContact c : contacts) {
 			VCard v;
 			if (c instanceof PanboxMyContact) {
 				v = AbstractAddressbookManager.contact2VCard(this.myId);
 			} else {
-				v = AbstractAddressbookManager.contact2VCard((PanboxContact) c
-						.getModel());
+				v = AbstractAddressbookManager.contact2VCard((PanboxContact) c.getModel());
 			}
 			vcards.add(v);
 		}
 
-		File tmpFileForVcard = new File(System.getProperty("java.io.tmpdir")
-				+ File.separator + "panboxTMPex.vcf");
+		File tmpFileForVcard = new File(System.getProperty("java.io.tmpdir") + File.separator + "panboxTMPex.vcf");
 
 		if (!AbstractAddressbookManager.exportContacts(vcards, tmpFileForVcard)) {
-			JOptionPane
-					.showMessageDialog(getMainWindow(), bundle
-							.getString("PanboxClient.couldNotExportContacts"),
-							bundle.getString("client.error"),
-							JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(getMainWindow(), bundle.getString("PanboxClient.couldNotExportContacts"),
+					bundle.getString("client.error"), JOptionPane.ERROR_MESSAGE);
 		}
 
 		try {
-			logger.info("Exporting contacts with export PIN "
-					+ String.valueOf(exportPIN));
+			logger.info("Exporting contacts with export PIN " + String.valueOf(exportPIN));
 			VCardProtector.protectVCF(vcardFile, tmpFileForVcard, exportPIN);
 		} catch (Exception e) {
 			logger.warn("protectVCF Exception", e);
@@ -1293,23 +1133,18 @@ public abstract class PanboxClient {
 			if (c instanceof PanboxMyContact) {
 				v = AbstractAddressbookManager.contact2VCard(this.myId);
 			} else {
-				v = AbstractAddressbookManager.contact2VCard((PanboxContact) c
-						.getModel());
+				v = AbstractAddressbookManager.contact2VCard((PanboxContact) c.getModel());
 			}
 			vcards.add(v);
 		}
 
 		if (!AbstractAddressbookManager.exportContacts(vcards, vcardFile)) {
-			JOptionPane
-					.showMessageDialog(getMainWindow(), bundle
-							.getString("PanboxClient.couldNotExportContacts"),
-							bundle.getString("client.error"),
-							JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(getMainWindow(), bundle.getString("PanboxClient.couldNotExportContacts"),
+					bundle.getString("client.error"), JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
-	public void addCSPtoContact(PanboxGUIContact contact, String csp,
-			String account) {
+	public void addCSPtoContact(PanboxGUIContact contact, String csp, String account) {
 		contact.addCloudProvider(new CloudProviderInfo(csp, account));
 	}
 
@@ -1319,11 +1154,9 @@ public abstract class PanboxClient {
 
 	// Device list events
 
-	public NetworkPairingInformation initDevicePairingLAN()
-			throws SocketException {
+	public NetworkPairingInformation initDevicePairingLAN() throws SocketException {
 		Settings s = Settings.getInstance();
-		NetworkPairingInformation info = new NetworkPairingInformation(
-				s.getPairingInterface(), s.getPairingAddress());
+		NetworkPairingInformation info = new NetworkPairingInformation(s.getPairingInterface(), s.getPairingAddress());
 		extendPairingInformation(info);
 		return info;
 	}
@@ -1339,15 +1172,15 @@ public abstract class PanboxClient {
 		try {
 			local.setDiscoverable(DiscoveryAgent.GIAC);
 		} catch (BluetoothStateException e) {
-			logger.debug("PanboxClient : initDevicePairingBluetooth : First try to set discoverable failed. Will try again in 1sec.");
+			logger.debug(
+					"PanboxClient : initDevicePairingBluetooth : First try to set discoverable failed. Will try again in 1sec.");
 			Thread.sleep(1000);
 			local.setDiscoverable(DiscoveryAgent.GIAC);
 		}
 
 		// setting LocalDevice is only need for Linux, since on Windows we
 		// bluecove only supports one device!
-		BluetoothPairingInformation info = new BluetoothPairingInformation(
-				local);
+		BluetoothPairingInformation info = new BluetoothPairingInformation(local);
 		extendPairingInformation(info);
 		return info;
 	}
@@ -1364,65 +1197,49 @@ public abstract class PanboxClient {
 
 	private void extendPairingInformation(PairingInformation info) {
 		logger.debug("PanboxClient : extendPairingInformation : Will now extend given device pairing information...");
-		final JTextField deviceNameField = new JTextField(
-				bundle.getString("PanboxClient.chooseDeviceName"));
+		final JTextField deviceNameField = new JTextField(bundle.getString("PanboxClient.chooseDeviceName"));
 		deviceNameField.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
-				if (deviceNameField.getText().equals(
-						bundle.getString("PanboxClient.chooseDeviceName"))) {
+				if (deviceNameField.getText().equals(bundle.getString("PanboxClient.chooseDeviceName"))) {
 					deviceNameField.setText("");
 				}
 			}
 		});
-		JOptionPane.showMessageDialog(null, deviceNameField,
-				bundle.getString("PanboxClient.enterDeviceName"),
+		JOptionPane.showMessageDialog(null, deviceNameField, bundle.getString("PanboxClient.enterDeviceName"),
 				JOptionPane.INFORMATION_MESSAGE);
 		info.setDeviceName(deviceNameField.getText());
-		logger.debug("PanboxClient : extendPairingInformation : Set device name to: "
-				+ info.getDeviceName());
+		logger.debug("PanboxClient : extendPairingInformation : Set device name to: " + info.getDeviceName());
 	}
 
-	public void runMasterPairingOnPairingHandle(final PairingInformation info,
-			final String password, final PairingNotificationReceiver receiver,
-			final char[] keyPassword) {
-		logger.debug("PanboxClient : runMasterPairingOnPairingHandle : Master pairing started: "
-				+ info);
-		runGeneralPairingHandler(PairingType.MASTER, info, password, receiver,
-				keyPassword);
-	}
-
-	public void runSlavePairingOnPairingHandle(final PairingInformation info,
-			final String password, final PairingNotificationReceiver receiver) {
-		logger.debug("PanboxClient : runSlavePairingOnPairingHandle : Slave pairing started: "
-				+ info);
-		runGeneralPairingHandler(PairingType.SLAVE, info, password, receiver,
-				null);
-	}
-
-	private void runGeneralPairingHandler(final PairingType type,
-			final PairingInformation info, final String password,
+	public void runMasterPairingOnPairingHandle(final PairingInformation info, final String password,
 			final PairingNotificationReceiver receiver, final char[] keyPassword) {
-		logger.debug("PanboxClient : runGeneralPairingHandler : Pairing is about to start: "
-				+ "Type: " + type + " for " + info);
+		logger.debug("PanboxClient : runMasterPairingOnPairingHandle : Master pairing started: " + info);
+		runGeneralPairingHandler(PairingType.MASTER, info, password, receiver, keyPassword);
+	}
+
+	public void runSlavePairingOnPairingHandle(final PairingInformation info, final String password,
+			final PairingNotificationReceiver receiver) {
+		logger.debug("PanboxClient : runSlavePairingOnPairingHandle : Slave pairing started: " + info);
+		runGeneralPairingHandler(PairingType.SLAVE, info, password, receiver, null);
+	}
+
+	private void runGeneralPairingHandler(final PairingType type, final PairingInformation info, final String password,
+			final PairingNotificationReceiver receiver, final char[] keyPassword) {
+		logger.debug("PanboxClient : runGeneralPairingHandler : Pairing is about to start: " + "Type: " + type + " for "
+				+ info);
 		final PanboxClient thisClient = this;
 
 		try {
 			if (info instanceof NetworkPairingInformation) {
-				task = executor.submit(new NetworkPairingCallable(type, info,
-						password, receiver, keyPassword, this));
+				task = executor.submit(new NetworkPairingCallable(type, info, password, receiver, keyPassword, this));
 			} else if (info instanceof BluetoothPairingInformation) {
-				task = executor.submit(new BluetoothPairingCallable(type, info,
-						password, receiver, keyPassword, this));
+				task = executor.submit(new BluetoothPairingCallable(type, info, password, receiver, keyPassword, this));
 			}
 		} catch (Exception e) {
-			logger.error(
-					"PanboxClient : runGeneralPairingHandler : Setting up pairing failed: ",
-					e);
-			JOptionPane.showMessageDialog(getMainWindow(),
-					bundle.getString("client.pairing.couldnotsetup.message"),
-					bundle.getString("client.pairing.failed"),
-					JOptionPane.ERROR_MESSAGE);
+			logger.error("PanboxClient : runGeneralPairingHandler : Setting up pairing failed: ", e);
+			JOptionPane.showMessageDialog(getMainWindow(), bundle.getString("client.pairing.couldnotsetup.message"),
+					bundle.getString("client.pairing.failed"), JOptionPane.ERROR_MESSAGE);
 			task = null;
 			return; // pairing setup failed. Return and don't start!
 		}
@@ -1436,7 +1253,8 @@ public abstract class PanboxClient {
 						logger.debug("PanboxClient : runGeneralPairingHandler : Timeout for pairing task!");
 						receiver.inform(PairingResult.TIMEOUT);
 					} else {
-						logger.debug("PanboxClient : runGeneralPairingHandler : Timeout for task that has been finished/canceled already!");
+						logger.debug(
+								"PanboxClient : runGeneralPairingHandler : Timeout for task that has been finished/canceled already!");
 					}
 					return null;
 				}
@@ -1466,16 +1284,14 @@ public abstract class PanboxClient {
 
 		KeyPair deviceKey = CryptCore.generateKeypair();
 
-		PleaseWaitDialog dialog = new PleaseWaitDialog(null,
-				bundle.getString("client.pairing.pleasewait.message"));
+		PleaseWaitDialog dialog = new PleaseWaitDialog(null, bundle.getString("client.pairing.pleasewait.message"));
 		dialog.setLocationRelativeTo(null);
 		dialog.setVisible(true);
 
 		// try if addr is InetAddress
 		try {
 			InetAddress inetaddr = InetAddress.getByName(addr);
-			PAKNetworkPairingRequester requester = new PAKNetworkPairingRequester(
-					inetaddr, password,
+			PAKNetworkPairingRequester requester = new PAKNetworkPairingRequester(inetaddr, password,
 					org.panbox.core.devicemgmt.DeviceType.DESKTOP, deviceKey);
 			requester.runProtocol();
 
@@ -1487,14 +1303,17 @@ public abstract class PanboxClient {
 			try {
 				// do the search for service discovery
 				RemoteDeviceDiscovery.discover();
-				List<ServiceRecord> records = RemoteDeviceDiscovery
-						.getServiceRecordsByDeviceAddr(addr);
+				List<ServiceRecord> records = RemoteDeviceDiscovery.getServiceRecordsByDeviceAddr(addr);
 				// check whether we found our device or not
 				if (records != null) {
 					try {
-						PAKBluetoothPairingRequester requester = new PAKBluetoothPairingRequester(
-								password, DeviceType.DESKTOP, deviceKey,
-								records.get(0)); // Since we only search for a
+						PAKBluetoothPairingRequester requester = new PAKBluetoothPairingRequester(password,
+								DeviceType.DESKTOP, deviceKey, records.get(0)); // Since
+																				// we
+																				// only
+																				// search
+																				// for
+																				// a
 						// single UUID we will only
 						// find a single
 						// ServiceRecord!
@@ -1507,68 +1326,52 @@ public abstract class PanboxClient {
 								ex);
 					}
 				} else {
-					logger.error("PanboxClient : runGeneralPairingRequester : The specified device was not found on Device search!");
+					logger.error(
+							"PanboxClient : runGeneralPairingRequester : The specified device was not found on Device search!");
 				}
 			} catch (BluetoothStateException | InterruptedException ex) {
-				logger.error(
-						"PanboxClient : runGeneralPairingRequester : Bluetooth device lookup failed!",
-						ex);
+				logger.error("PanboxClient : runGeneralPairingRequester : Bluetooth device lookup failed!", ex);
 			}
 			dialog.dispose();
 
 			// Neither LAN nor Bluetooth could find a host. Host could not be
 			// connected!
-			JOptionPane.showMessageDialog(null,
-					bundle.getString("client.pairing.couldnotconnect.message"),
-					bundle.getString("client.pairing.failed"),
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, bundle.getString("client.pairing.couldnotconnect.message"),
+					bundle.getString("client.pairing.failed"), JOptionPane.ERROR_MESSAGE);
 			logger.error("PanboxClient : runGeneralPairingRequester : Could not connect to host.");
 		} catch (Exception e) {
 			dialog.dispose();
-			JOptionPane.showMessageDialog(null,
-					bundle.getString("client.pairing.failed.message"),
-					bundle.getString("client.pairing.failed"),
-					JOptionPane.ERROR_MESSAGE);
-			logger.error(
-					"PanboxClient : runGeneralPairingRequester : Pairing failed with exception: ",
-					e);
+			JOptionPane.showMessageDialog(null, bundle.getString("client.pairing.failed.message"),
+					bundle.getString("client.pairing.failed"), JOptionPane.ERROR_MESSAGE);
+			logger.error("PanboxClient : runGeneralPairingRequester : Pairing failed with exception: ", e);
 		}
 	}
 
-	private void finishGeneralPairing(KeyPair deviceKey,
-			PAKCorePairingRequester requester) {
+	private void finishGeneralPairing(KeyPair deviceKey, PAKCorePairingRequester requester) {
 		switch (requester.getType()) {
 		case MASTER:
-			finishMasterPairing(requester.geteMail(), requester.getFirstName(),
-					requester.getLastName(), requester.getKeyPassword(),
-					requester.getOwnerCertEnc(), requester.getOwnerKeyEnc(),
-					requester.getOwnerCertSign(), requester.getOwnerKeySign(),
-					deviceKey, requester.getDeviceName(),
-					requester.getDevCert(), requester.getKnownDevices(),
-					requester.getKnownContacts());
+			finishMasterPairing(requester.geteMail(), requester.getFirstName(), requester.getLastName(),
+					requester.getKeyPassword(), requester.getOwnerCertEnc(), requester.getOwnerKeyEnc(),
+					requester.getOwnerCertSign(), requester.getOwnerKeySign(), deviceKey, requester.getDeviceName(),
+					requester.getDevCert(), requester.getKnownDevices(), requester.getKnownContacts());
 			break;
 		case SLAVE:
-			finishSlavePairing(requester.geteMail(), requester.getFirstName(),
-					requester.getLastName(), requester.getOwnerCertEnc(),
-					requester.getOwnerCertSign(), deviceKey,
-					requester.getDeviceName(), requester.getDevCert(),
-					requester.getKnownDevices(), requester.getKnownContacts());
+			finishSlavePairing(requester.geteMail(), requester.getFirstName(), requester.getLastName(),
+					requester.getOwnerCertEnc(), requester.getOwnerCertSign(), deviceKey, requester.getDeviceName(),
+					requester.getDevCert(), requester.getKnownDevices(), requester.getKnownContacts());
 			break;
 		default:
 			logger.error("PanboxClient : runGeneralPairingRequester : Unknown pairing type");
 		}
 	}
 
-	private void finishMasterPairing(String eMail, String firstName,
-			String lastName, char[] keyPassword, X509Certificate certEnc,
-			KeyPair ownerKeyEnc, X509Certificate certSign,
-			KeyPair ownerKeySign, KeyPair deviceKey, String deviceName,
-			X509Certificate deviceCert, Map<String, X509Certificate> devices,
+	private void finishMasterPairing(String eMail, String firstName, String lastName, char[] keyPassword,
+			X509Certificate certEnc, KeyPair ownerKeyEnc, X509Certificate certSign, KeyPair ownerKeySign,
+			KeyPair deviceKey, String deviceName, X509Certificate deviceCert, Map<String, X509Certificate> devices,
 			Collection<VCard> contacts) {
 		logger.debug("PanboxClient : finishMasterPairing : Will set up master identity.");
 		// create identity and initial keypairs
-		Identity id = new Identity(new SimpleAddressbook(), eMail, firstName,
-				lastName);
+		Identity id = new Identity(new SimpleAddressbook(), eMail, firstName, lastName);
 		id.setOwnerKeySign(certSign);
 		id.setOwnerKeyEnc(certEnc);
 		id.setOwnerKeySign(ownerKeySign, keyPassword);
@@ -1588,14 +1391,16 @@ public abstract class PanboxClient {
 		// ownerKeyEnc.getPrivate().destroy();
 		// } catch (DestroyFailedException e1) {
 		// logger.warn(
-		// "PanboxClient : finishMasterPairing : Could not destroy private enc key after pairing: ",
+		// "PanboxClient : finishMasterPairing : Could not destroy private enc
+		// key after pairing: ",
 		// e1);
 		// }
 		// try {
 		// ownerKeySign.getPrivate().destroy();
 		// } catch (DestroyFailedException e1) {
 		// logger.warn(
-		// "PanboxClient : finishMasterPairing : Could not destroy private sign key after pairing: ",
+		// "PanboxClient : finishMasterPairing : Could not destroy private sign
+		// key after pairing: ",
 		// e1);
 		// }
 		try {
@@ -1610,31 +1415,24 @@ public abstract class PanboxClient {
 
 		try {
 			deviceManager.setIdentity(id);
-			deviceManager.addThisDevice(deviceName, deviceKey,
-					DeviceType.DESKTOP);
+			deviceManager.addThisDevice(deviceName, deviceKey, DeviceType.DESKTOP);
 
 			// add other known devices
 			for (Entry<String, X509Certificate> dev : devices.entrySet()) {
-				deviceManager.addDevice(dev.getKey(), dev.getValue(),
-						DeviceType.DESKTOP);
+				deviceManager.addDevice(dev.getKey(), dev.getValue(), DeviceType.DESKTOP);
 			}
 			refreshDeviceListModel();
 		} catch (DeviceManagerException ex) {
-			logger.error(
-					"PanboxClient : finishMasterPairing : Could not add device to device list.",
-					ex);
+			logger.error("PanboxClient : finishMasterPairing : Could not add device to device list.", ex);
 		}
 	}
 
-	private void finishSlavePairing(String eMail, String firstName,
-			String lastName, X509Certificate ownerCertSign,
-			X509Certificate ownerCertEnc, KeyPair deviceKey, String deviceName,
-			X509Certificate deviceCert, Map<String, X509Certificate> devices,
-			Collection<VCard> contacts) {
+	private void finishSlavePairing(String eMail, String firstName, String lastName, X509Certificate ownerCertSign,
+			X509Certificate ownerCertEnc, KeyPair deviceKey, String deviceName, X509Certificate deviceCert,
+			Map<String, X509Certificate> devices, Collection<VCard> contacts) {
 		logger.debug("PanboxClient : finishSlavePairing : Will set up slave identity.");
 		// create identity and initial keypairs
-		Identity id = new Identity(new SimpleAddressbook(), eMail, firstName,
-				lastName);
+		Identity id = new Identity(new SimpleAddressbook(), eMail, firstName, lastName);
 
 		id.setOwnerKeyEnc(ownerCertEnc);
 		id.setOwnerKeySign(ownerCertSign);
@@ -1655,20 +1453,16 @@ public abstract class PanboxClient {
 
 		try {
 			deviceManager.setIdentity(id);
-			deviceManager.addThisDevice(deviceName, deviceKey,
-					DeviceType.DESKTOP);
+			deviceManager.addThisDevice(deviceName, deviceKey, DeviceType.DESKTOP);
 
 			// add other known devices
 			for (Entry<String, X509Certificate> dev : devices.entrySet()) {
-				deviceManager.addDevice(dev.getKey(), dev.getValue(),
-						DeviceType.DESKTOP);
+				deviceManager.addDevice(dev.getKey(), dev.getValue(), DeviceType.DESKTOP);
 			}
 
 			refreshDeviceListModel();
 		} catch (DeviceManagerException ex) {
-			logger.error(
-					"PanboxClient : finishMasterPairing : Could not add device to device list.",
-					ex);
+			logger.error("PanboxClient : finishMasterPairing : Could not add device to device list.", ex);
 		}
 	}
 
@@ -1683,61 +1477,38 @@ public abstract class PanboxClient {
 	 * @param password
 	 *            Password of the identity
 	 */
-	public void storePairingFile(File outputFile, String devicename,
-			char[] password, PairingType type, DeviceType devType) {
-		logger.debug("PanboxClient : storePairingFile : Storing pairing container to: "
-				+ outputFile.getAbsolutePath());
+	public void storePairingFile(File outputFile, String devicename, char[] password, PairingType type,
+			DeviceType devType) {
+		logger.debug("PanboxClient : storePairingFile : Storing pairing container to: " + outputFile.getAbsolutePath());
 
 		try {
 			PanboxFilePairingWriteReturnContainer retCon = null;
 			if (type == PairingType.MASTER) {
-				retCon = PanboxFilePairingUtils.storePairingFile(outputFile,
-						devicename, password, type, devType, myId.getEmail(),
-						myId.getFirstName(), myId.getName(),
-						myId.getPrivateKeyEnc(password), myId.getCertEnc(),
-						myId.getPrivateKeySign(password), myId.getCertSign(),
-						getDevicePairingMap(), getContactsPairingList());
+				retCon = PanboxFilePairingUtils.storePairingFile(outputFile, devicename, password, type, devType,
+						myId.getEmail(), myId.getFirstName(), myId.getName(), myId.getPrivateKeyEnc(password),
+						myId.getCertEnc(), myId.getPrivateKeySign(password), myId.getCertSign(), getDevicePairingMap(),
+						getContactsPairingList());
 			} else {
-				retCon = PanboxFilePairingUtils.storePairingFile(outputFile,
-						devicename, password, type, devType, myId.getEmail(),
-						myId.getFirstName(), myId.getName(), null,
-						myId.getCertEnc(), null, myId.getCertSign(),
-						getDevicePairingMap(), getContactsPairingList());
+				retCon = PanboxFilePairingUtils.storePairingFile(outputFile, devicename, password, type, devType,
+						myId.getEmail(), myId.getFirstName(), myId.getName(), null, myId.getCertEnc(), null,
+						myId.getCertSign(), getDevicePairingMap(), getContactsPairingList());
 			}
 			logger.debug("PanboxClient : storePairingFile : Storing pairing container finished.");
 
-			deviceManager.addDevice(retCon.getDevicename(),
-					retCon.getDevCert(), retCon.getDevType());
+			deviceManager.addDevice(retCon.getDevicename(), retCon.getDevCert(), retCon.getDevType());
 			refreshDeviceListModel();
-		} catch (IOException | KeyStoreException | NoSuchAlgorithmException
-				| CertificateException ex) {
-			logger.error(
-					"PanboxClient : storePairingFile : Exception caught: ", ex);
-			JOptionPane
-					.showMessageDialog(
-							null,
-							bundle.getString("PanboxClient.errorWhileStoringPairingContainer"),
-							bundle.getString("PanboxClient.errorWhileStoringPairingContainer"),
-							JOptionPane.ERROR_MESSAGE);
+		} catch (IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex) {
+			logger.error("PanboxClient : storePairingFile : Exception caught: ", ex);
+			JOptionPane.showMessageDialog(null, bundle.getString("PanboxClient.errorWhileStoringPairingContainer"),
+					bundle.getString("PanboxClient.errorWhileStoringPairingContainer"), JOptionPane.ERROR_MESSAGE);
 		} catch (UnrecoverableKeyException ex) {
-			logger.error("PanboxClient : storePairingFile : Wrong password: ",
-					ex);
-			JOptionPane
-					.showMessageDialog(
-							null,
-							bundle.getString("PanboxClient.wrongPassword"),
-							bundle.getString("PanboxClient.errorWhileStoringPairingContainer"),
-							JOptionPane.ERROR_MESSAGE);
+			logger.error("PanboxClient : storePairingFile : Wrong password: ", ex);
+			JOptionPane.showMessageDialog(null, bundle.getString("PanboxClient.wrongPassword"),
+					bundle.getString("PanboxClient.errorWhileStoringPairingContainer"), JOptionPane.ERROR_MESSAGE);
 		} catch (DeviceManagerException ex) {
-			logger.warn(
-					"PanboxClient : storePairingFile : Exception caught after pairing file: ",
-					ex);
-			JOptionPane
-					.showMessageDialog(
-							null,
-							bundle.getString("PanboxClient.errorCouldNotAddDevicePairing"),
-							bundle.getString("PanboxClient.errorCouldNotAddDevicePairingTitle"),
-							JOptionPane.ERROR_MESSAGE);
+			logger.warn("PanboxClient : storePairingFile : Exception caught after pairing file: ", ex);
+			JOptionPane.showMessageDialog(null, bundle.getString("PanboxClient.errorCouldNotAddDevicePairing"),
+					bundle.getString("PanboxClient.errorCouldNotAddDevicePairingTitle"), JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -1745,18 +1516,17 @@ public abstract class PanboxClient {
 		Map<String, X509Certificate> devices = new HashMap<>();
 		try {
 			for (PanboxDevice dev : deviceManager.getDeviceList()) {
-				X509Certificate cert = (X509Certificate) myId.getDeviceCert(dev
-						.getDeviceName());
+				X509Certificate cert = (X509Certificate) myId.getDeviceCert(dev.getDeviceName());
 				if (cert != null) {
 					devices.put(dev.getDeviceName(), cert);
 				} else {
 					logger.error("PanboxClient : storePairingFile : Could not get device key for device "
-							+ dev.getDeviceName()
-							+ ". Will not add it to device list.");
+							+ dev.getDeviceName() + ". Will not add it to device list.");
 				}
 			}
 		} catch (DeviceManagerException ex) {
-			logger.error("PanboxClient : storePairingFile : Could not get device list from DeviceManager. Will not add any device to list.");
+			logger.error(
+					"PanboxClient : storePairingFile : Could not get device list from DeviceManager. Will not add any device to list.");
 		}
 		return devices;
 	}
@@ -1770,39 +1540,29 @@ public abstract class PanboxClient {
 	}
 
 	public void loadPairingFile(File inputFile) throws IOException {
-		logger.debug("PanboxClient : loadPairingFile : Started importing pairing file: "
-				+ inputFile);
+		logger.debug("PanboxClient : loadPairingFile : Started importing pairing file: " + inputFile);
 
 		char[] password = PasswordEnterDialog.invoke(PermissionType.DEVICE);
 
 		try {
-			PanboxFilePairingLoadReturnContainer retCon = PanboxFilePairingUtils
-					.loadPairingFile(inputFile, password);
+			PanboxFilePairingLoadReturnContainer retCon = PanboxFilePairingUtils.loadPairingFile(inputFile, password);
 
-			setUpIdentity(retCon.geteMail(), retCon.getFirstName(),
-					retCon.getLastName(), retCon.getPassword(),
-					retCon.getDeviceName(), retCon.getDevicePrivKey(),
-					retCon.getDeviceCert(), retCon.getSignPrivKey(),
-					retCon.getSignCert(), retCon.getEncPrivKey(),
-					retCon.getEncCert(), retCon.getDevices(),
+			setUpIdentity(retCon.geteMail(), retCon.getFirstName(), retCon.getLastName(), retCon.getPassword(),
+					retCon.getDeviceName(), retCon.getDevicePrivKey(), retCon.getDeviceCert(), retCon.getSignPrivKey(),
+					retCon.getSignCert(), retCon.getEncPrivKey(), retCon.getEncCert(), retCon.getDevices(),
 					retCon.getContactsFile());
 		} catch (IllegalArgumentException e) {
 			logger.error("PanboxClient : loadPairingFile : Could not read pairing file!");
-			JOptionPane
-					.showMessageDialog(
-							null,
-							"The provided Panbox pairing file was corrupt. Please create a new one.",
-							"Panbox Pairing failed", JOptionPane.ERROR_MESSAGE);
-		} catch (NoSuchAlgorithmException | CertificateException
-				| KeyStoreException | InvalidKeySpecException e) {
-			logger.error("PanboxClient : loadPairingFile : Exception: ", e);
 			JOptionPane.showMessageDialog(null,
-					"An error occurred while pairing. Please try again",
+					"The provided Panbox pairing file was corrupt. Please create a new one.", "Panbox Pairing failed",
+					JOptionPane.ERROR_MESSAGE);
+		} catch (NoSuchAlgorithmException | CertificateException | KeyStoreException | InvalidKeySpecException e) {
+			logger.error("PanboxClient : loadPairingFile : Exception: ", e);
+			JOptionPane.showMessageDialog(null, "An error occurred while pairing. Please try again",
 					"Panbox Pairing failed", JOptionPane.ERROR_MESSAGE);
 		} catch (UnrecoverableKeyException e) {
 			logger.error("PanboxClient : loadPairingFile : Wrong password while pairing...");
-			JOptionPane.showMessageDialog(null,
-					"The password you entered was wrong. Please try again.",
+			JOptionPane.showMessageDialog(null, "The password you entered was wrong. Please try again.",
 					"Panbox Pairing failed", JOptionPane.ERROR_MESSAGE);
 		} finally {
 			if (password != null) {
@@ -1811,30 +1571,23 @@ public abstract class PanboxClient {
 		}
 	}
 
-	private void setUpIdentity(String email, String firstName, String lastName,
-			char[] password, String devicename, PrivateKey deviceKey,
-			Certificate deviceCert, PrivateKey ownerKeySign,
-			Certificate ownerCertSign, PrivateKey ownerKeyEnc,
-			Certificate ownerCertEnc, Map<String, X509Certificate> devices,
-			File contactsFile) throws NoSuchAlgorithmException,
-			InvalidKeySpecException {
+	private void setUpIdentity(String email, String firstName, String lastName, char[] password, String devicename,
+			PrivateKey deviceKey, Certificate deviceCert, PrivateKey ownerKeySign, Certificate ownerCertSign,
+			PrivateKey ownerKeyEnc, Certificate ownerCertEnc, Map<String, X509Certificate> devices, File contactsFile)
+					throws NoSuchAlgorithmException, InvalidKeySpecException {
 		// create identity and initial keypairs
-		Identity id = new Identity(new SimpleAddressbook(), email, firstName,
-				lastName);
+		Identity id = new Identity(new SimpleAddressbook(), email, firstName, lastName);
 
 		id.setOwnerKeyEnc(ownerCertEnc);
 		id.setOwnerKeySign(ownerCertSign);
 		if (ownerKeySign != null && ownerKeyEnc != null) {
-			id.setOwnerKeySign(CryptCore.privateKeyToKeyPair(ownerKeySign),
-					password);
-			id.setOwnerKeyEnc(CryptCore.privateKeyToKeyPair(ownerKeyEnc),
-					password);
+			id.setOwnerKeySign(CryptCore.privateKeyToKeyPair(ownerKeySign), password);
+			id.setOwnerKeyEnc(CryptCore.privateKeyToKeyPair(ownerKeyEnc), password);
 			Settings.getInstance().setPairingType(PairingType.MASTER);
 		} else {
 			Settings.getInstance().setPairingType(PairingType.SLAVE);
 		}
-		id.addDeviceKey(CryptCore.privateKeyToKeyPair(deviceKey), deviceCert,
-				devicename);
+		id.addDeviceKey(CryptCore.privateKeyToKeyPair(deviceKey), deviceCert, devicename);
 		Settings.getInstance().setDeviceName(devicename);
 		identityManager.init(addressbookManager);
 		identityManager.storeMyIdentity(id);
@@ -1854,14 +1607,11 @@ public abstract class PanboxClient {
 
 		try {
 			// add this device
-			deviceManager.addThisDevice(devicename,
-					CryptCore.privateKeyToKeyPair(deviceKey),
-					DeviceType.DESKTOP);
+			deviceManager.addThisDevice(devicename, CryptCore.privateKeyToKeyPair(deviceKey), DeviceType.DESKTOP);
 
 			// add other known devices
 			for (Entry<String, X509Certificate> dev : devices.entrySet()) {
-				deviceManager.addDevice(dev.getKey(), dev.getValue(),
-						DeviceType.DESKTOP);
+				deviceManager.addDevice(dev.getKey(), dev.getValue(), DeviceType.DESKTOP);
 			}
 			refreshDeviceListModel();
 		} catch (DeviceManagerException ex) {
@@ -1891,8 +1641,7 @@ public abstract class PanboxClient {
 				try {
 					shutdown();
 				} catch (Exception e) {
-					logger.error("Encountered error during application shutdown: "
-							+ e.getMessage());
+					logger.error("Encountered error during application shutdown: " + e.getMessage());
 				}
 			}
 		});
@@ -1918,32 +1667,25 @@ public abstract class PanboxClient {
 			PanboxShare share = shareManager.getShareForName(shareName);
 			res = shareManager.getOnlineFilename(share, path);
 		} catch (Exception ex) {
-			logger.error(
-					"PanboxClient : getOnlineFilename : Exception occured: ",
-					ex);
-			JOptionPane
-					.showMessageDialog(null,
-							bundle.getString("client.error.getOnlineFilename"),
-							bundle.getString("client.error"),
-							JOptionPane.ERROR_MESSAGE);
+			logger.error("PanboxClient : getOnlineFilename : Exception occured: ", ex);
+			JOptionPane.showMessageDialog(null, bundle.getString("client.error.getOnlineFilename"),
+					bundle.getString("client.error"), JOptionPane.ERROR_MESSAGE);
 		}
 		return res;
 	}
 
-	public abstract void showTrayMessage(String title, String message,
-			MessageType type);
+	public abstract void showTrayMessage(String title, String message, MessageType type);
 
 	public void conflictNotification(PanboxShare share, String chk) {
-		JOptionPane.showMessageDialog(null, MessageFormat.format(
-				bundle.getString("client.warning.conflictNotification"),
-				share.getName(), chk), bundle.getString("client.warn"),
-				JOptionPane.WARNING_MESSAGE);
+		JOptionPane.showMessageDialog(null,
+				MessageFormat.format(bundle.getString("client.warning.conflictNotification"), share.getName(), chk),
+				bundle.getString("client.warn"), JOptionPane.WARNING_MESSAGE);
 	}
 
 	public PanboxShare reloadShare(PanboxShare share) {
-		showTrayMessage(bundle.getString("client.warn"), MessageFormat.format(
-				bundle.getString("client.shareReloadNotification"),
-				share.getName()), MessageType.WARNING);
+		showTrayMessage(bundle.getString("client.warn"),
+				MessageFormat.format(bundle.getString("client.shareReloadNotification"), share.getName()),
+				MessageType.WARNING);
 		try {
 			PanboxShare nshare = shareManager.reloadShareMetadata(share);
 			PanboxShare tmp;
@@ -1955,14 +1697,12 @@ public abstract class PanboxClient {
 			if (index != -1) {
 				shareList.setElementAt(nshare, index);
 			} else {
-				logger.error("Could not find share instance " + share
-						+ " in shareList");
+				logger.error("Could not find share instance " + share + " in shareList");
 			}
 			getMainWindow().refreshShare();
 			return nshare;
 		} catch (ShareManagerException e) {
-			JOptionPane.showMessageDialog(null,
-					bundle.getString("client.error.shareReloadFailed"),
+			JOptionPane.showMessageDialog(null, bundle.getString("client.error.shareReloadFailed"),
 					bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
 		}
 		return null;
@@ -1979,8 +1719,7 @@ public abstract class PanboxClient {
 	 */
 	public static boolean checkSupportedKeySize() {
 		try {
-			int ksize = Cipher
-					.getMaxAllowedKeyLength(KeyConstants.SYMMETRIC_ALGORITHM);
+			int ksize = Cipher.getMaxAllowedKeyLength(KeyConstants.SYMMETRIC_ALGORITHM);
 			logger.info("Maximum supported key size: " + ksize);
 			if (ksize < KeyConstants.SYMMETRIC_KEY_SIZE) {
 				return false;
@@ -1990,5 +1729,21 @@ public abstract class PanboxClient {
 			return false;
 		}
 		return true;
+	}
+	
+	public void executeVersionCheck() {
+		if (VersionUtils.isNewerVersionAvailable()) {
+			MessageFormat formatter = new MessageFormat("", Settings.getInstance().getLocale());
+
+			formatter.applyPattern(bundle.getString("PanboxClient.newversion.message"));
+
+			JOptionPane pane = new JOptionPane(
+					formatter.format(new Object[] { VersionUtils.getRemoteVersion(OS.getOperatingSystem()) }),
+					JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION);
+			JDialog dialog = pane.createDialog(null, bundle.getString("PanboxClient.newversion"));
+			dialog.setModal(false);
+			dialog.setVisible(true);
+			pane.getValue();
+		}
 	}
 }
