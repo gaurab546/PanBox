@@ -1,6 +1,13 @@
 PanBox OSE Changelog
 ====================
 
+Next Minor-Version
+------------------
+
+To be released
+
+* Added version check to Desktop client and show information message if newer version is available.
+
 Version 1.1.2
 -------------
 
