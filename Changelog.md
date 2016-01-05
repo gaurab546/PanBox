@@ -6,7 +6,14 @@ Next Minor-Version
 
 To be released
 
+Features:
+
 * Added version check to Desktop client and show information message if newer version is available.
+
+Bugfixes:
+
+* Fixed missing German translation for remove device/contact button on share list entry
+* Fixed remove device button on device management, which was clickable even if it was disabled
 
 Version 1.1.2
 -------------
