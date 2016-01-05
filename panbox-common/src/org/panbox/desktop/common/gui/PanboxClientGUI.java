@@ -456,13 +456,17 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 		// TODO: add action and document listeners to the csp settings after it
 		// has been fixed (see trac ticket #139)
 
-		// Disable device pairing for SLAVE devices!
+		// Disable device pairing for SLAVE devices and enable the click for MASTER devices!
 		if (Settings.getInstance().isSlave()) {
 			addDeviceButton.setEnabled(false);
 			addDeviceButton.setToolTipText(bundle
 					.getString("client.disabledPairingSlave"));
-			addDeviceButton.removeMouseListener(addDeviceButton
-					.getMouseListeners()[0]);
+		} else {
+			addDeviceButton.addMouseListener(new java.awt.event.MouseAdapter() {
+				public void mousePressed(java.awt.event.MouseEvent evt) {
+					addDeviceButtonMousePressed(evt);
+				}
+			});
 		}
 
 		if (OS.getOperatingSystem().isWindows()) {
@@ -1525,11 +1529,6 @@ public class PanboxClientGUI extends javax.swing.JFrame {
 		addDeviceButton.setToolTipText(bundle
 				.getString("client.deviceList.addDevice")); // NOI18N
 		addDeviceButton.setPreferredSize(new java.awt.Dimension(28, 28));
-		addDeviceButton.addMouseListener(new java.awt.event.MouseAdapter() {
-			public void mousePressed(java.awt.event.MouseEvent evt) {
-				addDeviceButtonMousePressed(evt);
-			}
-		});
 
 		removeDeviceButton
 				.setIcon(new javax.swing.ImageIcon(getClass().getResource(
