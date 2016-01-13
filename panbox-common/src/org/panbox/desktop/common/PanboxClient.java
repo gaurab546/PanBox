@@ -850,6 +850,8 @@ public abstract class PanboxClient {
 					bundle.getString("client.error"), JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
 			logger.error("PanboxClient : addShare : Exception occured: ", e);
+			JOptionPane.showMessageDialog(getMainWindow(), bundle.getString("client.error.addShare"),
+					bundle.getString("client.error"), JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

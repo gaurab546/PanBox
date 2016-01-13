@@ -752,7 +752,7 @@ public class ShareManagerImpl implements IShareManager {
 			ShareMetaDataException, UnrecoverableKeyException {
 
 		if (!new File(sharePath).exists()) {
-			throw new FileNotFoundException();
+			throw new ShareManagerException( "The specified share path (" + sharePath + ") does not exist or is inaccessible!" );
 		}
 
 		String metaDataDir = sharePath + File.separator
