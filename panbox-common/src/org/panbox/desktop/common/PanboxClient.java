@@ -1429,8 +1429,8 @@ public abstract class PanboxClient {
 		}
 	}
 
-	private void finishSlavePairing(String eMail, String firstName, String lastName, X509Certificate ownerCertSign,
-			X509Certificate ownerCertEnc, KeyPair deviceKey, String deviceName, X509Certificate deviceCert,
+	private void finishSlavePairing(String eMail, String firstName, String lastName, X509Certificate ownerCertEnc,
+			X509Certificate ownerCertSign, KeyPair deviceKey, String deviceName, X509Certificate deviceCert,
 			Map<String, X509Certificate> devices, Collection<VCard> contacts) {
 		logger.debug("PanboxClient : finishSlavePairing : Will set up slave identity.");
 		// create identity and initial keypairs
