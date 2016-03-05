@@ -4,7 +4,7 @@
 
 ## Copyright
 
-Copyright 2013-2015 Sirrix AG, Fraunhofer SIT
+Copyright 2013-2016 Sirrix AG, Fraunhofer SIT
 
 This is the OpenSource Edition of PanBox which has been released under GPLv3 license. You will find a copy of the GPLv3 license in this repository.
 
