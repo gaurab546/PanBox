@@ -12,8 +12,15 @@ Features:
 
 Bugfixes:
 
+* Fixed issue when pairing a new desktop PC as slave device and identity signature and encryption certificates are interchanged
 * Fixed missing German translation for remove device/contact button on share list entry
 * Fixed remove device button on device management, which was clickable even if it was disabled
+* Fixed identity creation wizard to accept also upper case characters in the email address
+* Linux: Removed check if PanBox is running headless or not. This was needed for some distributions (for example QubesOS)
+
+Others:
+
+* Windows: Updated JRE to 1.8.0_72
 
 Version 1.1.2
 -------------

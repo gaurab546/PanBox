@@ -545,7 +545,7 @@ public class SetupWizardDialog extends javax.swing.JDialog {
 			canceled = false;
 			dispose();
 		} else if (step == 1) {
-			matcher = pattern.matcher(emailTextField.getText());
+			matcher = pattern.matcher(emailTextField.getText().toLowerCase());
 			if (firstnameTextField.getText().equals(
 					bundle.getString("FirstNameInput"))
 					|| firstnameTextField.getText().isEmpty()
