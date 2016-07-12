@@ -1,10 +1,10 @@
 # PanBox
 
-[![Build Status](https://travis-ci.org/Sirrix-AG/PanBox.svg)](https://travis-ci.org/Sirrix-AG/PanBox)
+[![Build Status](https://travis-ci.org/Rohde-Schwarz-Cybersecurity/PanBox.svg)](https://travis-ci.org/Rohde-Schwarz-Cybersecurity/PanBox)
 
 ## Copyright
 
-Copyright 2013-2016 Sirrix AG, Fraunhofer SIT
+Copyright 2013-2016 Rohde & Schwarz Cybersecurity, Fraunhofer SIT
 
 This is the OpenSource Edition of PanBox which has been released under GPLv3 license. You will find a copy of the GPLv3 license in this repository.
 
